@@ -384,10 +384,13 @@ CREATE TABLE IF NOT EXISTS public.reservations (
   car_id                     uuid REFERENCES public.cars(id) ON DELETE SET NULL,
   departure_date             date,
   departure_time             time,
-  departure_agency_id        uuid REFERENCES public.agencies(id) ON DELETE SET NULL,
+  -- FK nommée explicitement : l'app l'utilise comme indice PostgREST
+  -- (agencies!reservations_departure_agency_fkey). Ne pas laisser Postgres
+  -- auto-nommer (…_agency_id_fkey) sinon l'embed échoue en PGRST200.
+  departure_agency_id        uuid,
   return_date                date,
   return_time                time,
-  return_agency_id           uuid REFERENCES public.agencies(id) ON DELETE SET NULL,
+  return_agency_id           uuid,
   price_per_day              numeric NOT NULL DEFAULT 0,
   price_week                 numeric,
   price_month                numeric,
@@ -433,6 +436,10 @@ CREATE TABLE IF NOT EXISTS public.reservations (
   CONSTRAINT reservations_status_check CHECK (status = ANY (ARRAY[
     'website_reservation','pending','accepted','confirmed','active','completed','cancelled'])),
   CONSTRAINT reservations_payment_status_check CHECK (payment_status IN ('unpaid','partial','paid')),
+  CONSTRAINT reservations_departure_agency_fkey
+    FOREIGN KEY (departure_agency_id) REFERENCES public.agencies(id) ON DELETE SET NULL,
+  CONSTRAINT reservations_return_agency_fkey
+    FOREIGN KEY (return_agency_id) REFERENCES public.agencies(id) ON DELETE SET NULL,
   CONSTRAINT reservations_protection_assurance_fkey
     FOREIGN KEY (protection_assurance_id) REFERENCES public.protection_assurances(id) ON DELETE SET NULL
 );
