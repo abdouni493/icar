@@ -29,6 +29,7 @@ import { setupErrorInterceptor } from './utils/errorInterceptor';
 import { DebugAuth } from './utils/debugAuth';
 import { sessionService } from './utils/sessionService';
 import { initTheme, applyTheme, getStoredTheme } from './utils/themeService';
+import { invalidateAll as clearDataCache } from './services/dataCache';
 import { PermissionsProvider, usePermissions } from './utils/permissions';
 
 // Initialize global error interceptor on load
@@ -486,6 +487,7 @@ export default function App() {
 
   const handleLogout = async () => {
     console.log('[Auth] Logout handler called');
+    clearDataCache(); // vide le cache mémoire pour ne pas fuiter d'un compte à l'autre
     await sessionService.invalidateSession();
     await supabase.auth.signOut();
     setUser(null);

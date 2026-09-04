@@ -1,4 +1,5 @@
 import { supabase } from '../supabase'
+import { compressImage } from '../utils/imageCompression'
 
 export interface InspectionImageUploadResult {
   success: boolean
@@ -36,8 +37,11 @@ export async function uploadInspectionImage(
       }
     }
 
+    // Compresse/redimensionne côté client : uploads bien plus rapides.
+    const upload = await compressImage(file, { maxDimension: 1800 })
+
     // Generate unique filename
-    const fileExt = file.name.split('.').pop()
+    const fileExt = upload.name.split('.').pop() || 'jpg'
     const fileName = inspectionId
       ? `inspection-${inspectionId}-${type}-${Date.now()}.${fileExt}`
       : `inspection-${type}-${Date.now()}.${fileExt}`
@@ -45,8 +49,8 @@ export async function uploadInspectionImage(
     // Upload file to Supabase storage
     const { data, error } = await supabase.storage
       .from('inspection')
-      .upload(fileName, file, {
-        cacheControl: '3600',
+      .upload(fileName, upload, {
+        cacheControl: '31536000',
         upsert: false
       })
 

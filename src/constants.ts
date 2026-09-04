@@ -25,7 +25,6 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: 'entreprises', label: { fr: 'Entreprises', ar: 'الشركات' }, icon: '🏭' },
   { id: 'agencies', label: { fr: 'Agences', ar: 'الوكالات' }, icon: '🏢' },
   { id: 'team', label: { fr: 'Équipe', ar: 'الفريق' }, icon: '🤝' },
-  { id: 'personalization', label: { fr: 'Personalisation', ar: 'التخصيص' }, icon: '🎨' },
   { id: 'expenses', label: { fr: 'Dépenses', ar: 'المصاريف' }, icon: '📉' },
   { id: 'web-mgmt', label: { fr: 'Website management', ar: 'إدارة الموقع' }, icon: '🌐' },
   { id: 'car-gains', label: { fr: 'Bénéfices par voiture', ar: 'أرباح كل سيارة' }, icon: '💰' },

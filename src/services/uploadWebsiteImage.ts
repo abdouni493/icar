@@ -1,5 +1,6 @@
 import { supabase } from '../supabase'
 import { sessionService } from '../utils/sessionService'
+import { compressImage } from '../utils/imageCompression'
 
 export interface WebsiteImageUploadResult {
   success: boolean
@@ -37,12 +38,18 @@ export async function uploadWebsiteImage(
       }
     }
 
-    const fileExt = file.name.split('.').pop()
+    // Le fond d'accueil est une grande photo (haute résolution), le logo reste
+    // petit et peut être transparent (PNG conservé par le compresseur).
+    const upload = await compressImage(file, {
+      maxDimension: prefix === 'background' ? 1920 : 800,
+    })
+
+    const fileExt = upload.name.split('.').pop() || 'jpg'
     const fileName = `${prefix}-${Date.now()}.${fileExt}`
 
     const { error } = await supabase.storage
       .from('website')
-      .upload(fileName, file, { cacheControl: '3600', upsert: false })
+      .upload(fileName, upload, { cacheControl: '31536000', upsert: false })
 
     if (error) {
       console.error('Website image upload error:', error)

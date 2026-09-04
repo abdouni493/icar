@@ -1,5 +1,6 @@
 import { supabase } from '../supabase'
 import { uploadCarImage } from './uploadCarImage'
+import { invalidate as cacheInvalidate } from './dataCache'
 
 export interface Car {
   id?: string
@@ -121,6 +122,7 @@ export async function addCar(carData: AddCarData): Promise<{ success: boolean; c
       }
     }
 
+    cacheInvalidate('cars', 'special_offers')
     return {
       success: true,
       car: data
@@ -184,6 +186,7 @@ export async function getCar(id: string): Promise<{ success: boolean; car?: Car;
       }
     }
 
+    cacheInvalidate('cars', 'special_offers')
     return {
       success: true,
       car: data
@@ -220,6 +223,7 @@ export async function updateCar(
       }
     }
 
+    cacheInvalidate('cars', 'special_offers')
     return {
       success: true,
       car: data
@@ -251,6 +255,7 @@ export async function deleteCar(id: string): Promise<{ success: boolean; error?:
       }
     }
 
+    cacheInvalidate('cars', 'special_offers')
     return {
       success: true
     }

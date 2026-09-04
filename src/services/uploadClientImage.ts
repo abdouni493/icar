@@ -1,4 +1,5 @@
 import { supabase } from '../supabase'
+import { compressImage } from '../utils/imageCompression'
 
 export interface ClientImageUploadResult {
   success: boolean
@@ -26,14 +27,17 @@ export async function uploadClientProfilePhoto(
       return { success: false, error: 'File size must be less than 5MB' }
     }
 
-    const fileExt = file.name.split('.').pop()
+    // Photo de profil : petite taille suffisante.
+    const upload = await compressImage(file, { maxDimension: 1200 })
+
+    const fileExt = upload.name.split('.').pop() || 'jpg'
     const fileName = clientId
       ? `profile-${clientId}-${Date.now()}.${fileExt}`
       : `profile-${Date.now()}.${fileExt}`
 
     const { data, error } = await supabase.storage
       .from('clients')
-      .upload(fileName, file, { cacheControl: '3600', upsert: false })
+      .upload(fileName, upload, { cacheControl: '31536000', upsert: false })
 
     if (error) {
       console.error('Upload error:', error)
@@ -71,14 +75,18 @@ export async function uploadClientDocument(
       return { success: false, error: 'File size must be less than 10MB' }
     }
 
-    const fileExt = file.name.split('.').pop()
+    // Document scanné (CIN, permis…) : on garde une résolution élevée pour
+    // que le texte reste lisible, tout en allégeant nettement le fichier.
+    const upload = await compressImage(file, { maxDimension: 2200, quality: 0.85 })
+
+    const fileExt = upload.name.split('.').pop() || 'jpg'
     const fileName = clientId
       ? `document-${clientId}-${Date.now()}.${fileExt}`
       : `document-${Date.now()}.${fileExt}`
 
     const { data, error } = await supabase.storage
       .from('clients')
-      .upload(fileName, file, { cacheControl: '3600', upsert: false })
+      .upload(fileName, upload, { cacheControl: '31536000', upsert: false })
 
     if (error) {
       console.error('Upload error:', error)

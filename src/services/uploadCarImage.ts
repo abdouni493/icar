@@ -1,4 +1,5 @@
 import { supabase } from '../supabase'
+import { compressImage } from '../utils/imageCompression'
 
 export interface CarImageUploadResult {
   success: boolean
@@ -34,8 +35,11 @@ export async function uploadCarImage(
       }
     }
 
+    // Compresse/redimensionne côté client : uploads bien plus rapides.
+    const upload = await compressImage(file)
+
     // Generate unique filename
-    const fileExt = file.name.split('.').pop()
+    const fileExt = upload.name.split('.').pop() || 'jpg'
     const fileName = carId
       ? `${carId}-${Date.now()}.${fileExt}`
       : `car-${Date.now()}.${fileExt}`
@@ -43,8 +47,8 @@ export async function uploadCarImage(
     // Upload file to Supabase storage
     const { data, error } = await supabase.storage
       .from('cars')
-      .upload(fileName, file, {
-        cacheControl: '3600',
+      .upload(fileName, upload, {
+        cacheControl: '31536000',
         upsert: false
       })
 

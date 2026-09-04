@@ -1,6 +1,18 @@
 import { supabase } from '../supabase';
 import { Car, Client, Agency, Worker, WorkerAdvance, WorkerAbsence, WorkerPayment, WorkerRole, WorkerPermissions, Entreprise, RentalSettings, StoreExpense, VehicleExpense, MaintenanceAlert, WebsiteOrder, ReservationDetails, SpecialOffer, ContactInfo, WebsiteSettings, PromoCode } from '../types';
 import { parseCarCurrencies } from '../utils/currency';
+import { cachedFetch, invalidate as cacheInvalidate } from './dataCache';
+
+/** Clés du cache mémoire (stale-while-revalidate) des lectures fréquentes. */
+const CK = {
+  cars: 'cars',
+  clients: 'clients',
+  agencies: 'agencies',
+  workers: 'workers',
+  offers: 'special_offers',
+  contacts: 'website_contacts',
+  settings: 'website_settings',
+} as const;
 
 // Generic database service functions
 export class DatabaseService {
@@ -91,16 +103,18 @@ export class DatabaseService {
 
   // ─── Cars ────────────────────────────────────────────────────────────────
   static async getCars(): Promise<Car[]> {
-    const { data, error } = await supabase
-      .from('cars')
-      .select('*')
-      .order('created_at', { ascending: false });
+    return cachedFetch(CK.cars, async () => {
+      const { data, error } = await supabase
+        .from('cars')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    // Le statut retourné ici est soit 'maintenance' (saisi manuellement en DB) soit
-    // 'disponible' (placeholder). Utilise getCarsWithRealStatus() pour le statut calculé.
-    return (data || []).map(dbCar => this.mapDbCar(dbCar));
+      // Le statut retourné ici est soit 'maintenance' (saisi manuellement en DB) soit
+      // 'disponible' (placeholder). Utilise getCarsWithRealStatus() pour le statut calculé.
+      return (data || []).map(dbCar => this.mapDbCar(dbCar));
+    });
   }
 
   /**
@@ -255,6 +269,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.cars, CK.offers);
     return this.mapDbCar(data);
   }
 
@@ -271,6 +286,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.cars, CK.offers);
     return this.mapDbCar(data);
   }
 
@@ -281,6 +297,7 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.cars, CK.offers);
   }
 
   /**
@@ -333,14 +350,16 @@ export class DatabaseService {
       }
       throw error;
     }
+    cacheInvalidate(CK.cars, CK.offers);
   }
 
   // Clients
   static async getClients(): Promise<Client[]> {
+   return cachedFetch(CK.clients, async () => {
     // Add retry logic for rate limiting
     const maxRetries = 2;
     let lastError;
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         const { data, error } = await supabase
@@ -394,8 +413,9 @@ export class DatabaseService {
         throw error;
       }
     }
-    
+
     throw lastError;
+   });
   }
 
 
@@ -492,6 +512,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.clients);
 
     // Map back to camelCase for the return
     return {
@@ -554,6 +575,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.clients);
 
     // Map back to camelCase for the return
     return {
@@ -590,16 +612,19 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.clients);
   }
   // Agencies
   static async getAgencies(): Promise<Agency[]> {
-    const { data, error } = await supabase
-      .from('agencies')
-      .select('*')
-      .order('created_at', { ascending: false });
+    return cachedFetch(CK.agencies, async () => {
+      const { data, error } = await supabase
+        .from('agencies')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+      if (error) throw error;
+      return data || [];
+    });
   }
 
   static async createAgency(agency: Omit<Agency, 'id' | 'created_at'>): Promise<Agency> {
@@ -616,6 +641,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.agencies);
     return data;
   }
 
@@ -628,6 +654,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.agencies);
     return data;
   }
 
@@ -638,24 +665,27 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.agencies);
   }
 
   // Workers
   static async getWorkers(): Promise<Worker[]> {
-    const { data, error } = await supabase
-      .from('workers')
-      .select(`
-        *,
-        advances:worker_advances(*),
-        absences:worker_absences(*),
-        payments:worker_payments(*)
-      `)
-      .order('created_at', { ascending: false });
+    return cachedFetch(CK.workers, async () => {
+      const { data, error } = await supabase
+        .from('workers')
+        .select(`
+          *,
+          advances:worker_advances(*),
+          absences:worker_absences(*),
+          payments:worker_payments(*)
+        `)
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    // Map snake_case to camelCase
-    return (data || []).map(worker => this.mapWorkerRow(worker));
+      // Map snake_case to camelCase
+      return (data || []).map(worker => this.mapWorkerRow(worker));
+    });
   }
 
   /** Ligne DB → Worker (camelCase), tolérant aux colonnes pas encore migrées. */
@@ -747,6 +777,7 @@ export class DatabaseService {
       .update({ permissions })
       .eq('id', workerId);
     if (error) throw error;
+    cacheInvalidate(CK.workers);
   }
 
   static async createWorker(worker: Omit<Worker, 'id' | 'createdAt' | 'advances' | 'absences' | 'payments'>): Promise<Worker> {
@@ -788,6 +819,7 @@ export class DatabaseService {
 
     console.log('[DatabaseService] Worker created successfully:', data.id);
 
+    cacheInvalidate(CK.workers);
     return this.mapWorkerRow(data);
   }
 
@@ -822,6 +854,7 @@ export class DatabaseService {
 
     if (error) throw error;
 
+    cacheInvalidate(CK.workers);
     return this.mapWorkerRow(data);
   }
 
@@ -895,6 +928,7 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.workers);
   }
 
   // Worker Advances
@@ -914,6 +948,7 @@ export class DatabaseService {
 
     if (error) throw error;
 
+    cacheInvalidate(CK.workers);
     return {
       id: data.id,
       amount: Number(data.amount) || 0,
@@ -939,6 +974,7 @@ export class DatabaseService {
         .in('id', absenceIds);
       if (error) throw error;
     }
+    cacheInvalidate(CK.workers);
   }
 
   static async deleteWorkerAdvance(id: string): Promise<void> {
@@ -948,6 +984,7 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.workers);
   }
 
   // Worker Absences
@@ -967,6 +1004,7 @@ export class DatabaseService {
 
     if (error) throw error;
 
+    cacheInvalidate(CK.workers);
     return {
       id: data.id,
       cost: Number(data.cost) || 0,
@@ -983,6 +1021,7 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.workers);
   }
 
   // Worker Payments
@@ -1007,6 +1046,7 @@ export class DatabaseService {
 
     if (error) throw error;
 
+    cacheInvalidate(CK.workers);
     return {
       id: data.id,
       amount: Number(data.amount) || 0,
@@ -1027,6 +1067,7 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.workers);
   }
 
   // Store Expenses
@@ -1608,22 +1649,24 @@ export class DatabaseService {
   }
 
   static async getSpecialOffers(): Promise<SpecialOffer[]> {
-    try {
-      const { data, error } = await supabase
-        .from('special_offers')
-        .select(`
-          *,
-          car:cars(*)
-        `)
-        .order('created_at', { ascending: false });
+    return cachedFetch(CK.offers, async () => {
+      try {
+        const { data, error } = await supabase
+          .from('special_offers')
+          .select(`
+            *,
+            car:cars(*)
+          `)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      return (data || []).map(row => this.mapDbSpecialOffer(row));
-    } catch (e: any) {
-      console.warn('getSpecialOffers failed, returning empty array', e.message || e);
-      return [];
-    }
+        return (data || []).map(row => this.mapDbSpecialOffer(row));
+      } catch (e: any) {
+        console.warn('getSpecialOffers failed, returning empty array', e.message || e);
+        return [];
+      }
+    });
   }
 
   static async createSpecialOffer(offer: Omit<SpecialOffer, 'id' | 'createdAt' | 'car'>): Promise<SpecialOffer> {
@@ -1637,6 +1680,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw this.specialOfferMigrationError(error);
+    cacheInvalidate(CK.offers);
     return this.mapDbSpecialOffer(data);
   }
 
@@ -1652,6 +1696,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw this.specialOfferMigrationError(error);
+    cacheInvalidate(CK.offers);
     return this.mapDbSpecialOffer(data);
   }
 
@@ -1678,6 +1723,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.offers);
     return this.mapDbSpecialOffer(data);
   }
 
@@ -1688,37 +1734,40 @@ export class DatabaseService {
       .eq('id', id);
 
     if (error) throw error;
+    cacheInvalidate(CK.offers);
   }
 
 
   // Website Management - Contacts
   static async getWebsiteContacts(): Promise<ContactInfo> {
-    try {
-      const { data, error } = await supabase
-        .from('website_contacts')
-        .select('*')
-        .order('updated_at', { ascending: false })
-        .limit(1);
+    return cachedFetch(CK.contacts, async () => {
+      try {
+        const { data, error } = await supabase
+          .from('website_contacts')
+          .select('*')
+          .order('updated_at', { ascending: false })
+          .limit(1);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      if (data && data.length > 0) {
-        return {
-          facebook: data[0].facebook,
-          instagram: data[0].instagram,
-          tiktok: data[0].tiktok,
-          whatsapp: data[0].whatsapp,
-          phone: data[0].phone,
-          address: data[0].address,
-          email: data[0].email,
-        };
+        if (data && data.length > 0) {
+          return {
+            facebook: data[0].facebook,
+            instagram: data[0].instagram,
+            tiktok: data[0].tiktok,
+            whatsapp: data[0].whatsapp,
+            phone: data[0].phone,
+            address: data[0].address,
+            email: data[0].email,
+          };
+        }
+      } catch (e: any) {
+        console.warn('getWebsiteContacts failed, returning empty object', e.message || e);
       }
-    } catch (e: any) {
-      console.warn('getWebsiteContacts failed, returning empty object', e.message || e);
-    }
 
-    // Return empty object if error or no contacts exist
-    return {};
+      // Return empty object if error or no contacts exist
+      return {};
+    });
   }
 
   static async updateWebsiteContacts(contacts: ContactInfo): Promise<ContactInfo> {
@@ -1745,6 +1794,7 @@ export class DatabaseService {
       .single();
 
     if (error) throw error;
+    cacheInvalidate(CK.contacts);
 
     return {
       facebook: data.facebook,
@@ -1759,42 +1809,44 @@ export class DatabaseService {
 
   // Website Management - Settings
   static async getWebsiteSettings(): Promise<WebsiteSettings> {
-    try {
-      const { data, error } = await supabase
-        .from('website_settings')
-        .select('*')
-        .order('updated_at', { ascending: false })
-        .limit(1);
+    return cachedFetch(CK.settings, async () => {
+      try {
+        const { data, error } = await supabase
+          .from('website_settings')
+          .select('*')
+          .order('updated_at', { ascending: false })
+          .limit(1);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      if (data && data.length > 0) {
-        return {
-          name: data[0].name,
-          description: data[0].description,
-          logo: data[0].logo,
-          phone_number_2: data[0].phone_number_2,
-          bank_number: data[0].bank_number,
-          address: data[0].address,
-          phone: data[0].phone,
-          landing_background: data[0].landing_background,
-        };
+        if (data && data.length > 0) {
+          return {
+            name: data[0].name,
+            description: data[0].description,
+            logo: data[0].logo,
+            phone_number_2: data[0].phone_number_2,
+            bank_number: data[0].bank_number,
+            address: data[0].address,
+            phone: data[0].phone,
+            landing_background: data[0].landing_background,
+          };
+        }
+      } catch (e: any) {
+        console.warn('getWebsiteSettings failed, returning empty object', e.message || e);
       }
-    } catch (e: any) {
-      console.warn('getWebsiteSettings failed, returning empty object', e.message || e);
-    }
 
-    // default empty - ensure required fields present
-    return {
-      name: '',
-      description: '',
-      logo: '',
-      phone_number_2: '',
-      bank_number: '',
-      address: '',
-      phone: '',
-      landing_background: '',
-    };
+      // default empty - ensure required fields present
+      return {
+        name: '',
+        description: '',
+        logo: '',
+        phone_number_2: '',
+        bank_number: '',
+        address: '',
+        phone: '',
+        landing_background: '',
+      };
+    });
   }
 
   static async updateWebsiteSettings(settings: WebsiteSettings): Promise<WebsiteSettings> {
@@ -1843,6 +1895,7 @@ export class DatabaseService {
     }
 
     if (error) throw error;
+    cacheInvalidate(CK.settings);
 
     return {
       name: data.name,

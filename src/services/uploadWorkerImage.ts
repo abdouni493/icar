@@ -1,16 +1,18 @@
 import { supabase } from '../supabase';
+import { compressImage } from '../utils/imageCompression';
 
 export const uploadWorkerProfilePhoto = async (file: File, workerId?: string): Promise<{ success: boolean; url?: string; error?: string }> => {
   try {
-    const fileExt = file.name.split('.').pop();
+    const upload = await compressImage(file, { maxDimension: 1200 });
+    const fileExt = upload.name.split('.').pop() || 'jpg';
     const fileName = workerId
-      ? `worker_${workerId}_profile.${fileExt}`
+      ? `worker_${workerId}_profile_${Date.now()}.${fileExt}`
       : `worker_temp_profile_${Date.now()}.${fileExt}`;
 
     const { data, error } = await supabase.storage
       .from('worker')
-      .upload(fileName, file, {
-        cacheControl: '3600',
+      .upload(fileName, upload, {
+        cacheControl: '31536000',
         upsert: false
       });
 
