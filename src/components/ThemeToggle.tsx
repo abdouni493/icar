@@ -17,16 +17,18 @@ interface ThemeToggleProps {
  * partagé entre les deux.
  */
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ lang = 'fr', variant = 'nav', className = '' }) => {
-  const [mode, setMode] = useState<ThemeMode>('light');
+  // Le site public ('site') et l'admin ('app') mémorisent leur thème séparément.
+  const surface = variant === 'site' ? 'site' : 'app';
+  const [mode, setMode] = useState<ThemeMode>(variant === 'site' ? 'dark' : 'light');
 
   useEffect(() => {
-    setMode(getStoredTheme());
-  }, []);
+    setMode(getStoredTheme(surface));
+  }, [surface]);
 
   const toggle = () => {
     const next: ThemeMode = mode === 'dark' ? 'light' : 'dark';
     setMode(next);
-    setTheme(next);
+    setTheme(next, surface);
   };
 
   const label =

@@ -28,14 +28,17 @@ import { DatabaseService } from './services/DatabaseService';
 import { setupErrorInterceptor } from './utils/errorInterceptor';
 import { DebugAuth } from './utils/debugAuth';
 import { sessionService } from './utils/sessionService';
-import { initTheme } from './utils/themeService';
+import { initTheme, applyTheme, getStoredTheme } from './utils/themeService';
 import { PermissionsProvider, usePermissions } from './utils/permissions';
 
 // Initialize global error interceptor on load
 setupErrorInterceptor();
 
-// Applique le thème clair/sombre enregistré avant le premier rendu
-initTheme();
+// Applique le thème avant le premier rendu, selon la surface d'entrée :
+// site public ('/website') → sombre par défaut · application admin → clair.
+initTheme(
+  typeof window !== 'undefined' && window.location.pathname === '/website' ? 'site' : 'app'
+);
 
 // Make Supabase available globally for console debugging
 if (typeof window !== 'undefined') {
@@ -67,6 +70,12 @@ export default function App() {
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isWebsiteMode = location.pathname === '/website';
+
+  // Bascule le thème selon la surface : le site public s'ouvre en SOMBRE,
+  // l'application admin en CLAIR — chacun mémorisant son propre choix.
+  useEffect(() => {
+    applyTheme(getStoredTheme(isWebsiteMode ? 'site' : 'app'));
+  }, [isWebsiteMode]);
 
   // Sync URL with active tab - extract tab from URL on mount and when URL changes
   useEffect(() => {
