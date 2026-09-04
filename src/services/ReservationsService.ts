@@ -83,7 +83,84 @@ function mapProtectionAssurance(pa: any): ProtectionAssurance | undefined {
 // =========================================
 export class ReservationsService {
   // ========== RESERVATIONS ==========
-  
+
+  /**
+   * Extrait le nom de la colonne manquante d'une erreur Supabase/PostgREST.
+   * Gère les deux formulations rencontrées :
+   *   • PostgREST : "Could not find the 'assurance_enabled' column of 'reservations' in the schema cache"
+   *   • Postgres  : `column "assurance_enabled" of relation "reservations" does not exist`
+   */
+  private static missingColumnFromError(error: any): string | null {
+    const msg = `${error?.message || ''} ${error?.details || ''} ${error?.hint || ''}`;
+    // PostgREST : colonne absente du cache de schéma.
+    let m = msg.match(/Could not find the '([^']+)' column/i);
+    if (m) return m[1];
+    // Postgres : « column "x" of relation "t" does not exist ». On EXIGE le
+    // « does not exist » final pour ne PAS confondre avec une violation NOT NULL
+    // (« null value in column "x" … »), qui ne doit surtout pas retirer la colonne.
+    m = msg.match(/column "?([a-zA-Z0-9_]+)"? of relation "?[a-zA-Z0-9_.]+"? does not exist/i);
+    if (m) return m[1];
+    return null;
+  }
+
+  /**
+   * Insère une ligne en tolérant un schéma en retard : si une colonne du
+   * payload n'existe pas encore en base (migration non appliquée), on la
+   * retire et on réessaie au lieu d'échouer complètement. Les colonnes
+   * ignorées sont journalisées ; une fois la migration SQL exécutée, tous les
+   * champs sont de nouveau enregistrés.
+   */
+  private static async resilientInsert(table: string, payload: Record<string, any>): Promise<{ id: string }> {
+    const row: Record<string, any> = { ...payload };
+    const dropped: string[] = [];
+    // Bornage : au pire on retire chaque clé une fois.
+    for (let attempt = 0; attempt <= Object.keys(payload).length; attempt++) {
+      const { data, error } = await supabase.from(table).insert([row]).select().single();
+      if (!error) {
+        if (dropped.length) {
+          console.warn(`[Reservations] Colonnes ignorées à l'insertion dans ${table} (schéma en retard, exécutez la migration) : ${dropped.join(', ')}`);
+        }
+        return { id: data.id };
+      }
+      const col = this.missingColumnFromError(error);
+      if (col && col in row) { delete row[col]; dropped.push(col); continue; }
+      throw error;
+    }
+    throw new Error(`Insertion impossible dans ${table} : trop de colonnes absentes du schéma.`);
+  }
+
+  /** Insère une réservation (tolérant au schéma en retard). */
+  private static async insertReservationRow(payload: Record<string, any>): Promise<{ id: string }> {
+    return this.resilientInsert('reservations', payload);
+  }
+
+  /**
+   * Met à jour une ligne avec la même tolérance au schéma en retard que
+   * {@link resilientInsert}.
+   */
+  private static async resilientUpdate(table: string, id: string, payload: Record<string, any>): Promise<void> {
+    const row: Record<string, any> = { ...payload };
+    const dropped: string[] = [];
+    for (let attempt = 0; attempt <= Object.keys(payload).length; attempt++) {
+      const { error } = await supabase.from(table).update(row).eq('id', id);
+      if (!error) {
+        if (dropped.length) {
+          console.warn(`[Reservations] Colonnes ignorées à la mise à jour de ${table} (schéma en retard) : ${dropped.join(', ')}`);
+        }
+        return;
+      }
+      const col = this.missingColumnFromError(error);
+      if (col && col in row) { delete row[col]; dropped.push(col); continue; }
+      throw error;
+    }
+    throw new Error(`Mise à jour impossible de ${table} : trop de colonnes absentes du schéma.`);
+  }
+
+  /** Met à jour une réservation (tolérant au schéma en retard). */
+  private static async updateReservationRow(id: string, payload: Record<string, any>): Promise<void> {
+    return this.resilientUpdate('reservations', id, payload);
+  }
+
   static async createReservation(data: {
     clientId: string;
     carId: string;
@@ -132,62 +209,58 @@ export class ReservationsService {
     promoDiscountPercentage?: number | null;
     promoDiscountAmount?: number | null;
   }): Promise<{ id: string }> {
-    const { data: reservation, error } = await supabase
-      .from('reservations')
-      .insert([{
-        client_id: data.clientId,
-        car_id: data.carId,
-        departure_date: data.departureDate,
-        departure_time: data.departureTime,
-        departure_agency_id: data.departureAgencyId,
-        return_date: data.returnDate,
-        return_time: data.returnTime,
-        return_agency_id: data.returnAgencyId,
-        price_per_day: data.pricePerDay,
-        price_week: data.priceWeek,
-        price_month: data.priceMonth,
-        total_days: data.totalDays,
-        total_price: data.totalPrice,
-        deposit: data.deposit,
-        discount_amount: data.discountAmount || 0,
-        discount_type: data.discountType,
-        advance_payment: data.advancePayment || 0,
-        remaining_payment: data.remainingPayment,
-        status: data.status || 'pending',
-        notes: data.notes,
-        caution_amount_dzd: data.cautionAmountDzd || data.deposit,
-        caution_currency: data.cautionCurrency || 'DZD',
-        euro_rate: data.euroRate || 145,
-        assurance_enabled: data.assuranceEnabled || false,
-        assurance_percentage: data.assurancePercentage || null,
-        protection_assurance_id: data.protectionAssuranceId || null,
-        protection_assurance_name: data.protectionAssuranceName || null,
-        protection_assurance_price: data.protectionAssurancePrice || 0,
-        created_by: data.createdBy || null,
-        created_by_name: data.createdByName || null,
-        // Réservations créées ici = origine agence par défaut. Marquée
-        // explicitement pour que le planificateur affiche « 🏢 Agence ».
-        source: data.source || 'agency',
-        // Timbre fiscal
-        timbre_enabled: data.timbreEnabled || false,
-        timbre_rate: data.timbreEnabled ? (data.timbreRate ?? null) : null,
-        timbre_amount: data.timbreEnabled ? (data.timbreAmount ?? 0) : 0,
-        // Entreprise (facturation société)
-        entreprise_id: data.entrepriseId || null,
-        // Devise choisie (le total_price reste TOUJOURS en DZD)
-        currency: data.currency || 'DZD',
-        currency_rate: data.currencyRate ?? 1,
-        total_price_currency: data.totalPriceCurrency ?? null,
-        // Code promo
-        promo_code: data.promoCode || null,
-        promo_discount_percentage: data.promoDiscountPercentage ?? null,
-        promo_discount_amount: data.promoDiscountAmount ?? null,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return { id: reservation.id };
+    // L'insertion tolère un schéma en retard : une colonne absente est
+    // retirée puis l'insertion est retentée (cf. insertReservationRow), ce qui
+    // évite l'échec « Could not find the '…' column … in the schema cache ».
+    return this.insertReservationRow({
+      client_id: data.clientId,
+      car_id: data.carId,
+      departure_date: data.departureDate,
+      departure_time: data.departureTime,
+      departure_agency_id: data.departureAgencyId,
+      return_date: data.returnDate,
+      return_time: data.returnTime,
+      return_agency_id: data.returnAgencyId,
+      price_per_day: data.pricePerDay,
+      price_week: data.priceWeek,
+      price_month: data.priceMonth,
+      total_days: data.totalDays,
+      total_price: data.totalPrice,
+      deposit: data.deposit,
+      discount_amount: data.discountAmount || 0,
+      discount_type: data.discountType,
+      advance_payment: data.advancePayment || 0,
+      remaining_payment: data.remainingPayment,
+      status: data.status || 'pending',
+      notes: data.notes,
+      caution_amount_dzd: data.cautionAmountDzd || data.deposit,
+      caution_currency: data.cautionCurrency || 'DZD',
+      euro_rate: data.euroRate || 145,
+      assurance_enabled: data.assuranceEnabled || false,
+      assurance_percentage: data.assurancePercentage || null,
+      protection_assurance_id: data.protectionAssuranceId || null,
+      protection_assurance_name: data.protectionAssuranceName || null,
+      protection_assurance_price: data.protectionAssurancePrice || 0,
+      created_by: data.createdBy || null,
+      created_by_name: data.createdByName || null,
+      // Réservations créées ici = origine agence par défaut. Marquée
+      // explicitement pour que le planificateur affiche « 🏢 Agence ».
+      source: data.source || 'agency',
+      // Timbre fiscal
+      timbre_enabled: data.timbreEnabled || false,
+      timbre_rate: data.timbreEnabled ? (data.timbreRate ?? null) : null,
+      timbre_amount: data.timbreEnabled ? (data.timbreAmount ?? 0) : 0,
+      // Entreprise (facturation société)
+      entreprise_id: data.entrepriseId || null,
+      // Devise choisie (le total_price reste TOUJOURS en DZD)
+      currency: data.currency || 'DZD',
+      currency_rate: data.currencyRate ?? 1,
+      total_price_currency: data.totalPriceCurrency ?? null,
+      // Code promo
+      promo_code: data.promoCode || null,
+      promo_discount_percentage: data.promoDiscountPercentage ?? null,
+      promo_discount_amount: data.promoDiscountAmount ?? null,
+    });
   }
 
   static async addCautionAmountDzdColumn(): Promise<void> {
@@ -796,30 +869,10 @@ export class ReservationsService {
     if (updates.promoDiscountPercentage !== undefined) updateData.promo_discount_percentage = updates.promoDiscountPercentage;
     if (updates.promoDiscountAmount !== undefined) updateData.promo_discount_amount = updates.promoDiscountAmount;
 
-    // Remove caution_amount_dzd from updateData if it exists and is invalid, as it may not exist in the schema yet
-    // The column should be added via migration first
-    try {
-      const { error } = await supabase
-        .from('reservations')
-        .update(updateData)
-        .eq('id', id);
-
-      if (error) {
-        // If the error is about caution_amount_dzd column not existing, retry without it
-        if (error.message && error.message.includes('caution_amount_dzd')) {
-          delete updateData.caution_amount_dzd;
-          const { error: retryError } = await supabase
-            .from('reservations')
-            .update(updateData)
-            .eq('id', id);
-          if (retryError) throw retryError;
-        } else {
-          throw error;
-        }
-      }
-    } catch (e) {
-      throw e;
-    }
+    // Tolérant au schéma en retard : toute colonne absente (caution_amount_dzd,
+    // conditions_text, tva_amount, assurance_*…) est retirée puis la mise à
+    // jour est retentée, au lieu d'échouer sur la première colonne manquante.
+    await this.updateReservationRow(id, updateData);
   }
 
   static async activateReservation(id: string): Promise<void> {
@@ -885,7 +938,11 @@ export class ReservationsService {
         const response = await fetch(photoDataUrl);
         const blob = await response.blob();
         const file = new File([blob], `departure-photo-${data.reservationId}-${i}-${Date.now()}.jpg`, { type: 'image/jpeg' });
-        const url = await this.uploadInspectionImage(file, data.reservationId, 'departure');
+        // Correction : la méthode s'appelle uploadInspectionPhoto et attend un
+        // type de photo valide (l'ancien appel uploadInspectionImage(…, 'departure')
+        // n'existait pas → l'activation avec photos plantait).
+        const photoType = i === 0 ? 'exterior-front' : i === 1 ? 'interior' : 'other';
+        const url = await this.uploadInspectionPhoto(file, data.reservationId, photoType);
         photoUrls.push(url);
       }
     }
@@ -1089,27 +1146,13 @@ export class ReservationsService {
         }
       }
 
-      const { error } = await supabase
-        .from('reservations')
-        .update(updateData)
-        .eq('id', data.reservationId);
-
-      if (error) {
-        // `payment_status` peut ne pas exister sur d'anciennes bases : on réessaie sans.
-        if (error.message && error.message.includes('payment_status')) {
-          delete updateData.payment_status;
-          const { error: retryError } = await supabase
-            .from('reservations')
-            .update(updateData)
-            .eq('id', data.reservationId);
-          if (retryError) throw new Error(`Failed to complete reservation: ${retryError.message}`);
-        } else {
-          console.error('❌ Reservation update failed:', error);
-          console.error('Error code:', error.code);
-          console.error('Error message:', error.message);
-          console.error('Error details:', error);
-          throw new Error(`Failed to complete reservation: ${error.message}`);
-        }
+      // Tolérant au schéma en retard (payment_status, additional_fees…) :
+      // toute colonne absente est retirée puis la mise à jour est retentée.
+      try {
+        await this.updateReservationRow(data.reservationId, updateData);
+      } catch (error: any) {
+        console.error('❌ Reservation update failed:', error);
+        throw new Error(`Failed to complete reservation: ${error?.message || error}`);
       }
 
       // Purge DÉFINITIVE des photos d'inspection de cette réservation
@@ -1391,21 +1434,15 @@ export class ReservationsService {
     price: number;
     driverId?: string;
   }): Promise<{ id: string }> {
-    const { data: service, error } = await supabase
-      .from('reservation_services')
-      .insert([{
-        reservation_id: data.reservationId,
-        category: data.category,
-        service_name: data.serviceName,
-        description: data.description,
-        price: data.price,
-        driver_id: data.driverId,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return { id: service.id };
+    // Tolérant au schéma en retard (driver_id / driver_caution absents).
+    return this.resilientInsert('reservation_services', {
+      reservation_id: data.reservationId,
+      category: data.category,
+      service_name: data.serviceName,
+      description: data.description,
+      price: data.price,
+      driver_id: data.driverId,
+    });
   }
 
   static async deleteService(serviceId: string): Promise<void> {
@@ -1438,7 +1475,7 @@ export class ReservationsService {
 
     // Then, add the new services
     if (services.length > 0) {
-      const servicesToInsert = services.map(service => ({
+      let rows = services.map(service => ({
         reservation_id: reservationId,
         category: service.category,
         service_name: service.service_name || service.name || service.serviceName,
@@ -1446,13 +1483,27 @@ export class ReservationsService {
         price: service.price,
         driver_id: service.driver_id || service.driverId,
         driver_caution: service.driver_caution || service.driverCaution || 0
-      }));
+      })) as Record<string, any>[];
 
-      const { error: insertError } = await supabase
-        .from('reservation_services')
-        .insert(servicesToInsert);
-
-      if (insertError) throw insertError;
+      // Tolérant au schéma en retard : une colonne absente (driver_id,
+      // driver_caution…) est retirée de toutes les lignes puis on réessaie.
+      const dropped: string[] = [];
+      for (let attempt = 0; attempt <= 4; attempt++) {
+        const { error: insertError } = await supabase
+          .from('reservation_services')
+          .insert(rows);
+        if (!insertError) {
+          if (dropped.length) console.warn(`[Reservations] Colonnes de service ignorées (schéma en retard) : ${dropped.join(', ')}`);
+          return;
+        }
+        const col = this.missingColumnFromError(insertError);
+        if (col && rows[0] && col in rows[0]) {
+          rows = rows.map(({ [col]: _omit, ...rest }) => rest);
+          dropped.push(col);
+          continue;
+        }
+        throw insertError;
+      }
     }
   }
 
@@ -1461,21 +1512,38 @@ export class ReservationsService {
   static async addPayment(data: {
     reservationId: string;
     amount: number;
-    paymentMethod: 'cash' | 'card' | 'transfer' | 'check';
-    date: string;
+    // Accepte les deux noms de clé : `paymentMethod` (planificateur) et
+    // `method` (clôture de location) — pour n'oublier aucun encaissement.
+    paymentMethod?: 'cash' | 'card' | 'transfer' | 'check';
+    method?: 'cash' | 'card' | 'transfer' | 'check';
+    date?: string;
     note?: string;
   }): Promise<{ id: string }> {
-    const { data: payment, error } = await supabase
+    const method = data.paymentMethod || data.method || 'cash';
+    const date = data.date || new Date().toISOString().split('T')[0];
+    const base = {
+      reservation_id: data.reservationId,
+      amount: data.amount,
+      date,
+      note: data.note,
+    };
+
+    // Selon la base, la colonne s'appelle `payment_method` (schéma applicatif)
+    // ou `method` (ancien schéma). On tente le premier puis on retombe sur le
+    // second si PostgREST signale la colonne absente.
+    let { data: payment, error } = await supabase
       .from('payments')
-      .insert([{
-        reservation_id: data.reservationId,
-        amount: data.amount,
-        payment_method: data.paymentMethod,
-        date: data.date,
-        note: data.note,
-      }])
+      .insert([{ ...base, payment_method: method }])
       .select()
       .single();
+
+    if (error && /payment_method/i.test(`${error.message || ''} ${error.details || ''}`)) {
+      ({ data: payment, error } = await supabase
+        .from('payments')
+        .insert([{ ...base, method }])
+        .select()
+        .single());
+    }
 
     if (error) throw error;
     return { id: payment.id };
@@ -1495,7 +1563,8 @@ export class ReservationsService {
       reservationId: p.reservation_id,
       amount: p.amount,
       date: p.date,
-      method: p.payment_method,
+      // Compatible avec les deux noms de colonne (payment_method / method).
+      method: p.payment_method ?? p.method,
       note: p.note,
       createdAt: p.created_at,
     }));

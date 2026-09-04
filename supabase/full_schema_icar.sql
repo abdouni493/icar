@@ -403,10 +403,19 @@ CREATE TABLE IF NOT EXISTS public.reservations (
   remaining_payment          numeric NOT NULL DEFAULT 0,
   additional_fees            numeric NOT NULL DEFAULT 0,
   tva_applied                boolean NOT NULL DEFAULT false,
+  tva_amount                 numeric NOT NULL DEFAULT 0,
   excess_mileage             numeric,
   missing_fuel               numeric,
   notes                      text,
   conditions                 text,
+  conditions_text            text,
+  -- Caution / assurance / taux de change (écrits par l'app)
+  caution_enabled            boolean NOT NULL DEFAULT false,
+  caution_currency           text DEFAULT 'DZD',
+  caution_amount_dzd         numeric,
+  euro_rate                  numeric,
+  assurance_enabled          boolean NOT NULL DEFAULT false,
+  assurance_percentage       numeric,
   status                     text NOT NULL DEFAULT 'pending',
   source                     text NOT NULL DEFAULT 'agency',
   created_by                 uuid,
@@ -457,6 +466,8 @@ CREATE TABLE IF NOT EXISTS public.reservation_services (
   service_name   text,
   description    text,
   price          numeric NOT NULL DEFAULT 0,
+  driver_id      uuid REFERENCES public.workers(id) ON DELETE SET NULL,
+  driver_caution numeric DEFAULT 0,
   created_at     timestamptz DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS reservation_services_res_idx ON public.reservation_services (reservation_id);
@@ -467,7 +478,8 @@ CREATE TABLE IF NOT EXISTS public.payments (
   reservation_id uuid NOT NULL REFERENCES public.reservations(id) ON DELETE CASCADE,
   amount         numeric NOT NULL DEFAULT 0,
   date           date DEFAULT now(),
-  method         text DEFAULT 'cash',
+  -- L'application lit / écrit `payment_method` (cash | card | transfer | check)
+  payment_method text DEFAULT 'cash',
   note           text,
   status         text NOT NULL DEFAULT 'completed',
   created_at     timestamptz DEFAULT now()
