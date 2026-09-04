@@ -18,6 +18,7 @@ import { EntrepriseModal } from './EntreprisesPage';
 import { getCars } from '../services/carService';
 import { supabase } from '../supabase';
 import { generateConditionsPrintHTML, getConditionsTemplate } from '../constants/ConditionsTemplates';
+import { goldPrintOverrideCSS } from './printTheme';
 
 /**
  * Force a phone number (or any latin/number string) to render strictly left-to-right,
@@ -2717,6 +2718,7 @@ export const PersonalizationModal: React.FC<{
       <meta charset="UTF-8">
       <title>Contrat de Location</title>
       <style>
+        ${goldPrintOverrideCSS(compact)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Arial, sans-serif;
@@ -3403,6 +3405,7 @@ export const PersonalizationModal: React.FC<{
       <meta charset="UTF-8">
       <title>Devis</title>
       <style>
+        ${goldPrintOverrideCSS(false)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -3791,6 +3794,7 @@ export const PersonalizationModal: React.FC<{
       <meta charset="UTF-8">
       <title>Facture</title>
       <style>
+        ${goldPrintOverrideCSS(false)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -4024,6 +4028,7 @@ export const PersonalizationModal: React.FC<{
       <meta charset="UTF-8">
       <title>Engagement</title>
       <style>
+        ${goldPrintOverrideCSS(false)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -4331,6 +4336,7 @@ export const PersonalizationModal: React.FC<{
       <meta charset="UTF-8">
       <title>Reçu de Versement</title>
       <style>
+        ${goldPrintOverrideCSS(false)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -4777,6 +4783,7 @@ export const PersonalizationModal: React.FC<{
       <meta charset="UTF-8">
       <title>${labels.inspectionTitle}</title>
       <style>
+        ${goldPrintOverrideCSS(false)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
           font-family: 'Segoe UI', Arial, sans-serif;
