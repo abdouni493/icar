@@ -253,10 +253,17 @@ export default function App() {
         if (dbWebsiteSettings?.name) {
           document.title = `${dbWebsiteSettings.name.split(/\s+/).slice(0, 3).join(' ')} | Location de Voitures`;
         }
+        // Aucun favicon statique n'est livré : si l'agence a défini un logo en
+        // base, il devient le favicon (le lien est créé au besoin).
         if (dbWebsiteSettings?.logo) {
-          document.querySelectorAll("link[rel='icon']").forEach(link => {
-            (link as HTMLLinkElement).href = dbWebsiteSettings.logo;
-          });
+          let links = document.querySelectorAll<HTMLLinkElement>("link[rel='icon']");
+          if (links.length === 0) {
+            const link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+            links = document.querySelectorAll<HTMLLinkElement>("link[rel='icon']");
+          }
+          links.forEach(link => { link.href = dbWebsiteSettings.logo; });
         }
       } catch (error) {
         console.error('Failed to load website data from database:', error);
@@ -353,21 +360,21 @@ export default function App() {
   const mockAgencies: Agency[] = [
     {
       id: '1',
-      name: 'Luxdrive Alger Centre',
+      name: 'Agence Alger Centre',
       address: 'Boulevard Didouche Mourad',
       city: 'Alger',
       createdAt: new Date().toISOString(),
     },
     {
       id: '2',
-      name: 'Luxdrive Oran',
+      name: 'Agence Oran',
       address: 'Boulevard Khémisti',
       city: 'Oran',
       createdAt: new Date().toISOString(),
     },
     {
       id: '3',
-      name: 'Luxdrive Annaba',
+      name: 'Agence Annaba',
       address: 'Rue Larbi Ben Mhidi',
       city: 'Annaba',
       createdAt: new Date().toISOString(),
@@ -385,9 +392,9 @@ export default function App() {
   };
 
   const mockWebsiteSettings = {
-    name: 'Luxdrive Premium',
+    name: '',
     description: 'Votre partenaire de confiance en location de véhicules',
-    logo: 'https://images.unsplash.com/photo-1560958089-b8a63dd8aa8b?w=200&h=200&fit=crop',
+    logo: '',
   };
 
   const handleLogin = (userObj: User) => {

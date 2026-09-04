@@ -195,9 +195,8 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
           <div className="flex justify-between items-start mb-8 pb-6 border-b-4 border-blue-600">
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-blue-900 mb-2">
-                {agencySettings?.agency_name || 'SARL OUKKAL LISAYARAT'}
+                {agencySettings?.agency_name || ''}
               </h1>
-              <p className="text-sm text-gray-600 mb-1 font-semibold">MHD-AUTO</p>
               {agencySettings?.address && (
                 <p className="text-sm text-gray-700 mb-1">
                   📍 {agencySettings.address}
@@ -333,7 +332,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  {agencySettings?.agency_name || 'LuxDrive Premium Car Rental'}
+                  {agencySettings?.agency_name || ''}
                 </h1>
                 {agencySettings?.address && (
                   <p className="text-gray-700 mb-1">

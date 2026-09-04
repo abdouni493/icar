@@ -118,7 +118,7 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
         // Load website settings for general tab
         const websiteSettings = await DatabaseService.getWebsiteSettings();
         setGeneralData({
-          agencyName: websiteSettings.name || 'Luxdrive Premium',
+          agencyName: websiteSettings.name || '',
           slogan: websiteSettings.description || 'Votre partenaire de confiance en location de véhicules',
           address: websiteSettings.address || 'Alger, Algeria',
           phone: websiteSettings.phone || '+213 5 1234 5678',

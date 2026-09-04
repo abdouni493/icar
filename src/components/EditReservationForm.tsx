@@ -789,7 +789,7 @@ const EditStep1DatesLocations: React.FC<{
               className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               <option value="">{lang === 'fr' ? 'Sélectionner une agence...' : 'اختر وكالة...'}</option>
-              <option value="AGENCE MHD-AUTO">{lang === 'fr' ? 'AGENCE MHD-AUTO' : 'وكالة MHD-AUTO'}</option>
+              <option value="Agence principale">{lang === 'fr' ? 'Agence principale' : 'الوكالة الرئيسية'}</option>
               <option value="Autre agence">{lang === 'fr' ? 'Autre agence' : 'وكالة أخرى'}</option>
             </select>
           </div>
@@ -844,7 +844,7 @@ const EditStep1DatesLocations: React.FC<{
             className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">{lang === 'fr' ? 'Sélectionner une agence...' : 'اختر وكالة...'}</option>
-            <option value="AGENCE MHD-AUTO">{lang === 'fr' ? 'AGENCE MHD-AUTO' : 'وكالة MHD-AUTO'}</option>
+            <option value="Agence principale">{lang === 'fr' ? 'Agence principale' : 'الوكالة الرئيسية'}</option>
             <option value="Autre agence">{lang === 'fr' ? 'Autre agence' : 'وكالة أخرى'}</option>
           </select>
         </div>

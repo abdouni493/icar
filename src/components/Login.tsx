@@ -36,7 +36,7 @@ export const Login: React.FC<LoginProps> = ({ lang, onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [agencyBranding, setAgencyBranding] = useState<AgencyBranding>({
     logo: '',
-    name: 'AutoLocation'
+    name: ''
   });
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export const Login: React.FC<LoginProps> = ({ lang, onLogin }) => {
         if (settings) {
           setAgencyBranding({
             logo: settings.logo || '',
-            name: settings.name || 'AutoLocation'
+            name: settings.name || ''
           });
         }
       } catch (err) {
@@ -459,7 +459,7 @@ export const Login: React.FC<LoginProps> = ({ lang, onLogin }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="input-saas pl-12"
-                    placeholder={isSigningUp ? "admin@autofutur.com" : "john.doe ou john@email.com"}
+                    placeholder={isSigningUp ? "admin@exemple.com" : "john.doe ou john@email.com"}
                   />
                 </div>
               </motion.div>

@@ -60,19 +60,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Un employé ne voit que les interfaces autorisées par l'admin.
   const { canSeeInterface } = usePermissions();
   const byId = Object.fromEntries(SIDEBAR_ITEMS.map(i => [i.id, i]));
-  const [agencyData, setAgencyData] = useState({ name: 'MHD AUTO', logo: '' });
+  const [agencyData, setAgencyData] = useState({ name: '', logo: '' });
 
   useEffect(() => {
     const loadAgencyData = async () => {
       try {
         const websiteSettings = await DatabaseService.getWebsiteSettings();
         setAgencyData({
-          name: websiteSettings.name || 'MHD AUTO',
+          name: websiteSettings.name || '',
           logo: websiteSettings.logo || '',
         });
       } catch (error) {
         console.error('Error loading agency data:', error);
-        setAgencyData({ name: 'MHD AUTO', logo: '' });
+        setAgencyData({ name: '', logo: '' });
       }
     };
     loadAgencyData();
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <img src={agencyData.logo} alt="Agency Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
                   <span className="text-[#14130E] font-black text-xl italic bg-linear-to-br from-[#E4C878] to-[#B8912E] w-full h-full flex items-center justify-center">
-                    {(agencyData.name || 'M').charAt(0).toUpperCase()}
+                    {agencyData.name ? agencyData.name.charAt(0).toUpperCase() : ''}
                   </span>
                 )}
               </div>
