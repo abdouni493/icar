@@ -62,7 +62,7 @@ export const StepServices: React.FC = () => {
                         {service.name || service.service_name}
                         {isMandatory && (
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider"
-                            style={{ color: '#DC2626', background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)' }}>
+                            style={{ color: '#C8A13C', background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)' }}>
                             {{ fr: 'Inclus', ar: 'مشمول' }[lang]}
                           </span>
                         )}

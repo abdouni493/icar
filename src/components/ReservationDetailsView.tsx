@@ -1301,7 +1301,7 @@ export const ActivationModal: React.FC<{ lang: Language; reservation: Reservatio
         className="bg-saas-bg rounded-3xl shadow-2xl max-w-5xl w-full max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden border border-saas-border"
       >
         {/* En-tête */}
-        <div className="relative overflow-hidden bg-[#0F172A] text-white px-8 py-6 shrink-0">
+        <div className="relative overflow-hidden bg-[#14130E] text-white px-8 py-6 shrink-0">
           <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-emerald-500/20 blur-3xl" />
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -1329,7 +1329,7 @@ export const ActivationModal: React.FC<{ lang: Language; reservation: Reservatio
             <div className="rounded-2xl border border-saas-border bg-white overflow-hidden lg:col-span-2">
               <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
                 <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                  <span className="w-7 h-7 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
                     <CarIcon className="w-4 h-4" />
                   </span>
                   {lang === 'fr' ? 'Véhicule remis' : 'المركبة المسلمة'}
@@ -1360,7 +1360,7 @@ export const ActivationModal: React.FC<{ lang: Language; reservation: Reservatio
             <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
               <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
                 <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                  <span className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                     <User className="w-4 h-4" />
                   </span>
                   {lang === 'fr' ? 'Client' : 'العميل'}
@@ -1428,7 +1428,7 @@ export const ActivationModal: React.FC<{ lang: Language; reservation: Reservatio
               <div className="space-y-5">
                 <div>
                   <label className="label-saas">{lang === 'fr' ? 'Niveau de carburant' : 'مستوى الوقود'}</label>
-                  <FuelLevelPicker value={fuelLevel} onChange={setFuelLevel} accent="#059669" />
+                  <FuelLevelPicker value={fuelLevel} onChange={setFuelLevel} accent="#B8912E" />
                 </div>
                 <div>
                   <label className="label-saas">{lang === 'fr' ? 'Notes rapides' : 'ملاحظات سريعة'}</label>
@@ -1485,7 +1485,7 @@ export const ActivationModal: React.FC<{ lang: Language; reservation: Reservatio
               animate={{ opacity: 1, y: 0 }}
               className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-4"
             >
-              <AlertTriangle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-[#B8912E] shrink-0 mt-0.5" />
               <p className="text-sm font-semibold text-red-700">{errorMessage}</p>
             </motion.div>
           )}
@@ -1777,11 +1777,11 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
         className="bg-saas-bg rounded-3xl shadow-2xl max-w-6xl w-full max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden border border-saas-border"
       >
         {/* En-tête */}
-        <div className="relative overflow-hidden bg-[#0F172A] text-white px-8 py-6 shrink-0">
-          <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#DC2626]/25 blur-3xl" />
+        <div className="relative overflow-hidden bg-[#14130E] text-white px-8 py-6 shrink-0">
+          <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#B8912E]/25 blur-3xl" />
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="w-12 h-12 rounded-2xl bg-[#DC2626] flex items-center justify-center shadow-lg shadow-[#DC2626]/30">
+              <span className="w-12 h-12 rounded-2xl bg-[#B8912E] flex items-center justify-center shadow-lg shadow-[#B8912E]/30">
                 <FileText className="w-6 h-6" />
               </span>
               <div>
@@ -1807,7 +1807,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
               className="w-full px-5 py-4 flex items-center justify-between gap-3 hover:bg-saas-bg transition-colors cursor-pointer"
             >
               <span className="flex items-center gap-2.5 font-black text-sm uppercase tracking-tight text-saas-text-main">
-                <span className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                   <Wrench className="w-4 h-4" />
                 </span>
                 {lang === 'fr' ? 'Paramétrage limite de kilométrage' : 'إعداد حد الكيلومترات'}
@@ -1881,7 +1881,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
           <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
             <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
               <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
                   <MapPin className="w-4 h-4" />
                 </span>
                 {lang === 'fr' ? 'Kilométrage' : 'العداد'}
@@ -1925,10 +1925,10 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="mx-5 mb-5 rounded-2xl border-2 border-[#DC2626]/30 bg-[#DC2626]/5 p-4 flex flex-wrap items-center gap-4">
-                    <AlertTriangle className="w-6 h-6 text-[#DC2626] shrink-0" />
+                  <div className="mx-5 mb-5 rounded-2xl border-2 border-[#B8912E]/30 bg-[#B8912E]/5 p-4 flex flex-wrap items-center gap-4">
+                    <AlertTriangle className="w-6 h-6 text-[#B8912E] shrink-0" />
                     <div className="flex-1 min-w-[220px]">
-                      <p className="font-black text-[#DC2626]">
+                      <p className="font-black text-[#B8912E]">
                         {lang === 'fr' ? 'Limite de kilométrage dépassée' : 'تم تجاوز حد الكيلومترات'}
                       </p>
                       <p className="text-sm text-saas-text-main mt-0.5">
@@ -1966,7 +1966,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
             </div>
             <div className="p-5">
               <label className="label-saas">{lang === 'fr' ? 'Niveau au retour' : 'المستوى عند العودة'}</label>
-              <FuelLevelPicker value={returnFuelLevel} onChange={setReturnFuelLevel} accent="#059669" />
+              <FuelLevelPicker value={returnFuelLevel} onChange={setReturnFuelLevel} accent="#B8912E" />
 
               <AnimatePresence>
                 {fuelMissingLevels > 0 && (
@@ -2007,7 +2007,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
           <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
             <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
               <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#DC2626] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#B8912E] text-white flex items-center justify-center">
                   <DollarSign className="w-4 h-4" />
                 </span>
                 {lang === 'fr' ? 'Frais supplémentaires' : 'الرسوم الإضافية'}
@@ -2034,11 +2034,11 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
                   placeholder="0"
                 />
               </div>
-              <div className="rounded-xl bg-[#DC2626]/5 border border-[#DC2626]/25 px-4 py-3">
+              <div className="rounded-xl bg-[#B8912E]/5 border border-[#B8912E]/25 px-4 py-3">
                 <p className="text-[9px] font-black uppercase tracking-[0.16em] text-saas-text-muted">
                   {lang === 'fr' ? 'Total des frais' : 'إجمالي الرسوم'}
                 </p>
-                <p className="text-xl font-black text-[#DC2626] mt-0.5">{money(extraFees)}</p>
+                <p className="text-xl font-black text-[#B8912E] mt-0.5">{money(extraFees)}</p>
               </div>
             </div>
           </div>
@@ -2106,7 +2106,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
           <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
             <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
               <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                   <CreditCard className="w-4 h-4" />
                 </span>
                 {lang === 'fr' ? 'Règlement' : 'التسوية'}
@@ -2116,9 +2116,9 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
             <div className="p-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
                 { l: lang === 'fr' ? 'Total location' : 'إجمالي التأجير', v: money(baseTotal), c: 'text-saas-text-main' },
-                { l: lang === 'fr' ? 'Total + frais' : 'الإجمالي + الرسوم', v: money(totalWithFees), c: 'text-[#0F172A]' },
+                { l: lang === 'fr' ? 'Total + frais' : 'الإجمالي + الرسوم', v: money(totalWithFees), c: 'text-[#14130E]' },
                 { l: lang === 'fr' ? 'Déjà payé' : 'المدفوع سابقاً', v: money(alreadyPaid), c: 'text-emerald-600' },
-                { l: lang === 'fr' ? 'Reste avant paiement' : 'المتبقي قبل الدفع', v: money(Math.max(0, totalWithFees - alreadyPaid)), c: 'text-[#DC2626]' },
+                { l: lang === 'fr' ? 'Reste avant paiement' : 'المتبقي قبل الدفع', v: money(Math.max(0, totalWithFees - alreadyPaid)), c: 'text-[#B8912E]' },
               ].map(cell => (
                 <div key={cell.l} className="rounded-xl border border-saas-border bg-saas-bg px-4 py-3">
                   <p className="text-[9px] font-black uppercase tracking-[0.16em] text-saas-text-muted leading-tight">{cell.l}</p>
@@ -2152,12 +2152,12 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
                 </select>
               </div>
               <div className={`rounded-xl px-4 py-3 border-2 ${
-                remainingAfter > 0 ? 'border-[#DC2626]/30 bg-[#DC2626]/5' : 'border-emerald-400 bg-emerald-50'
+                remainingAfter > 0 ? 'border-[#B8912E]/30 bg-[#B8912E]/5' : 'border-emerald-400 bg-emerald-50'
               }`}>
                 <p className="text-[9px] font-black uppercase tracking-[0.16em] text-saas-text-muted">
                   {lang === 'fr' ? 'Reste après ce paiement' : 'المتبقي بعد الدفع'}
                 </p>
-                <p className={`text-xl font-black mt-0.5 ${remainingAfter > 0 ? 'text-[#DC2626]' : 'text-emerald-700'}`}>
+                <p className={`text-xl font-black mt-0.5 ${remainingAfter > 0 ? 'text-[#B8912E]' : 'text-emerald-700'}`}>
                   {money(remainingAfter)}
                 </p>
                 <p className="text-[11px] font-bold mt-0.5 text-saas-text-muted">
@@ -2173,7 +2173,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
           <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
             <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
               <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
                   <Calendar className="w-4 h-4" />
                 </span>
                 {lang === 'fr' ? 'Dates et heures' : 'التواريخ والأوقات'}
@@ -2226,7 +2226,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
           <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
             <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
               <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                   <FileText className="w-4 h-4" />
                 </span>
                 {lang === 'fr' ? 'Documents laissés par le client' : 'الوثائق المتروكة'}
@@ -2238,14 +2238,14 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
                 { v: false, l: lang === 'fr' ? 'Notifier le client (non récupéré)' : 'إشعار العميل (غير مستلم)' },
               ].map(opt => (
                 <label key={String(opt.v)} className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all ${
-                  documentsRecovered === opt.v ? 'border-[#0284C7] bg-[#0284C7]/8' : 'border-saas-border bg-saas-bg'
+                  documentsRecovered === opt.v ? 'border-[#C8A13C] bg-[#C8A13C]/8' : 'border-saas-border bg-saas-bg'
                 }`}>
                   <input
                     type="radio"
                     name="documents"
                     checked={documentsRecovered === opt.v}
                     onChange={() => setDocumentsRecovered(opt.v)}
-                    className="accent-[#0284C7] cursor-pointer"
+                    className="accent-[#C8A13C] cursor-pointer"
                   />
                   <span className="font-bold text-sm text-saas-text-main">{opt.l}</span>
                 </label>
@@ -2299,7 +2299,7 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
               animate={{ opacity: 1, y: 0 }}
               className="flex items-start gap-3 bg-red-50 border-2 border-red-300 rounded-2xl p-4"
             >
-              <AlertTriangle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-[#B8912E] shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-bold text-red-700">{errorMessage}</p>
                 <p className="text-xs text-red-600 mt-1">
@@ -2316,10 +2316,10 @@ export const CompletionModal: React.FC<{ lang: Language; reservation: Reservatio
         <div className="shrink-0 px-7 py-5 bg-white border-t border-saas-border flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm">
             <span className="text-saas-text-muted font-semibold">{lang === 'fr' ? 'À encaisser :' : 'المطلوب:'}</span>
-            <span className="ml-2 font-black text-[#0F172A]">{money(totalWithFees)}</span>
+            <span className="ml-2 font-black text-[#14130E]">{money(totalWithFees)}</span>
             <span className="mx-2 text-saas-text-muted">·</span>
             <span className="text-saas-text-muted font-semibold">{lang === 'fr' ? 'Reste :' : 'المتبقي:'}</span>
-            <span className={`ml-2 font-black ${remainingAfter > 0 ? 'text-[#DC2626]' : 'text-emerald-600'}`}>{money(remainingAfter)}</span>
+            <span className={`ml-2 font-black ${remainingAfter > 0 ? 'text-[#B8912E]' : 'text-emerald-600'}`}>{money(remainingAfter)}</span>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={onClose} disabled={isLoading} className="btn-saas-outline px-8 cursor-pointer">

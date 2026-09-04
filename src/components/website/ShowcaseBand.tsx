@@ -76,7 +76,7 @@ export const ShowcaseBand: React.FC<ShowcaseBandProps> = ({ lang, onReserve, ima
           className="max-w-xl space-y-6"
         >
           <p className="font-bold text-xs tracking-[0.25em] uppercase"
-            style={{ color: '#DC2626', fontFamily: 'var(--font-display)' }}>
+            style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
             {{ fr: 'Prêt quand vous l\'êtes', ar: 'جاهزون عندما تكون جاهزًا' }[lang]}
           </p>
           <h2 className="font-black text-4xl sm:text-5xl text-vel-ink leading-tight"

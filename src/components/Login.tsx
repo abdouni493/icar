@@ -507,7 +507,7 @@ export const Login: React.FC<LoginProps> = ({ lang, onLogin }) => {
             <motion.button
               type="submit"
               disabled={isSubmitting}
-              whileHover={{ scale: 1.02, boxShadow: "0 10px 30px rgba(30, 58, 138, 0.2)" }}
+              whileHover={{ scale: 1.02, boxShadow: "0 12px 32px rgba(200, 161, 60, 0.35)" }}
               whileTap={{ scale: 0.98 }}
               className="btn-saas-primary w-full text-sm py-4"
             >

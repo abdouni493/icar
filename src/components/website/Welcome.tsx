@@ -10,8 +10,8 @@ import { toYmd } from './wizard/wizardUi';
 
 // ─── Colour tokens for this page ───────────────────────────────────────────
 const C = {
-  accent:    '#DC2626',
-  amber:     '#D97706',
+  accent:    '#C8A13C',
+  amber:     '#B8912E',
   accentDim: 'rgba(220,38,38,0.1)',
   amberDim:  'rgba(217,119,6,0.1)',
   bg:        '#F8FAFC',
@@ -168,7 +168,7 @@ function BookingSearchPanel({ lang, agencies, onSearch, hasBg }: {
           className={`px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 whitespace-nowrap transition-all ${!isValid ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg hover:shadow-red-500/20'}`}
           style={{
             fontFamily: 'var(--font-display)',
-            background: `linear-gradient(135deg, ${C.accent}, #B91C1C)`,
+            background: `linear-gradient(135deg, ${C.accent}, #B8912E)`,
             color: '#FFFFFF',
             boxShadow: isValid ? '0 6px 20px rgba(220,38,38,0.25)' : 'none',
           }}
@@ -439,7 +439,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
             className="inline-flex items-center gap-2 text-lg px-12 py-5 rounded-xl font-bold transition-all duration-300"
             style={{
               fontFamily: 'var(--font-display)',
-              background: `linear-gradient(135deg, ${C.accent}, #B91C1C)`,
+              background: `linear-gradient(135deg, ${C.accent}, #B8912E)`,
               color: '#FFFFFF',
               boxShadow: `0 6px 18px rgba(220,38,38,0.28)`,
             }}

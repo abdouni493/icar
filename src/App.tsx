@@ -535,7 +535,7 @@ export default function App() {
       if (canSeeInterface(tabId)) return <>{children}</>;
       return (
         <div className="glass-card p-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#DC2626]/10 border border-[#DC2626]/25 flex items-center justify-center mx-auto mb-5 text-3xl">
+          <div className="w-16 h-16 rounded-2xl bg-[#B8912E]/10 border border-[#B8912E]/25 flex items-center justify-center mx-auto mb-5 text-3xl">
             🔒
           </div>
           <p className="text-lg font-black text-saas-text-main">

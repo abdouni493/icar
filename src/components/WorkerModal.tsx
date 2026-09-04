@@ -150,7 +150,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
   };
 
   const Section: React.FC<{ icon: React.ReactNode; title: string; children: React.ReactNode; accent?: string }> =
-    ({ icon, title, children, accent = '#DC2626' }) => (
+    ({ icon, title, children, accent = '#B8912E' }) => (
       <section className="rounded-2xl border border-saas-border bg-white overflow-hidden">
         <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
           <h3 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
@@ -164,12 +164,12 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
       </section>
     );
 
-  const Toggle: React.FC<{ on: boolean; onChange: () => void; accent?: string }> = ({ on, onChange, accent = '#DC2626' }) => (
+  const Toggle: React.FC<{ on: boolean; onChange: () => void; accent?: string }> = ({ on, onChange, accent = '#B8912E' }) => (
     <button
       type="button"
       onClick={onChange}
       className="relative w-11 h-6 rounded-full shrink-0 transition-colors cursor-pointer"
-      style={{ background: on ? accent : '#CBD5E1' }}
+      style={{ background: on ? accent : '#E8E0CD' }}
       aria-pressed={on}
     >
       <motion.span
@@ -189,11 +189,11 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="bg-saas-bg w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-4rem)] border border-saas-border"
       >
-        <div className="relative overflow-hidden bg-[#0F172A] text-white px-8 py-6 shrink-0">
-          <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#DC2626]/25 blur-3xl" />
+        <div className="relative overflow-hidden bg-[#14130E] text-white px-8 py-6 shrink-0">
+          <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#B8912E]/25 blur-3xl" />
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="w-12 h-12 rounded-2xl bg-[#DC2626] flex items-center justify-center shadow-lg shadow-[#DC2626]/30">
+              <span className="w-12 h-12 rounded-2xl bg-[#B8912E] flex items-center justify-center shadow-lg shadow-[#B8912E]/30">
                 <User className="w-6 h-6" />
               </span>
               <div>
@@ -221,12 +221,12 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
                     ? <img src={formData.profilePhoto} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     : <User className="w-10 h-10 text-saas-text-muted opacity-40" />}
                 </div>
-                <label className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-saas-border text-xs font-bold text-saas-text-main hover:border-[#DC2626] hover:text-[#DC2626] transition-colors cursor-pointer">
+                <label className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-saas-border text-xs font-bold text-saas-text-main hover:border-[#B8912E] hover:text-[#B8912E] transition-colors cursor-pointer">
                   {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                   {T('Photo', 'صورة')}
                   <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} disabled={uploading} />
                 </label>
-                {uploadError && <p className="text-[11px] font-bold text-[#DC2626] text-center">{uploadError}</p>}
+                {uploadError && <p className="text-[11px] font-bold text-[#B8912E] text-center">{uploadError}</p>}
               </div>
 
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -260,7 +260,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
           </Section>
 
           {/* Poste */}
-          <Section icon={<Briefcase className="w-4 h-4" />} title={T('Poste', 'المنصب')} accent="#0284C7">
+          <Section icon={<Briefcase className="w-4 h-4" />} title={T('Poste', 'المنصب')} accent="#C8A13C">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
                 <label className="label-saas">{T('Rôle', 'الدور')}</label>
@@ -276,7 +276,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
                   <button
                     type="button"
                     onClick={() => setShowNewRole(v => !v)}
-                    className="px-4 rounded-xl bg-white border border-saas-border text-saas-text-main hover:border-[#0284C7] hover:text-[#0284C7] transition-colors cursor-pointer"
+                    className="px-4 rounded-xl bg-white border border-saas-border text-saas-text-main hover:border-[#C8A13C] hover:text-[#C8A13C] transition-colors cursor-pointer"
                     title={T('Créer un rôle', 'إنشاء دور')}
                   >
                     <Plus className="w-4 h-4" />
@@ -335,7 +335,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
           </Section>
 
           {/* Rémunération */}
-          <Section icon={<CreditCard className="w-4 h-4" />} title={T('Rémunération', 'الأجر')} accent="#0F172A">
+          <Section icon={<CreditCard className="w-4 h-4" />} title={T('Rémunération', 'الأجر')} accent="#14130E">
             <div className="flex items-start gap-3.5 mb-4">
               <Toggle on={!!formData.paymentEnabled} onChange={() => set({ paymentEnabled: !formData.paymentEnabled })} />
               <div>
@@ -371,7 +371,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
                             onClick={() => set({ paymentType: opt.v })}
                             className={`py-2.5 rounded-xl border-2 text-sm font-black transition-all cursor-pointer ${
                               formData.paymentType === opt.v
-                                ? 'border-[#DC2626] bg-[#DC2626] text-white'
+                                ? 'border-[#B8912E] bg-[#B8912E] text-white'
                                 : 'border-saas-border bg-white text-saas-text-main hover:border-saas-border-strong'
                             }`}
                           >
@@ -401,9 +401,9 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
           </Section>
 
           {/* Compte de connexion */}
-          <Section icon={<KeyRound className="w-4 h-4" />} title={T('Compte de connexion', 'حساب الدخول')} accent="#0284C7">
+          <Section icon={<KeyRound className="w-4 h-4" />} title={T('Compte de connexion', 'حساب الدخول')} accent="#C8A13C">
             <div className="flex items-start gap-3.5 mb-4">
-              <Toggle on={!!formData.accountEnabled} onChange={() => set({ accountEnabled: !formData.accountEnabled })} accent="#0284C7" />
+              <Toggle on={!!formData.accountEnabled} onChange={() => set({ accountEnabled: !formData.accountEnabled })} accent="#C8A13C" />
               <div>
                 <p className="font-black text-saas-text-main">
                   {T('Activer un compte de connexion', 'تفعيل حساب الدخول')}
@@ -447,7 +447,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
                   </div>
 
                   <p className="mt-3 flex items-start gap-2 text-[11px] text-saas-text-muted leading-relaxed">
-                    <AlertTriangle className="w-3.5 h-3.5 text-[#0284C7] shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#C8A13C] shrink-0 mt-0.5" />
                     {T(
                       "L'employé est créé sans aucune permission. Attribuez-lui ensuite ses interfaces et ses boutons via l'action « Permissions » de sa fiche.",
                       'يُنشأ الموظف بدون أي صلاحية. امنحه لاحقاً واجهاته وأزراره عبر إجراء «الصلاحيات» في بطاقته.'
@@ -464,7 +464,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({ isOpen, onClose, onSav
               animate={{ opacity: 1, y: 0 }}
               className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-4"
             >
-              <AlertTriangle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-[#B8912E] shrink-0 mt-0.5" />
               <p className="text-sm font-semibold text-red-700">{validationError}</p>
             </motion.div>
           )}

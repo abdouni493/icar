@@ -45,14 +45,14 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
       label: 'Facebook',
       shortLabel: 'fb',
       href: contactInfo?.facebook,
-      hoverColor: '#1877F2',
+      hoverColor: '#C8A13C',
     },
     {
       show: !!contactInfo?.instagram,
       label: 'Instagram',
       shortLabel: 'ig',
       href: contactInfo?.instagram ? `https://instagram.com/${contactInfo.instagram}` : undefined,
-      hoverColor: '#E1306C',
+      hoverColor: '#C8A13C',
     },
     {
       show: !!contactInfo?.tiktok,
@@ -66,7 +66,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
       label: 'WhatsApp',
       shortLabel: 'wa',
       href: contactInfo?.whatsapp ? `https://wa.me/${contactInfo.whatsapp.replace(/\D/g, '')}` : undefined,
-      hoverColor: '#25D366',
+      hoverColor: '#C8A13C',
     },
   ].filter(s => s.show && s.href);
 
@@ -83,7 +83,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
           className="text-center mb-20"
         >
           <p className="font-bold text-xs tracking-[0.25em] uppercase mb-4"
-            style={{ color: '#DC2626', fontFamily: 'var(--font-display)' }}>
+            style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
             {{ fr: 'Parlons', ar: 'لنتحدث' }[lang]}
           </p>
           <h1 className="font-black text-6xl text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
@@ -110,7 +110,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                 {SITE_NAME}
               </h2>
               <div className="w-10 h-0.5 mb-4"
-                style={{ background: '#DC2626', boxShadow: '0 0 8px rgba(220,38,38,0.35)' }} />
+                style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(220,38,38,0.35)' }} />
               {websiteSettings?.description && (
                 <p className="text-vel-muted leading-relaxed">{websiteSettings.description}</p>
               )}
@@ -124,16 +124,16 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                       background: 'rgba(220,38,38,0.04)',
                       border: '1px solid rgba(15,23,42,0.08)',
                       borderLeftWidth: '2px',
-                      borderLeftColor: '#DC2626',
+                      borderLeftColor: '#C8A13C',
                     }}
                   >
                     <div className="w-10 h-10 rounded-lg vel-glass-accent flex items-center justify-center flex-shrink-0">
-                      <method.icon size={18} style={{ color: '#DC2626' }} />
+                      <method.icon size={18} style={{ color: '#C8A13C' }} />
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-vel-muted mb-0.5">{method.label[lang]}</p>
                       <p className="text-vel-ink font-bold truncate transition-colors"
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#DC2626'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C8A13C'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; }}>
                         {method.value}
                       </p>
@@ -164,10 +164,10 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                     background: 'rgba(37,211,102,0.05)',
                     border: '1px solid rgba(15,23,42,0.08)',
                     borderLeftWidth: '2px',
-                    borderLeftColor: '#25D366',
+                    borderLeftColor: '#C8A13C',
                   }}
                 >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold text-[#25D366]"
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold text-[#B8912E]"
                     style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.3)' }}>
                     wa
                   </div>
@@ -193,7 +193,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
               <h3 className="font-black text-2xl text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
                 {{ fr: 'Suivez-nous', ar: 'تابعنا' }[lang]}
               </h3>
-              <div className="w-10 h-0.5 mt-2 mb-6" style={{ background: '#DC2626' }} />
+              <div className="w-10 h-0.5 mt-2 mb-6" style={{ background: '#C8A13C' }} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -250,7 +250,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
           <h3 className="font-black text-2xl text-vel-ink mb-2" style={{ fontFamily: 'var(--font-display)' }}>
             {{ fr: 'Envoyez-nous un message', ar: 'أرسل لنا رسالة' }[lang]}
           </h3>
-          <div className="w-10 h-0.5 mb-8" style={{ background: '#DC2626' }} />
+          <div className="w-10 h-0.5 mb-8" style={{ background: '#C8A13C' }} />
 
           <form className="space-y-5" onSubmit={e => e.preventDefault()}>
             {[
@@ -269,7 +269,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                   style={{ background: '#EEF2F7', border: '1px solid rgba(15,23,42,0.08)' }}
                   placeholder={field.placeholder[lang]}
                   onFocus={e => {
-                    (e.target as HTMLElement).style.borderColor = '#DC2626';
+                    (e.target as HTMLElement).style.borderColor = '#C8A13C';
                     (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(220,38,38,0.25)';
                   }}
                   onBlur={e => {
@@ -291,7 +291,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                 style={{ background: '#EEF2F7', border: '1px solid rgba(15,23,42,0.08)' }}
                 placeholder={{ fr: 'Votre message...', ar: 'رسالتك...' }[lang]}
                 onFocus={e => {
-                  (e.target as HTMLElement).style.borderColor = '#DC2626';
+                  (e.target as HTMLElement).style.borderColor = '#C8A13C';
                   (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(220,38,38,0.25)';
                 }}
                 onBlur={e => {

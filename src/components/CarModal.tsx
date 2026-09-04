@@ -151,7 +151,7 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="bg-white w-full max-w-5xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-4rem)] border border-saas-border my-auto sm:my-0"
       >
-        <div className="p-8 border-b border-saas-border flex items-center justify-between bg-[#0F172A] text-white">
+        <div className="p-8 border-b border-saas-border flex items-center justify-between bg-[#14130E] text-white">
           <div>
             <h2 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
               {car ? '✏️ Modifier Véhicule' : '🚗 Nouveau Véhicule'}
@@ -176,19 +176,19 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                 onClick={() => setFormData(prev => ({ ...prev, ownerType: 'personal' }))}
                 className={`text-left p-5 rounded-2xl border-2 transition-all cursor-pointer ${
                   !isThirdParty
-                    ? 'border-[#DC2626] bg-[#DC2626]/8 shadow-sm'
+                    ? 'border-[#B8912E] bg-[#B8912E]/8 shadow-sm'
                     : 'border-saas-border bg-white hover:border-saas-border-strong'
                 }`}
               >
                 <div className="flex items-center gap-3 mb-1.5">
-                  <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${!isThirdParty ? 'bg-[#DC2626] text-white' : 'bg-saas-bg text-saas-text-muted'}`}>
+                  <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${!isThirdParty ? 'bg-[#B8912E] text-white' : 'bg-saas-bg text-saas-text-muted'}`}>
                     <User size={17} />
                   </span>
                   <span className="font-black text-saas-text-main">
                     {lang === 'fr' ? 'Voiture personnelle' : 'سيارة شخصية'}
                   </span>
                   {!isThirdParty && (
-                    <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-[#DC2626] bg-white border border-[#DC2626]/30 px-2 py-0.5 rounded-full">
+                    <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-[#B8912E] bg-white border border-[#B8912E]/30 px-2 py-0.5 rounded-full">
                       {lang === 'fr' ? 'Par défaut' : 'افتراضي'}
                     </span>
                   )}
@@ -205,12 +205,12 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                 onClick={() => setFormData(prev => ({ ...prev, ownerType: 'third_party' }))}
                 className={`text-left p-5 rounded-2xl border-2 transition-all cursor-pointer ${
                   isThirdParty
-                    ? 'border-[#0284C7] bg-[#0284C7]/8 shadow-sm'
+                    ? 'border-[#C8A13C] bg-[#C8A13C]/8 shadow-sm'
                     : 'border-saas-border bg-white hover:border-saas-border-strong'
                 }`}
               >
                 <div className="flex items-center gap-3 mb-1.5">
-                  <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${isThirdParty ? 'bg-[#0284C7] text-white' : 'bg-saas-bg text-saas-text-muted'}`}>
+                  <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${isThirdParty ? 'bg-[#C8A13C] text-white' : 'bg-saas-bg text-saas-text-muted'}`}>
                     <Users size={17} />
                   </span>
                   <span className="font-black text-saas-text-main">
@@ -232,7 +232,7 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white border border-[#0284C7]/25 rounded-2xl p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white border border-[#C8A13C]/25 rounded-2xl p-6">
                   <div className="space-y-2">
                     <label className="label-saas">{lang === 'fr' ? 'Nom du propriétaire' : 'اسم المالك'}</label>
                     <input
@@ -267,7 +267,7 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                       placeholder="0"
                     />
                     <p className="flex items-start gap-1.5 text-[11px] text-saas-text-muted leading-snug">
-                      <Info size={12} className="mt-0.5 shrink-0 text-[#0284C7]" />
+                      <Info size={12} className="mt-0.5 shrink-0 text-[#C8A13C]" />
                       {lang === 'fr'
                         ? "Montant que l'agence garde sur chaque jour loué ; le reste revient au propriétaire."
                         : 'المبلغ الذي تحتفظ به الوكالة عن كل يوم مؤجر؛ الباقي للمالك.'}
@@ -287,17 +287,17 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                   <img src={img} className="w-full h-full object-cover transition-transform group-hover:scale-110" referrerPolicy="no-referrer" />
                   <button
                     onClick={() => removeImage(idx)}
-                    className="absolute top-2 right-2 bg-[#DC2626] text-white p-2 rounded-xl hover:bg-[#B91C1C] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute top-2 right-2 bg-[#B8912E] text-white p-2 rounded-xl hover:bg-[#94721B] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                   >
                     <X size={16} />
                   </button>
                 </div>
               ))}
               <label
-                className="aspect-video rounded-2xl border-2 border-dashed border-saas-border bg-white flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#DC2626] hover:bg-[#DC2626]/5 text-saas-text-muted hover:text-[#DC2626] transition-all group"
+                className="aspect-video rounded-2xl border-2 border-dashed border-saas-border bg-white flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#B8912E] hover:bg-[#B8912E]/5 text-saas-text-muted hover:text-[#B8912E] transition-all group"
                 onClick={e => { if (uploadingImages) e.preventDefault(); }}
               >
-                <div className="w-10 h-10 rounded-xl bg-saas-bg flex items-center justify-center text-saas-text-muted group-hover:text-[#DC2626] transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-saas-bg flex items-center justify-center text-saas-text-muted group-hover:text-[#B8912E] transition-colors">
                   {uploadingImages ? <Loader2 size={24} className="animate-spin" /> : <Plus size={24} />}
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-widest">
@@ -399,8 +399,8 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
           <section className="space-y-6">
             {sectionTitle(<Coins size={14} />, lang === 'fr' ? 'Autres Devises' : 'عملات أخرى')}
 
-            <div className="flex items-start gap-2.5 rounded-xl bg-[#0284C7]/8 border border-[#0284C7]/20 px-4 py-3">
-              <Info size={15} className="text-[#0284C7] shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2.5 rounded-xl bg-[#C8A13C]/8 border border-[#C8A13C]/20 px-4 py-3">
+              <Info size={15} className="text-[#C8A13C] shrink-0 mt-0.5" />
               <p className="text-xs text-saas-text-main leading-relaxed">
                 {lang === 'fr'
                   ? "Le dinar reste la référence. Activez une devise et saisissez son taux de change : les prix jour, semaine, mois et la caution sont calculés automatiquement à partir des montants en DZD ci-dessus."
@@ -419,14 +419,14 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                   <div
                     key={code}
                     className={`rounded-2xl border-2 transition-all overflow-hidden ${
-                      enabled ? 'border-[#0284C7]/40 bg-white' : 'border-saas-border bg-white/60'
+                      enabled ? 'border-[#C8A13C]/40 bg-white' : 'border-saas-border bg-white/60'
                     }`}
                   >
                     <div className="flex flex-wrap items-center gap-4 px-5 py-4">
                       <button
                         type="button"
                         onClick={() => toggleCurrency(code)}
-                        className={`relative w-12 h-6.5 rounded-full transition-colors shrink-0 cursor-pointer ${enabled ? 'bg-[#0284C7]' : 'bg-slate-300'}`}
+                        className={`relative w-12 h-6.5 rounded-full transition-colors shrink-0 cursor-pointer ${enabled ? 'bg-[#C8A13C]' : 'bg-slate-300'}`}
                         style={{ height: 26 }}
                         aria-pressed={enabled}
                         aria-label={`${enabled ? 'Désactiver' : 'Activer'} ${meta.label}`}
@@ -461,7 +461,7 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                               step="0.01"
                               value={rate}
                               onChange={e => setRate(code, Number(e.target.value))}
-                              className="w-32 bg-white border border-saas-border rounded-xl px-3 py-2 text-right font-bold text-saas-text-main outline-none focus:border-[#0284C7] focus:ring-2 focus:ring-[#0284C7]/10 transition-all"
+                              className="w-32 bg-white border border-saas-border rounded-xl px-3 py-2 text-right font-bold text-saas-text-main outline-none focus:border-[#C8A13C] focus:ring-2 focus:ring-[#C8A13C]/10 transition-all"
                             />
                           </div>
                           <span className="text-xs font-bold text-saas-text-muted whitespace-nowrap">
@@ -485,7 +485,7 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                             return (
                               <div key={row.key} className="rounded-xl bg-white border border-saas-border px-4 py-3">
                                 <p className="text-[9px] font-black uppercase tracking-[0.18em] text-saas-text-muted">{row.label}</p>
-                                <p className="text-lg font-black text-[#0284C7] leading-tight mt-0.5">
+                                <p className="text-lg font-black text-[#C8A13C] leading-tight mt-0.5">
                                   {rate > 0 ? formatCurrency(converted, code) : '—'}
                                 </p>
                                 <p className="text-[10px] text-saas-text-muted">{dzd.toLocaleString('fr-FR')} DA</p>

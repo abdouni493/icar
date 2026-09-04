@@ -38,11 +38,11 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
 
   const actions: { key: string; icon: React.ReactNode; label: string; onClick: () => void; cls: string; show: boolean }[] = [
     { key: 'view', icon: <Eye className="w-3.5 h-3.5" />, label: T('Voir', 'عرض'), onClick: onDetails,
-      cls: 'border-saas-border hover:border-[#0284C7] hover:text-[#0284C7]', show: can('team', 'view') },
+      cls: 'border-saas-border hover:border-[#C8A13C] hover:text-[#C8A13C]', show: can('team', 'view') },
     { key: 'edit', icon: <Pencil className="w-3.5 h-3.5" />, label: T('Modifier', 'تعديل'), onClick: onEdit,
-      cls: 'border-saas-border hover:border-[#0284C7] hover:text-[#0284C7]', show: can('team', 'edit') },
+      cls: 'border-saas-border hover:border-[#C8A13C] hover:text-[#C8A13C]', show: can('team', 'edit') },
     { key: 'permissions', icon: <ShieldCheck className="w-3.5 h-3.5" />, label: T('Permissions', 'الصلاحيات'), onClick: onPermissions || (() => {}),
-      cls: 'border-[#0284C7]/35 text-[#0284C7] hover:bg-[#0284C7]/8', show: !!onPermissions },
+      cls: 'border-[#C8A13C]/35 text-[#C8A13C] hover:bg-[#C8A13C]/8', show: !!onPermissions },
     { key: 'advance', icon: <HandCoins className="w-3.5 h-3.5" />, label: T('Acompte', 'سلفة'), onClick: onAdvance,
       cls: 'border-saas-border hover:border-orange-500 hover:text-orange-600', show: can('team', 'advance') },
     { key: 'absence', icon: <CalendarX className="w-3.5 h-3.5" />, label: T('Absence', 'غياب'), onClick: onAbsence,
@@ -50,9 +50,9 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
     { key: 'payment', icon: <Wallet className="w-3.5 h-3.5" />, label: T('Paiement', 'الدفع'), onClick: onPayment,
       cls: 'border-emerald-300 text-emerald-700 hover:bg-emerald-50', show: can('team', 'payment') },
     { key: 'history', icon: <History className="w-3.5 h-3.5" />, label: T('Historique', 'السجل'), onClick: onHistory,
-      cls: 'border-saas-border hover:border-[#0F172A] hover:text-[#0F172A]', show: true },
+      cls: 'border-saas-border hover:border-[#14130E] hover:text-[#14130E]', show: true },
     { key: 'delete', icon: <Trash2 className="w-3.5 h-3.5" />, label: T('Supprimer', 'حذف'), onClick: onDelete,
-      cls: 'border-[#DC2626]/35 text-[#DC2626] hover:bg-[#DC2626]/8', show: can('team', 'delete') },
+      cls: 'border-[#B8912E]/35 text-[#B8912E] hover:bg-[#B8912E]/8', show: can('team', 'delete') },
   ];
 
   return (
@@ -62,7 +62,7 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
       transition={{ delay: Math.min(index, 8) * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="group relative bg-white rounded-3xl border border-saas-border overflow-hidden hover-lift flex flex-col"
     >
-      <span className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#DC2626] to-[#0284C7]" />
+      <span className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#B8912E] to-[#C8A13C]" />
 
       {/* En-tête */}
       <div className="p-5 flex items-start gap-4 border-b border-saas-border">
@@ -73,12 +73,12 @@ export const WorkerCard: React.FC<WorkerCardProps> = ({
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="font-black text-saas-text-main truncate leading-tight">{worker.fullName}</h3>
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#DC2626] mt-0.5">
+          <p className="text-[11px] font-black uppercase tracking-wider text-[#B8912E] mt-0.5">
             {worker.roleName || typeLabel}
           </p>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {worker.accountEnabled && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0284C7]/10 border border-[#0284C7]/25 text-[9px] font-black uppercase tracking-wider text-[#0284C7]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#C8A13C]/10 border border-[#C8A13C]/25 text-[9px] font-black uppercase tracking-wider text-[#C8A13C]">
                 <KeyRound className="w-2.5 h-2.5" />{T('Compte actif', 'حساب مفعّل')}
               </span>
             )}

@@ -152,7 +152,7 @@ export const CarBookingCalendar: React.FC<CarBookingCalendarProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             className="text-sm font-bold px-4 py-3 rounded-xl"
-            style={{ color: '#DC2626', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}
+            style={{ color: '#C8A13C', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}
           >
             ⚠️ {rangeError}
           </motion.p>

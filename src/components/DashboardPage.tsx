@@ -1201,15 +1201,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
         initial={{ opacity: 0, y: -14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden rounded-3xl bg-[#0F172A] text-white p-8"
+        className="relative overflow-hidden rounded-3xl bg-[#14130E] text-white p-8"
       >
-        <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-[#DC2626]/22 blur-3xl" />
-        <div className="absolute -left-16 -bottom-24 w-64 h-64 rounded-full bg-[#0284C7]/22 blur-3xl" />
+        <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-[#B8912E]/22 blur-3xl" />
+        <div className="absolute -left-16 -bottom-24 w-64 h-64 rounded-full bg-[#C8A13C]/22 blur-3xl" />
 
         <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div>
             <div className="flex items-center gap-4">
-              <span className="w-14 h-14 rounded-2xl bg-[#DC2626] flex items-center justify-center shadow-lg shadow-[#DC2626]/30">
+              <span className="w-14 h-14 rounded-2xl bg-[#B8912E] flex items-center justify-center shadow-lg shadow-[#B8912E]/30">
                 <BarChart3 className="w-7 h-7" />
               </span>
               <div>
@@ -1255,7 +1255,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             value: stats.activeReservations.toLocaleString('fr-DZ'),
             hint: lang === 'fr' ? 'En cours et confirmées' : 'جارية ومؤكدة',
             icon: <CalendarCheck className="w-5 h-5" />,
-            bar: 'bg-[#0284C7]', text: 'text-[#0284C7]',
+            bar: 'bg-[#C8A13C]', text: 'text-[#C8A13C]',
             onClick: () => navigate('/planificateur'),
           },
           {
@@ -1275,7 +1275,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
               ? `Total : ${Math.round(stats.totalRevenue || 0).toLocaleString('fr-DZ')} DA`
               : `الإجمالي: ${Math.round(stats.totalRevenue || 0).toLocaleString('fr-DZ')} دج`,
             icon: <TrendingUp className="w-5 h-5" />,
-            bar: 'bg-[#0F172A]', text: 'text-[#0F172A]',
+            bar: 'bg-[#14130E]', text: 'text-[#14130E]',
             onClick: () => navigate('/rapports'),
           },
           {
@@ -1283,7 +1283,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             value: String(stats.maintenanceAlerts),
             hint: `${criticalAlerts.length} ${lang === 'fr' ? 'critique(s)' : 'حرجة'}`,
             icon: <AlertTriangle className="w-5 h-5" />,
-            bar: 'bg-[#DC2626]', text: 'text-[#DC2626]',
+            bar: 'bg-[#B8912E]', text: 'text-[#B8912E]',
             onClick: () => navigate('/maintenance'),
           },
         ].map(kpi => (
@@ -1311,7 +1311,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
         <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
           <div className="px-6 py-4 border-b border-saas-border bg-saas-bg flex items-center justify-between">
             <h3 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-              <span className="w-8 h-8 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+              <span className="w-8 h-8 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
                 <TrendingUp className="w-4 h-4" />
               </span>
               {lang === 'fr' ? 'Revenus par mois' : 'الإيرادات الشهرية'}
@@ -1338,7 +1338,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
                           initial={{ width: 0 }}
                           animate={{ width: `${pct}%` }}
                           transition={{ duration: 0.7, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                          className="h-full rounded-full bg-linear-to-r from-[#DC2626] to-[#0284C7]"
+                          className="h-full rounded-full bg-linear-to-r from-[#B8912E] to-[#C8A13C]"
                         />
                       </div>
                       <span className="w-28 text-right text-sm font-black text-saas-text-main shrink-0">
@@ -1356,7 +1356,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
         <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
           <div className="px-6 py-4 border-b border-saas-border bg-saas-bg flex items-center justify-between">
             <h3 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-              <span className="w-8 h-8 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+              <span className="w-8 h-8 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                 <CarIcon className="w-4 h-4" />
               </span>
               {lang === 'fr' ? 'Utilisation des véhicules' : 'استخدام المركبات'}
@@ -1376,7 +1376,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
                       <span className="text-sm font-bold text-saas-text-main truncate pr-3">{car.carInfo}</span>
                       <span className={`text-sm font-black shrink-0 ${
                         car.utilization >= 70 ? 'text-emerald-600'
-                          : car.utilization >= 35 ? 'text-[#0284C7]' : 'text-[#DC2626]'
+                          : car.utilization >= 35 ? 'text-[#C8A13C]' : 'text-[#B8912E]'
                       }`}>
                         {car.utilization}%
                       </span>
@@ -1388,7 +1388,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
                         transition={{ duration: 0.7, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
                         className={`h-full rounded-full ${
                           car.utilization >= 70 ? 'bg-emerald-500'
-                            : car.utilization >= 35 ? 'bg-[#0284C7]' : 'bg-[#DC2626]'
+                            : car.utilization >= 35 ? 'bg-[#C8A13C]' : 'bg-[#B8912E]'
                         }`}
                       />
                     </div>
@@ -1408,7 +1408,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             desc: lang === 'fr' ? 'Créer un contrat de location' : 'إنشاء عقد تأجير',
             cta: lang === 'fr' ? 'Créer' : 'إنشاء',
             icon: <CalendarCheck className="w-5 h-5" />,
-            accent: '#DC2626',
+            accent: '#B8912E',
             to: '/planificateur',
           },
           {
@@ -1416,7 +1416,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             desc: lang === 'fr' ? 'Étendre la flotte' : 'توسيع الأسطول',
             cta: lang === 'fr' ? 'Ajouter' : 'إضافة',
             icon: <CarIcon className="w-5 h-5" />,
-            accent: '#0284C7',
+            accent: '#C8A13C',
             to: '/vehicules',
           },
           {
@@ -1424,7 +1424,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             desc: lang === 'fr' ? 'Locations, dépenses, bénéfices' : 'الإيجارات والمصاريف والأرباح',
             cta: lang === 'fr' ? 'Analyser' : 'تحليل',
             icon: <PieChart className="w-5 h-5" />,
-            accent: '#0F172A',
+            accent: '#14130E',
             to: '/gains-vehicule',
           },
           {
@@ -1432,7 +1432,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             desc: lang === 'fr' ? 'Performances et statistiques' : 'الأداء والإحصائيات',
             cta: lang === 'fr' ? 'Voir' : 'عرض',
             icon: <BarChart3 className="w-5 h-5" />,
-            accent: '#059669',
+            accent: '#B8912E',
             to: '/rapports',
           },
         ].map(action => (

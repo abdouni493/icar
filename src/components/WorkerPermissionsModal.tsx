@@ -124,11 +124,11 @@ export const WorkerPermissionsModal: React.FC<{
         className="bg-saas-bg w-full max-w-4xl rounded-3xl shadow-2xl border border-saas-border overflow-hidden flex flex-col max-h-[calc(100vh-4rem)]"
       >
         {/* En-tête */}
-        <div className="relative overflow-hidden bg-[#0F172A] text-white px-8 py-6 shrink-0">
-          <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#0284C7]/25 blur-3xl" />
+        <div className="relative overflow-hidden bg-[#14130E] text-white px-8 py-6 shrink-0">
+          <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#C8A13C]/25 blur-3xl" />
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="w-12 h-12 rounded-2xl bg-[#0284C7] flex items-center justify-center shadow-lg shadow-[#0284C7]/30">
+              <span className="w-12 h-12 rounded-2xl bg-[#C8A13C] flex items-center justify-center shadow-lg shadow-[#C8A13C]/30">
                 <ShieldCheck className="w-6 h-6" />
               </span>
               <div>
@@ -163,8 +163,8 @@ export const WorkerPermissionsModal: React.FC<{
 
         {/* Corps */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-3">
-          <p className="flex items-start gap-2.5 text-xs text-saas-text-main leading-relaxed rounded-xl bg-[#0284C7]/8 border border-[#0284C7]/20 px-4 py-3">
-            <Eye className="w-4 h-4 text-[#0284C7] shrink-0 mt-0.5" />
+          <p className="flex items-start gap-2.5 text-xs text-saas-text-main leading-relaxed rounded-xl bg-[#C8A13C]/8 border border-[#C8A13C]/20 px-4 py-3">
+            <Eye className="w-4 h-4 text-[#C8A13C] shrink-0 mt-0.5" />
             {T(
               "Cochez les interfaces visibles dans la barre latérale de cet employé, puis, dans chacune, les boutons d'action qu'il peut utiliser. Tout ce qui n'est pas coché lui est invisible.",
               'حدد الواجهات الظاهرة في الشريط الجانبي لهذا الموظف، ثم في كل واجهة الأزرار المسموح له باستخدامها. كل ما لم يُحدد يبقى مخفياً عنه.'
@@ -181,14 +181,14 @@ export const WorkerPermissionsModal: React.FC<{
               <div
                 key={item.id}
                 className={`rounded-2xl border-2 overflow-hidden transition-all ${
-                  enabled ? 'border-[#0284C7]/35 bg-white' : 'border-saas-border bg-white/60'
+                  enabled ? 'border-[#C8A13C]/35 bg-white' : 'border-saas-border bg-white/60'
                 }`}
               >
                 <div className="flex items-center gap-3 px-5 py-3.5">
                   <button
                     type="button"
                     onClick={() => toggleInterface(item.id)}
-                    className={`relative w-11 h-6 rounded-full shrink-0 transition-colors cursor-pointer ${enabled ? 'bg-[#0284C7]' : 'bg-slate-300'}`}
+                    className={`relative w-11 h-6 rounded-full shrink-0 transition-colors cursor-pointer ${enabled ? 'bg-[#C8A13C]' : 'bg-slate-300'}`}
                     aria-pressed={enabled}
                   >
                     <motion.span
@@ -235,7 +235,7 @@ export const WorkerPermissionsModal: React.FC<{
                           </span>
                           <button
                             onClick={() => selectAllActions(item.id)}
-                            className="text-[11px] font-black uppercase tracking-wider text-[#0284C7] hover:underline cursor-pointer"
+                            className="text-[11px] font-black uppercase tracking-wider text-[#C8A13C] hover:underline cursor-pointer"
                           >
                             {granted.length === list.length ? T('Tout décocher', 'إلغاء الكل') : T('Tout cocher', 'تحديد الكل')}
                           </button>
@@ -251,14 +251,14 @@ export const WorkerPermissionsModal: React.FC<{
                                 className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border-2 text-left transition-all cursor-pointer ${
                                   on
                                     ? action.sensitive
-                                      ? 'border-[#DC2626] bg-[#DC2626]/8'
+                                      ? 'border-[#B8912E] bg-[#B8912E]/8'
                                       : 'border-emerald-400 bg-emerald-50'
                                     : 'border-saas-border bg-white hover:border-saas-border-strong'
                                 }`}
                               >
                                 <span className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
                                   on
-                                    ? action.sensitive ? 'border-[#DC2626] bg-[#DC2626]' : 'border-emerald-500 bg-emerald-500'
+                                    ? action.sensitive ? 'border-[#B8912E] bg-[#B8912E]' : 'border-emerald-500 bg-emerald-500'
                                     : 'border-slate-300 bg-white'
                                 }`}>
                                   {on && <Check className="w-3 h-3 text-white" strokeWidth={3.5} />}
@@ -267,7 +267,7 @@ export const WorkerPermissionsModal: React.FC<{
                                   {action.label[lang]}
                                 </span>
                                 {action.sensitive && (
-                                  <Lock className="w-3.5 h-3.5 text-[#DC2626] shrink-0" />
+                                  <Lock className="w-3.5 h-3.5 text-[#B8912E] shrink-0" />
                                 )}
                               </button>
                             );
@@ -275,7 +275,7 @@ export const WorkerPermissionsModal: React.FC<{
                         </div>
 
                         {list.some(a => a.sensitive) && (
-                          <p className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-[#DC2626]">
+                          <p className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-[#B8912E]">
                             <Lock className="w-3 h-3" />
                             {T('Action sensible — paiements ou suppressions.', 'إجراء حساس — مدفوعات أو حذف.')}
                           </p>
@@ -290,7 +290,7 @@ export const WorkerPermissionsModal: React.FC<{
 
           {error && (
             <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-4">
-              <AlertTriangle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-[#B8912E] shrink-0 mt-0.5" />
               <p className="text-sm font-semibold text-red-700">{error}</p>
             </div>
           )}

@@ -61,7 +61,7 @@ export const StepRecap: React.FC = () => {
       {currency !== 'DZD' && (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3.5"
           style={{ background: 'rgba(2,132,199,0.07)', border: '1px solid rgba(2,132,199,0.22)' }}>
-          <span className="text-sm font-black" style={{ color: '#0284C7', fontFamily: 'var(--font-display)' }}>
+          <span className="text-sm font-black" style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
             {{ fr: 'Devise de la réservation', ar: 'عملة الحجز' }[lang]} : {currency}
           </span>
           <span className="text-xs text-vel-muted font-semibold">
@@ -71,7 +71,7 @@ export const StepRecap: React.FC = () => {
       )}
       {!currencySupported && (
         <div className="rounded-2xl px-5 py-3.5 text-sm font-semibold"
-          style={{ background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)', color: '#B91C1C' }}>
+          style={{ background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)', color: '#B8912E' }}>
           {{ fr: 'Cette voiture n’est pas proposée dans la devise choisie — les montants sont affichés en dinars.',
              ar: 'هذه السيارة غير متاحة بالعملة المختارة — تُعرض المبالغ بالدينار.' }[lang]}
         </div>
@@ -145,7 +145,7 @@ export const StepRecap: React.FC = () => {
                 🏷️ {promo.label || (lang === 'fr' ? 'Offre spéciale' : 'عرض خاص')}
                 {' '}({promo.newPrice.toLocaleString()} {{ fr: 'DA/j', ar: 'د.ج/ي' }[lang]})
               </span>
-              <span className="font-bold" style={{ color: '#DC2626' }}>
+              <span className="font-bold" style={{ color: '#C8A13C' }}>
                 −{fx(discount)}
               </span>
             </div>
@@ -186,7 +186,7 @@ export const StepRecap: React.FC = () => {
                 className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl"
                 style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)' }}
               >
-                <span className="flex items-center gap-2 text-sm font-bold" style={{ color: '#16A34A' }}>
+                <span className="flex items-center gap-2 text-sm font-bold" style={{ color: '#C8A13C' }}>
                   <CheckCircle2 size={16} />
                   {promoInput.trim().toUpperCase()} — −{promoDiscountPct}%
                 </span>
@@ -231,7 +231,7 @@ export const StepRecap: React.FC = () => {
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-1.5 text-xs font-bold"
-                    style={{ color: '#DC2626' }}
+                    style={{ color: '#C8A13C' }}
                   >
                     <XCircle size={13} />
                     {{ fr: 'Code invalide, déjà utilisé ou désactivé.', ar: 'رمز غير صالح أو مستخدم أو معطل.' }[lang]}
@@ -248,7 +248,7 @@ export const StepRecap: React.FC = () => {
               <span className="text-vel-slate">
                 🎟️ {{ fr: 'Code promo', ar: 'رمز الخصم' }[lang]} {promoInput.trim().toUpperCase()} (−{promoDiscountPct}%)
               </span>
-              <span className="font-bold" style={{ color: '#16A34A' }}>
+              <span className="font-bold" style={{ color: '#C8A13C' }}>
                 −{fx(promoDiscount)}
               </span>
             </div>
@@ -294,7 +294,7 @@ export const StepRecap: React.FC = () => {
         >
           <span className="text-xl">⚠️</span>
           <div className="flex-1">
-            <p className="text-sm font-bold" style={{ color: '#DC2626' }}>{submitError}</p>
+            <p className="text-sm font-bold" style={{ color: '#C8A13C' }}>{submitError}</p>
           </div>
         </motion.div>
       )}

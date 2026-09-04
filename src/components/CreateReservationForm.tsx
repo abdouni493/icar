@@ -1653,12 +1653,12 @@ export const Step3DepartureInspection: React.FC<{
   return (
     <div className="space-y-7">
       {/* ── En-tête ─────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#0F172A] text-white p-7">
-        <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#DC2626]/25 blur-3xl" />
-        <div className="absolute -left-12 -bottom-20 w-52 h-52 rounded-full bg-[#0284C7]/20 blur-3xl" />
+      <div className="relative overflow-hidden rounded-3xl bg-[#14130E] text-white p-7">
+        <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-[#B8912E]/25 blur-3xl" />
+        <div className="absolute -left-12 -bottom-20 w-52 h-52 rounded-full bg-[#C8A13C]/20 blur-3xl" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <span className="w-12 h-12 rounded-2xl bg-[#DC2626] flex items-center justify-center shadow-lg shadow-[#DC2626]/30">
+            <span className="w-12 h-12 rounded-2xl bg-[#B8912E] flex items-center justify-center shadow-lg shadow-[#B8912E]/30">
               <Search className="w-6 h-6" />
             </span>
             <div>
@@ -1691,7 +1691,7 @@ export const Step3DepartureInspection: React.FC<{
         <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
           <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
             <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+              <span className="w-7 h-7 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
                 <CarIcon className="w-4 h-4" />
               </span>
               {lang === 'fr' ? 'Véhicule' : 'المركبة'}
@@ -1709,7 +1709,7 @@ export const Step3DepartureInspection: React.FC<{
                   <p className="font-black text-saas-text-main truncate">
                     {selectedCarInfo?.brand} {selectedCarInfo?.model}
                   </p>
-                  <p className="text-[#DC2626] font-bold text-sm">{selectedCarInfo?.registration}</p>
+                  <p className="text-[#B8912E] font-bold text-sm">{selectedCarInfo?.registration}</p>
                 </div>
               </div>
               <div className="space-y-1.5 pt-3 border-t border-saas-border">
@@ -1737,7 +1737,7 @@ export const Step3DepartureInspection: React.FC<{
         <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
           <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
             <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+              <span className="w-7 h-7 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                 <Fuel className="w-4 h-4" />
               </span>
               {lang === 'fr' ? 'Relevés au départ' : 'القراءات عند المغادرة'}
@@ -1760,7 +1760,7 @@ export const Step3DepartureInspection: React.FC<{
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-saas-text-muted pointer-events-none">km</span>
               </div>
               {_carMileage !== undefined && _carMileage > 0 && (
-                <p className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0284C7]/8 border border-[#0284C7]/20 text-[11px] font-bold text-[#0284C7]">
+                <p className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C8A13C]/8 border border-[#C8A13C]/20 text-[11px] font-bold text-[#C8A13C]">
                   <AlertTriangle size={12} />
                   {lang === 'fr'
                     ? `Compteur actuel du véhicule : ${_carMileage.toLocaleString('fr-DZ')} km`
@@ -1774,7 +1774,7 @@ export const Step3DepartureInspection: React.FC<{
               <FuelLevelPicker
                 value={fuelLevel}
                 onChange={(v) => { markTouched(); setFuelLevel(v); }}
-                accent="#0284C7"
+                accent="#C8A13C"
               />
             </div>
 
@@ -1805,7 +1805,7 @@ export const Step3DepartureInspection: React.FC<{
         <div className="rounded-2xl border border-saas-border bg-white overflow-hidden flex flex-col">
           <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
             <h4 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+              <span className="w-7 h-7 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
                 <PenTool className="w-4 h-4" />
               </span>
               {lang === 'fr' ? "Notes d'inspection" : 'ملاحظات الفحص'}
@@ -1864,7 +1864,7 @@ export const Step3DepartureInspection: React.FC<{
       <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-saas-border bg-saas-bg">
           <h4 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-lg bg-[#0F172A] text-white flex items-center justify-center">
+            <span className="w-8 h-8 rounded-lg bg-[#14130E] text-white flex items-center justify-center">
               <PenTool className="w-4 h-4" />
             </span>
             {lang === 'fr' ? 'Signature du client' : 'توقيع العميل'}
@@ -1889,7 +1889,7 @@ export const Step3DepartureInspection: React.FC<{
               type="checkbox"
               id="signature-confirm"
               onChange={markTouched}
-              className="w-5 h-5 rounded border-saas-border accent-[#DC2626] cursor-pointer"
+              className="w-5 h-5 rounded border-saas-border accent-[#B8912E] cursor-pointer"
             />
             <span className="text-saas-text-main font-bold text-sm">
               {lang === 'fr'
@@ -2603,7 +2603,7 @@ export const Step5AdditionalServices: React.FC<{
                     <h4 className="font-bold text-lg text-slate-900 flex items-center gap-2 flex-wrap">
                       {service.name}
                       {service.isMandatory && (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#DC2626] bg-[#DC2626]/10 border border-[#DC2626]/25 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#B8912E] bg-[#B8912E]/10 border border-[#B8912E]/25 px-2 py-0.5 rounded-full">
                           {lang === 'fr' ? 'Obligatoire' : 'إلزامي'}
                         </span>
                       )}
@@ -2856,11 +2856,11 @@ export const Step5AdditionalServices: React.FC<{
                   type="button"
                   onClick={() => setNewService(prev => ({ ...prev, isMandatory: !prev.isMandatory }))}
                   className={`w-full flex items-start gap-3.5 p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                    newService.isMandatory ? 'border-[#DC2626] bg-[#DC2626]/6' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                    newService.isMandatory ? 'border-[#B8912E] bg-[#B8912E]/6' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
                   }`}
                 >
                   <span
-                    className={`relative w-11 h-6 rounded-full shrink-0 mt-0.5 transition-colors ${newService.isMandatory ? 'bg-[#DC2626]' : 'bg-slate-300'}`}
+                    className={`relative w-11 h-6 rounded-full shrink-0 mt-0.5 transition-colors ${newService.isMandatory ? 'bg-[#B8912E]' : 'bg-slate-300'}`}
                   >
                     <motion.span
                       layout
@@ -3797,9 +3797,9 @@ export const Step6FinalPricing: React.FC<{
                   type="checkbox"
                   checked={timbreEnabled}
                   onChange={(e) => setTimbreEnabled(e.target.checked)}
-                  className="w-4 h-4 rounded border-saas-border accent-[#DC2626] cursor-pointer"
+                  className="w-4 h-4 rounded border-saas-border accent-[#B8912E] cursor-pointer"
                 />
-                <span className="font-bold text-[#DC2626]">
+                <span className="font-bold text-[#B8912E]">
                   {lang === 'fr' ? '🧾 Timbre fiscal' : '🧾 الطابع الجبائي'}
                 </span>
               </label>
@@ -3814,7 +3814,7 @@ export const Step6FinalPricing: React.FC<{
                     className="overflow-hidden"
                   >
                     <div className="ml-6 space-y-2">
-                      <div className="rounded-lg border border-[#DC2626]/25 bg-[#DC2626]/5 p-3 space-y-1.5">
+                      <div className="rounded-lg border border-[#B8912E]/25 bg-[#B8912E]/5 p-3 space-y-1.5">
                         <div className="flex justify-between text-sm">
                           <span className="text-saas-text-muted">
                             {lang === 'fr' ? 'Base de calcul' : 'أساس الحساب'}
@@ -3825,13 +3825,13 @@ export const Step6FinalPricing: React.FC<{
                           <span className="text-saas-text-muted">
                             {lang === 'fr' ? 'Barème appliqué' : 'التعريفة المطبقة'}
                           </span>
-                          <span className="font-bold text-[#DC2626] text-right">{timbreLabel(timbreBase, lang)}</span>
+                          <span className="font-bold text-[#B8912E] text-right">{timbreLabel(timbreBase, lang)}</span>
                         </div>
-                        <div className="flex justify-between text-base border-t border-[#DC2626]/20 pt-1.5">
+                        <div className="flex justify-between text-base border-t border-[#B8912E]/20 pt-1.5">
                           <span className="font-bold text-saas-text-main">
                             {lang === 'fr' ? 'Montant du timbre' : 'مبلغ الطابع'}
                           </span>
-                          <span className="font-black text-[#DC2626]">{timbreAmount.toLocaleString('fr-DZ')} DA</span>
+                          <span className="font-black text-[#B8912E]">{timbreAmount.toLocaleString('fr-DZ')} DA</span>
                         </div>
                       </div>
 

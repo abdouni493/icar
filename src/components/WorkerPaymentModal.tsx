@@ -148,7 +148,7 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="bg-saas-bg w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-saas-border max-h-[calc(100vh-4rem)]"
       >
-        <div className="relative overflow-hidden bg-[#0F172A] text-white px-8 py-6 shrink-0">
+        <div className="relative overflow-hidden bg-[#14130E] text-white px-8 py-6 shrink-0">
           <div className="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-emerald-500/25 blur-3xl" />
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -183,7 +183,7 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
           <section className="rounded-2xl border border-saas-border bg-white overflow-hidden">
             <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg flex items-center justify-between">
               <h3 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center">
+                <span className="w-7 h-7 rounded-lg bg-[#C8A13C] text-white flex items-center justify-center">
                   <CalendarDays className="w-4 h-4" />
                 </span>
                 {paymentType === 'monthly' ? T('Mois non payés', 'الأشهر غير المدفوعة') : T('Jours non payés', 'الأيام غير المدفوعة')}
@@ -269,7 +269,7 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
             <section className="rounded-2xl border border-saas-border bg-white overflow-hidden">
               <div className="px-5 py-3.5 border-b border-saas-border bg-saas-bg">
                 <h3 className="font-black text-sm uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                  <span className="w-7 h-7 rounded-lg bg-[#DC2626] text-white flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#B8912E] text-white flex items-center justify-center">
                     <TrendingDown className="w-4 h-4" />
                   </span>
                   {T('Absences à déduire', 'الغيابات المراد خصمها')}
@@ -287,11 +287,11 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
                       key={a.id}
                       onClick={() => toggle(selectedAbsences, setSelectedAbsences, a.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 text-left transition-all cursor-pointer ${
-                        on ? 'border-[#DC2626] bg-[#DC2626]/6' : 'border-saas-border bg-saas-bg'
+                        on ? 'border-[#B8912E] bg-[#B8912E]/6' : 'border-saas-border bg-saas-bg'
                       }`}
                     >
                       <span className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
-                        on ? 'border-[#DC2626] bg-[#DC2626]' : 'border-slate-300 bg-white'
+                        on ? 'border-[#B8912E] bg-[#B8912E]' : 'border-slate-300 bg-white'
                       }`}>
                         {on && <Check className="w-3 h-3 text-white" strokeWidth={3.5} />}
                       </span>
@@ -299,7 +299,7 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
                         <span className="block text-xs font-bold text-saas-text-main">{a.date}</span>
                         {a.note && <span className="block text-[11px] text-saas-text-muted truncate">{a.note}</span>}
                       </span>
-                      <span className="text-sm font-black text-[#DC2626]">−{money(a.cost)}</span>
+                      <span className="text-sm font-black text-[#B8912E]">−{money(a.cost)}</span>
                     </button>
                   );
                 })}
@@ -317,9 +317,9 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
             <div className="p-5 space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { l: T('Salaire', 'الراتب'), v: money(baseSalary), c: 'text-[#0284C7]' },
+                  { l: T('Salaire', 'الراتب'), v: money(baseSalary), c: 'text-[#C8A13C]' },
                   { l: T('Acomptes', 'السلف'), v: `−${money(advancesTotal)}`, c: 'text-orange-600' },
-                  { l: T('Absences', 'الغيابات'), v: `−${money(absencesTotal)}`, c: 'text-[#DC2626]' },
+                  { l: T('Absences', 'الغيابات'), v: `−${money(absencesTotal)}`, c: 'text-[#B8912E]' },
                 ].map(cell => (
                   <div key={cell.l} className="rounded-xl border border-saas-border bg-saas-bg px-4 py-3">
                     <p className="text-[9px] font-black uppercase tracking-[0.16em] text-saas-text-muted">{cell.l}</p>
@@ -367,7 +367,7 @@ export const WorkerPaymentModal: React.FC<WorkerPaymentModalProps> = ({ isOpen, 
                 exit={{ opacity: 0 }}
                 className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-4"
               >
-                <AlertTriangle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-[#B8912E] shrink-0 mt-0.5" />
                 <p className="text-sm font-semibold text-red-700">{error}</p>
               </motion.div>
             )}

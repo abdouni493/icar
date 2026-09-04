@@ -52,7 +52,7 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
           className="text-center mb-14"
         >
           <p className="font-bold text-xs tracking-[0.25em] uppercase mb-4"
-            style={{ color: '#DC2626', fontFamily: 'var(--font-display)' }}>
+            style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
             {{ fr: 'Nos Véhicules', ar: 'سياراتنا' }[lang]}
           </p>
           <h1 className="font-black text-5xl sm:text-6xl text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
@@ -126,12 +126,12 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
                   />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,12,20,0.7), transparent 55%)' }} />
                   <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-bold backdrop-blur-sm"
-                    style={{ color: '#DC2626', background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)', fontFamily: 'var(--font-display)' }}>
+                    style={{ color: '#C8A13C', background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)', fontFamily: 'var(--font-display)' }}>
                     {car.year}
                   </div>
                   {promo && (
                     <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow"
-                      style={{ background: '#EF4444', fontFamily: 'var(--font-display)' }}>
+                      style={{ background: '#C8A13C', fontFamily: 'var(--font-display)' }}>
                       {promo.label || `-${Math.round((1 - promo.newPrice / promo.oldPrice) * 100)}%`}
                     </div>
                   )}
@@ -142,7 +142,7 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
                   {/* Nom */}
                   <div className="min-w-0">
                     <h3 className="font-black text-sm text-vel-ink truncate" style={{ fontFamily: 'var(--font-display)' }}>
-                      {car.brand} <span style={{ color: '#DC2626' }}>{car.model}</span>
+                      {car.brand} <span style={{ color: '#C8A13C' }}>{car.model}</span>
                     </h3>
                     <p className="text-vel-muted text-[10px] truncate">{car.registration} · {car.color}</p>
                   </div>

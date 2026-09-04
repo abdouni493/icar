@@ -669,7 +669,7 @@ export const WebsiteOrders: React.FC<WebsiteOrdersProps> = ({ lang, onOrdersChan
                           <div className="space-y-3">
                             {cur !== 'DZD' && (
                               <div className="flex flex-wrap items-center gap-2 -mt-1 mb-1">
-                                <span className="px-2.5 py-1 rounded-lg bg-[#0284C7]/10 border border-[#0284C7]/25 text-[10px] font-black uppercase tracking-widest text-[#0284C7]">
+                                <span className="px-2.5 py-1 rounded-lg bg-[#C8A13C]/10 border border-[#C8A13C]/25 text-[10px] font-black uppercase tracking-widest text-[#C8A13C]">
                                   {lang === 'fr' ? 'Devise client' : 'عملة العميل'} : {cur}
                                 </span>
                                 <span className="text-[11px] font-bold text-slate-500">

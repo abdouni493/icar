@@ -94,7 +94,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                     transition={{ duration: 2, repeat: Infinity }}
                     className="absolute top-4 right-4 w-20 h-20 rounded-full flex flex-col items-center justify-center text-white"
                     style={{
-                      background: 'linear-gradient(135deg, #EF4444, #DC2626)',
+                      background: 'linear-gradient(135deg, #C8A13C, #C8A13C)',
                       boxShadow: '0 0 20px rgba(239,68,68,0.5)',
                     }}
                   >
@@ -118,7 +118,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                   <div className="absolute bottom-4 left-4">
                     <h3 className="font-black text-2xl text-white" style={{ fontFamily: 'var(--font-display)' }}>
                       {offer.car.brand}{' '}
-                      <span style={{ color: '#F87171' }}>{offer.car.model}</span>
+                      <span style={{ color: '#E0C16D' }}>{offer.car.model}</span>
                     </h3>
                     <p className="text-slate-200 text-sm">{offer.car.registration} · {offer.car.color}</p>
                   </div>
@@ -149,7 +149,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                         {offer.oldPrice.toLocaleString()} {{ fr: 'DA', ar: 'د.ج' }[lang]}
                       </p>
                       <span className="text-xs font-bold px-2 py-0.5 rounded text-white"
-                        style={{ background: '#EF4444' }}>
+                        style={{ background: '#C8A13C' }}>
                         {{ fr: 'Avant', ar: 'قبل' }[lang]}
                       </span>
                     </div>
@@ -157,21 +157,21 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                     {/* New price */}
                     <div className="flex items-center justify-between pt-2"
                       style={{ borderTop: '1px solid rgba(239,68,68,0.2)' }}>
-                      <p className="font-black text-4xl" style={{ color: '#DC2626', fontFamily: 'var(--font-display)', textShadow: '0 0 20px rgba(220,38,38,0.2)' }}>
+                      <p className="font-black text-4xl" style={{ color: '#C8A13C', fontFamily: 'var(--font-display)', textShadow: '0 0 20px rgba(220,38,38,0.2)' }}>
                         {offer.newPrice.toLocaleString()}
                         <span className="text-base ml-1" style={{ color: 'rgba(220,38,38,0.75)' }}>
                           {{ fr: 'DA/j', ar: 'د.ج/ي' }[lang]}
                         </span>
                       </p>
                       <span className="text-xs font-bold px-2 py-0.5 rounded"
-                        style={{ background: '#DC2626', color: '#FFFFFF' }}>
+                        style={{ background: '#C8A13C', color: '#FFFFFF' }}>
                         {{ fr: 'Maintenant', ar: 'الآن' }[lang]}
                       </span>
                     </div>
 
                     {/* Savings chip */}
                     <div className="vel-glass-accent rounded-lg px-3 py-2 text-center">
-                      <p className="text-xs font-bold" style={{ color: '#DC2626', fontFamily: 'var(--font-display)' }}>
+                      <p className="text-xs font-bold" style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
                         {{ fr: 'Économisez', ar: 'وفر' }[lang]}{' '}
                         {(offer.oldPrice - offer.newPrice).toLocaleString()} {{ fr: 'DA', ar: 'د.ج' }[lang]}
                       </p>
@@ -181,7 +181,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                   {/* Période de validité (optionnelle) */}
                   {offer.endDate && (
                     <p className="text-xs font-bold px-3 py-2 rounded-lg text-center"
-                      style={{ color: '#B45309', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
+                      style={{ color: '#B8912E', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
                       {lang === 'fr'
                         ? `Valable jusqu'au ${new Date(offer.endDate).toLocaleDateString('fr-FR')}`
                         : `صالح حتى ${new Date(offer.endDate).toLocaleDateString('fr-FR')}`}

@@ -78,7 +78,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
           {/* ── Header ── */}
           <div
             style={{
-              background: 'linear-gradient(135deg, #003399 0%, #0047b2 100%)',
+              background: 'linear-gradient(135deg, #B8912E 0%, #B8912E 100%)',
               padding: '16px 24px',
               display: 'flex',
               alignItems: 'center',
@@ -132,7 +132,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                       fontSize: '13px',
                       transition: 'all 0.2s',
                       background: conditionsLanguage === lng ? '#fff' : 'transparent',
-                      color: conditionsLanguage === lng ? '#003399' : 'rgba(255,255,255,0.85)',
+                      color: conditionsLanguage === lng ? '#B8912E' : 'rgba(255,255,255,0.85)',
                     }}
                   >
                     {lng === 'fr' ? '🇫🇷 FR' : '🇸🇦 AR'}
@@ -165,7 +165,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
             style={{
               flex: 1,
               overflow: 'auto',
-              background: '#e8ecf4',
+              background: '#F3EEE1',
               padding: '28px 32px',
             }}
           >
@@ -181,21 +181,21 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                 padding: '44px 56px',
                 fontFamily: "'Arial', 'Helvetica Neue', sans-serif",
                 position: 'relative',
-                border: '2px solid #003399',
+                border: '2px solid #B8912E',
               }}
             >
               {/* Document Title */}
               <div
                 style={{
                   textAlign: 'center',
-                  borderBottom: '3px solid #003399',
+                  borderBottom: '3px solid #B8912E',
                   paddingBottom: '14px',
                   marginBottom: '22px',
                 }}
               >
                 <h1
                   style={{
-                    color: '#003399',
+                    color: '#B8912E',
                     fontSize: '24px',
                     fontWeight: 800,
                     margin: '0 0 8px',
@@ -216,7 +216,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                     key={index}
                     style={{
                       padding: '10px 0',
-                      borderBottom: index < template.conditions.length - 1 ? '1px solid #eef0f7' : 'none',
+                      borderBottom: index < template.conditions.length - 1 ? '1px solid #F3EEE1' : 'none',
                     }}
                   >
                     <p
@@ -231,7 +231,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                       <span
                         style={{
                           fontWeight: 700,
-                          color: '#003399',
+                          color: '#B8912E',
                           marginInlineEnd: '6px',
                         }}
                       >
@@ -248,13 +248,13 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                 style={{
                   marginTop: '20px',
                   padding: '10px 14px',
-                  background: '#f0f4ff',
+                  background: '#FBF7EA',
                   borderRadius: '6px',
-                  border: '1px solid #b8ccee',
+                  border: '1px solid #ECD9A0',
                   textAlign: textAlign as 'left' | 'right',
                 }}
               >
-                <p style={{ fontSize: '13.5px', color: '#003399', fontWeight: 600, margin: 0 }}>
+                <p style={{ fontSize: '13.5px', color: '#B8912E', fontWeight: 600, margin: 0 }}>
                   {isArabic
                     ? 'يُقرّ المستأجر بأنه اطّلع على شروط الإيجار هذه وقبولها دون أي تحفظ، ويتعهد بتوقيع هذا العقد.'
                     : "Le client déclare avoir pris connaissance et accepter sans réserve les présentes conditions de location et s'engage à signer ce contrat."}
@@ -269,7 +269,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                   gap: '32px',
                   marginTop: '28px',
                   paddingTop: '18px',
-                  borderTop: '2px solid #003399',
+                  borderTop: '2px solid #B8912E',
                 }}
               >
                 {[
@@ -279,10 +279,10 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                   <div key={i} style={{ textAlign: 'center' }}>
                     <div
                       style={{
-                        borderBottom: '2px solid #003399',
+                        borderBottom: '2px solid #B8912E',
                         height: '50px',
                         marginBottom: '10px',
-                        background: '#f8faff',
+                        background: '#FAF8F2',
                         borderRadius: '4px 4px 0 0',
                       }}
                     />
@@ -290,7 +290,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                       style={{
                         fontSize: '13px',
                         fontWeight: 700,
-                        color: '#003399',
+                        color: '#B8912E',
                         margin: 0,
                         letterSpacing: '0.2px',
                       }}
@@ -307,8 +307,8 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
           <div
             style={{
               padding: '14px 24px',
-              background: '#f5f7ff',
-              borderTop: '1px solid #dde3f5',
+              background: '#FAF8F2',
+              borderTop: '1px solid #F6ECCB',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -316,8 +316,8 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Globe size={15} color="#6b7acc" />
-              <span style={{ fontSize: '12px', color: '#6b7acc' }}>
+              <Globe size={15} color="#C8A13C" />
+              <span style={{ fontSize: '12px', color: '#C8A13C' }}>
                 {isArabic
                   ? 'نموذج قياسي محسّن للطباعة على صفحة A4 واحدة'
                   : 'Modèle standard optimisé pour impression A4 sur une seule page'}
@@ -329,7 +329,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                 style={{
                   padding: '8px 20px',
                   borderRadius: '8px',
-                  border: '1.5px solid #ccd3e8',
+                  border: '1.5px solid #ECD9A0',
                   background: '#fff',
                   color: '#444',
                   fontWeight: 600,
@@ -337,7 +337,7 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#f0f2fa')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#FBF7EA')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
               >
                 {isArabic ? 'إغلاق' : 'Fermer'}
@@ -350,8 +350,8 @@ export const ConditionsPersonalizer: React.FC<ConditionsPersonalizerProps> = ({
                   borderRadius: '8px',
                   border: 'none',
                   background: isPrinting
-                    ? '#aab5d8'
-                    : 'linear-gradient(135deg, #003399 0%, #0047b2 100%)',
+                    ? '#E0C16D'
+                    : 'linear-gradient(135deg, #B8912E 0%, #B8912E 100%)',
                   color: '#fff',
                   fontWeight: 700,
                   fontSize: '13px',

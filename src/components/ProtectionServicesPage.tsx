@@ -545,7 +545,7 @@ const ServicesManager: React.FC<{ lang: Language }> = ({ lang }) => {
                         {t(lang, meta.fr, meta.ar)}
                       </span>
                       {s.isMandatory && (
-                        <span className="ml-2 inline-block text-[9px] font-black uppercase tracking-widest text-[#DC2626] bg-[#DC2626]/10 border border-[#DC2626]/25 px-2 py-0.5 rounded-full">
+                        <span className="ml-2 inline-block text-[9px] font-black uppercase tracking-widest text-[#B8912E] bg-[#B8912E]/10 border border-[#B8912E]/25 px-2 py-0.5 rounded-full">
                           {t(lang, 'Obligatoire', 'إلزامي')}
                         </span>
                       )}
@@ -692,11 +692,11 @@ const ServiceFormModal: React.FC<{
           type="button"
           onClick={() => setIsMandatory(v => !v)}
           className={`w-full flex items-start gap-3.5 p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-            isMandatory ? 'border-[#DC2626] bg-[#DC2626]/6' : 'border-saas-border bg-saas-bg hover:border-saas-border-strong'
+            isMandatory ? 'border-[#B8912E] bg-[#B8912E]/6' : 'border-saas-border bg-saas-bg hover:border-saas-border-strong'
           }`}
         >
           <span
-            className={`relative w-11 h-6 rounded-full shrink-0 mt-0.5 transition-colors ${isMandatory ? 'bg-[#DC2626]' : 'bg-slate-300'}`}
+            className={`relative w-11 h-6 rounded-full shrink-0 mt-0.5 transition-colors ${isMandatory ? 'bg-[#B8912E]' : 'bg-slate-300'}`}
           >
             <motion.span
               layout

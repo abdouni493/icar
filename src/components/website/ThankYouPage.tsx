@@ -56,7 +56,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
               <img src={websiteSettings.logo} alt={agencyName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
               // TODO: remplacer par le vrai logo de l'agence quand il sera disponible
-              <Car size={36} style={{ color: '#DC2626' }} />
+              <Car size={36} style={{ color: '#C8A13C' }} />
             )}
           </div>
           <h2 className="font-black text-xl text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
@@ -71,7 +71,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
           transition={{ delay: 0.3, type: 'spring', stiffness: 260, damping: 18 }}
           className="flex justify-center"
         >
-          <CheckCircle size={56} style={{ color: '#DC2626', filter: 'drop-shadow(0 0 16px rgba(220,38,38,0.35))' }} />
+          <CheckCircle size={56} style={{ color: '#C8A13C', filter: 'drop-shadow(0 0 16px rgba(220,38,38,0.35))' }} />
         </motion.div>
 
         {/* Message */}
@@ -86,7 +86,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
             }[lang]}
           </p>
           <p className="flex items-center justify-center gap-2 text-sm text-vel-muted">
-            <PhoneCall size={14} style={{ color: '#DC2626' }} />
+            <PhoneCall size={14} style={{ color: '#C8A13C' }} />
             {{ fr: 'Gardez votre téléphone à portée de main', ar: 'أبقِ هاتفك في متناول اليد' }[lang]}
           </p>
         </div>

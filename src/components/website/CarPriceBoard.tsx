@@ -64,7 +64,7 @@ export const CarPriceBoard: React.FC<{
             style={r.isDeposit ? { borderTop: '1px solid rgba(15,23,42,0.06)' } : undefined}
           >
             <span className="text-vel-muted">{r.label}</span>
-            <span className={`font-black ${valueSize}`} style={{ color: r.isDeposit ? 'rgba(248,113,113,0.95)' : '#DC2626' }}>
+            <span className={`font-black ${valueSize}`} style={{ color: r.isDeposit ? 'rgba(228,200,120,0.95)' : '#C8A13C' }}>
               {r.old !== undefined && (
                 <span className="line-through mr-1 font-medium" style={{ color: 'rgba(148,163,184,0.8)' }}>
                   {fmt(r.old, code)}
@@ -95,7 +95,7 @@ export const CarPriceBoard: React.FC<{
                 <th
                   key={code}
                   className={`text-right ${compact ? 'px-2 py-1.5 text-[9px]' : 'px-4 py-2.5 text-[11px]'} font-black uppercase tracking-wider whitespace-nowrap`}
-                  style={{ color: code === 'DZD' ? '#DC2626' : '#0284C7' }}
+                  style={{ color: code === 'DZD' ? '#C8A13C' : '#C8A13C' }}
                 >
                   <span className="mr-0.5">{CURRENCIES[code].flag}</span>{code}
                 </th>
@@ -117,8 +117,8 @@ export const CarPriceBoard: React.FC<{
                     className={`text-right ${compact ? 'px-2 py-1 text-[10px]' : 'px-4 py-2 text-sm'} font-bold whitespace-nowrap`}
                     style={{
                       color: r.isDeposit
-                        ? 'rgba(248,113,113,0.95)'
-                        : code === 'DZD' ? '#DC2626' : 'var(--color-vel-slate)',
+                        ? 'rgba(228,200,120,0.95)'
+                        : code === 'DZD' ? '#C8A13C' : 'var(--color-vel-slate)',
                     }}
                   >
                     {r.old !== undefined && (

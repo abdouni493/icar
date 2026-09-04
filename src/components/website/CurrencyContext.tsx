@@ -121,7 +121,7 @@ export const CurrencySwitcher: React.FC<{
         value={display}
         onChange={e => setDisplay(e.target.value as DisplayCurrency)}
         aria-label="Devise"
-        className={`px-3 py-1.5 rounded-lg text-xs font-bold bg-vel-surface border border-vel-border text-vel-ink outline-none cursor-pointer hover:border-[#DC2626] focus:border-[#DC2626] transition-colors ${className}`}
+        className={`px-3 py-1.5 rounded-lg text-xs font-bold bg-vel-surface border border-vel-border text-vel-ink outline-none cursor-pointer hover:border-[#B8912E] focus:border-[#B8912E] transition-colors ${className}`}
         style={{ fontFamily: 'var(--font-display)' }}
       >
         {options.map(o => (
@@ -141,7 +141,7 @@ export const CurrencySwitcher: React.FC<{
             onClick={() => setDisplay(o.value)}
             className={`px-4 py-2 rounded-xl text-xs font-black tracking-wide transition-all cursor-pointer ${
               activeOpt
-                ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25'
+                ? 'bg-[#B8912E] text-white shadow-md shadow-[#B8912E]/25'
                 : 'text-vel-muted hover:text-vel-ink hover:bg-vel-abyss'
             }`}
             style={{ fontFamily: 'var(--font-display)' }}

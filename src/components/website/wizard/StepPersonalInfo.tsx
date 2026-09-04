@@ -214,7 +214,7 @@ export const StepPersonalInfo: React.FC = () => {
                 )}
                 <button onClick={() => removeDocument(index)}
                   className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: '#EF4444' }}>
+                  style={{ background: '#C8A13C' }}>
                   <X size={12} color="white" />
                 </button>
               </div>
@@ -305,7 +305,7 @@ export const StepPersonalInfo: React.FC = () => {
               <button
                 onClick={() => setPersonal(prev => ({ ...prev, flightTicketImage: '' }))}
                 className="absolute top-2 right-2 p-1.5 rounded-lg text-white shadow-lg cursor-pointer"
-                style={{ background: '#DC2626' }}
+                style={{ background: '#C8A13C' }}
                 aria-label={lang === 'fr' ? 'Retirer le billet' : 'إزالة التذكرة'}
               >
                 <X size={14} />
@@ -333,7 +333,7 @@ export const StepPersonalInfo: React.FC = () => {
         </div>
 
         {uploadError && (
-          <p className="mt-3 text-xs font-bold" style={{ color: '#DC2626' }}>{uploadError}</p>
+          <p className="mt-3 text-xs font-bold" style={{ color: '#C8A13C' }}>{uploadError}</p>
         )}
       </SectionCard>
     </div>

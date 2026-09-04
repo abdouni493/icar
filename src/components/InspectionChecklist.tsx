@@ -25,21 +25,21 @@ export const CATEGORY_META = (lang: Language) => ([
     aliases: ['securite', 'security'],
     title: lang === 'fr' ? 'Sécurité' : 'الأمان',
     icon: <ShieldCheck className="w-4 h-4" />,
-    accent: '#DC2626',
+    accent: '#B8912E',
   },
   {
     key: 'equipements',
     aliases: ['equipements', 'equipment'],
     title: lang === 'fr' ? 'Équipements' : 'المعدات',
     icon: <Wrench className="w-4 h-4" />,
-    accent: '#0284C7',
+    accent: '#C8A13C',
   },
   {
     key: 'confort',
     aliases: ['confort', 'comfort', 'cleanliness'],
     title: lang === 'fr' ? 'Confort & Propreté' : 'الراحة والنظافة',
     icon: <Sparkles className="w-4 h-4" />,
-    accent: '#0F172A',
+    accent: '#14130E',
   },
 ]);
 
@@ -89,7 +89,7 @@ export const InspectionChecklist: React.FC<{
       <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
           <h4 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-lg bg-[#DC2626]/10 text-[#DC2626] flex items-center justify-center">
+            <span className="w-8 h-8 rounded-lg bg-[#B8912E]/10 text-[#B8912E] flex items-center justify-center">
               <Check className="w-4 h-4" />
             </span>
             {title || (lang === 'fr' ? "Contrôle d'état du véhicule" : 'فحص حالة المركبة')}
@@ -100,8 +100,8 @@ export const InspectionChecklist: React.FC<{
             </span>
             <span className={`px-3 py-1 rounded-lg text-xs font-black ${
               ratio === 100 ? 'bg-emerald-100 text-emerald-700'
-                : ratio >= 50 ? 'bg-[#0284C7]/10 text-[#0284C7]'
-                : 'bg-[#DC2626]/10 text-[#DC2626]'
+                : ratio >= 50 ? 'bg-[#C8A13C]/10 text-[#C8A13C]'
+                : 'bg-[#B8912E]/10 text-[#B8912E]'
             }`}>
               {ratio}%
             </span>
@@ -109,7 +109,7 @@ export const InspectionChecklist: React.FC<{
         </div>
         <div className="h-1.5 bg-saas-bg">
           <motion.div
-            className="h-full bg-linear-to-r from-[#DC2626] to-[#0284C7]"
+            className="h-full bg-linear-to-r from-[#B8912E] to-[#C8A13C]"
             initial={{ width: 0 }}
             animate={{ width: `${ratio}%` }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -150,7 +150,7 @@ export const InspectionChecklist: React.FC<{
                     } ${
                       ok
                         ? 'border-emerald-400 bg-emerald-50'
-                        : 'border-saas-border bg-saas-bg hover:border-[#DC2626]/40'
+                        : 'border-saas-border bg-saas-bg hover:border-[#B8912E]/40'
                     }`}
                   >
                     <span
@@ -190,7 +190,7 @@ export const InspectionChecklist: React.FC<{
                     {onDeleteItem && !readOnly && (
                       <button
                         onClick={e => { e.stopPropagation(); onDeleteItem(item.id); }}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-saas-text-muted hover:text-[#DC2626] hover:bg-white transition-all cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-saas-text-muted hover:text-[#B8912E] hover:bg-white transition-all cursor-pointer"
                         title={lang === 'fr' ? 'Supprimer cet élément' : 'حذف هذا العنصر'}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -290,7 +290,7 @@ export const InspectionPhotoUploader: React.FC<{
     <div className="rounded-2xl border border-saas-border bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-saas-border bg-saas-bg flex items-center justify-between">
         <h4 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-          <span className="w-8 h-8 rounded-lg bg-[#0284C7]/10 text-[#0284C7] flex items-center justify-center">
+          <span className="w-8 h-8 rounded-lg bg-[#C8A13C]/10 text-[#C8A13C] flex items-center justify-center">
             <Upload className="w-4 h-4" />
           </span>
           {title || (lang === 'fr' ? "Photos d'état" : 'صور الحالة')}
@@ -311,12 +311,12 @@ export const InspectionPhotoUploader: React.FC<{
                   key={slot.type}
                   className={`group relative aspect-4/3 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all overflow-hidden ${
                     busy
-                      ? 'border-[#0284C7] bg-[#0284C7]/5 cursor-wait'
-                      : 'border-saas-border bg-saas-bg hover:border-[#DC2626] hover:bg-[#DC2626]/5 cursor-pointer'
+                      ? 'border-[#C8A13C] bg-[#C8A13C]/5 cursor-wait'
+                      : 'border-saas-border bg-saas-bg hover:border-[#B8912E] hover:bg-[#B8912E]/5 cursor-pointer'
                   }`}
                 >
                   <span className="text-2xl transition-transform group-hover:scale-110">{slot.icon}</span>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-saas-text-muted text-center px-2 leading-tight group-hover:text-[#DC2626] transition-colors">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-saas-text-muted text-center px-2 leading-tight group-hover:text-[#B8912E] transition-colors">
                     {slot.label}
                   </span>
                   {count > 0 && (
@@ -326,7 +326,7 @@ export const InspectionPhotoUploader: React.FC<{
                   )}
                   {busy && (
                     <motion.span
-                      className="absolute inset-x-0 bottom-0 h-1 bg-[#0284C7]"
+                      className="absolute inset-x-0 bottom-0 h-1 bg-[#C8A13C]"
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
@@ -376,7 +376,7 @@ export const InspectionPhotoUploader: React.FC<{
                     {!readOnly && (
                       <button
                         onClick={() => onRemove(index)}
-                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-[#DC2626] text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-pointer"
+                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-[#B8912E] text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-pointer"
                         title={lang === 'fr' ? 'Retirer' : 'إزالة'}
                       >
                         <X className="w-3.5 h-3.5" />
@@ -422,7 +422,7 @@ export const FuelLevelPicker: React.FC<{
   onChange: (value: any) => void;
   disabled?: boolean;
   accent?: string;
-}> = ({ value, onChange, disabled = false, accent = '#DC2626' }) => (
+}> = ({ value, onChange, disabled = false, accent = '#B8912E' }) => (
   <div className="grid grid-cols-5 gap-2">
     {FUEL_LEVELS.map(level => {
       const active = value === level.value;

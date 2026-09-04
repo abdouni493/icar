@@ -81,9 +81,9 @@ export const EntrepriseModal: React.FC<{
         onClick={e => e.stopPropagation()}
         className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-saas-border overflow-hidden flex flex-col max-h-[calc(100vh-4rem)]"
       >
-        <div className="px-8 py-6 bg-[#0F172A] text-white flex items-center justify-between">
+        <div className="px-8 py-6 bg-[#14130E] text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="w-11 h-11 rounded-xl bg-[#DC2626] flex items-center justify-center">
+            <span className="w-11 h-11 rounded-xl bg-[#B8912E] flex items-center justify-center">
               <Building2 className="w-5 h-5" />
             </span>
             <div>
@@ -197,10 +197,10 @@ const EntrepriseHistoryModal: React.FC<{
         onClick={e => e.stopPropagation()}
         className="bg-white w-full max-w-5xl rounded-3xl shadow-2xl border border-saas-border overflow-hidden flex flex-col max-h-[calc(100vh-4rem)]"
       >
-        <div className="px-8 py-6 bg-[#0F172A] text-white flex items-center justify-between">
+        <div className="px-8 py-6 bg-[#14130E] text-white flex items-center justify-between">
           <div>
             <h3 className="text-xl font-black tracking-tight flex items-center gap-3">
-              <History className="w-5 h-5 text-[#0284C7]" />
+              <History className="w-5 h-5 text-[#C8A13C]" />
               {entreprise.name}
             </h3>
             <p className="text-white/60 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">
@@ -215,9 +215,9 @@ const EntrepriseHistoryModal: React.FC<{
         {/* Totaux */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-saas-bg border-b border-saas-border">
           {[
-            { label: lang === 'fr' ? 'Total' : 'الإجمالي', value: data.total, accent: 'text-[#0F172A]', bar: 'bg-[#0F172A]' },
+            { label: lang === 'fr' ? 'Total' : 'الإجمالي', value: data.total, accent: 'text-[#14130E]', bar: 'bg-[#14130E]' },
             { label: lang === 'fr' ? 'Total payé' : 'المدفوع', value: data.totalPaid, accent: 'text-green-700', bar: 'bg-green-600' },
-            { label: lang === 'fr' ? 'Total reste' : 'المتبقي', value: data.totalRemaining, accent: 'text-[#DC2626]', bar: 'bg-[#DC2626]' },
+            { label: lang === 'fr' ? 'Total reste' : 'المتبقي', value: data.totalRemaining, accent: 'text-[#B8912E]', bar: 'bg-[#B8912E]' },
           ].map(card => (
             <div key={card.label} className="relative bg-white rounded-2xl border border-saas-border p-5 overflow-hidden">
               <span className={`absolute inset-y-0 left-0 w-1 ${card.bar}`} />
@@ -270,7 +270,7 @@ const EntrepriseHistoryModal: React.FC<{
                       </td>
                       <td className="py-3 pr-4 text-right font-bold text-saas-text-main">{fmt(r.totalPrice)}</td>
                       <td className="py-3 pr-4 text-right font-bold text-green-700">{fmt(r.paid)}</td>
-                      <td className="py-3 text-right font-bold text-[#DC2626]">{fmt(r.remaining)}</td>
+                      <td className="py-3 text-right font-bold text-[#B8912E]">{fmt(r.remaining)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -351,14 +351,14 @@ export const EntreprisesPage: React.FC<{ lang: Language }> = ({ lang }) => {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden rounded-3xl bg-[#0F172A] text-white p-8"
+        className="relative overflow-hidden rounded-3xl bg-[#14130E] text-white p-8"
       >
-        <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#DC2626]/20 blur-3xl" />
-        <div className="absolute -left-10 -bottom-20 w-56 h-56 rounded-full bg-[#0284C7]/20 blur-3xl" />
+        <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#B8912E]/20 blur-3xl" />
+        <div className="absolute -left-10 -bottom-20 w-56 h-56 rounded-full bg-[#C8A13C]/20 blur-3xl" />
         <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
-              <span className="w-12 h-12 rounded-2xl bg-[#DC2626] flex items-center justify-center">
+              <span className="w-12 h-12 rounded-2xl bg-[#B8912E] flex items-center justify-center">
                 <Building2 className="w-6 h-6" />
               </span>
               {lang === 'fr' ? 'Entreprises' : 'الشركات'}
@@ -424,10 +424,10 @@ export const EntreprisesPage: React.FC<{ lang: Language }> = ({ lang }) => {
               key={e.id}
               className="group relative bg-white rounded-3xl border border-saas-border overflow-hidden hover-lift"
             >
-              <span className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#DC2626] to-[#0284C7]" />
+              <span className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#B8912E] to-[#C8A13C]" />
               <div className="p-6">
                 <div className="flex items-start gap-4">
-                  <span className="w-12 h-12 rounded-2xl bg-[#0F172A] text-white flex items-center justify-center shrink-0">
+                  <span className="w-12 h-12 rounded-2xl bg-[#14130E] text-white flex items-center justify-center shrink-0">
                     <Building2 className="w-6 h-6" />
                   </span>
                   <div className="min-w-0">
@@ -463,7 +463,7 @@ export const EntreprisesPage: React.FC<{ lang: Language }> = ({ lang }) => {
                 {can('entreprises', 'history') && (
                   <button
                     onClick={() => setHistoryFor(e)}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-saas-border text-xs font-bold text-saas-text-main hover:border-[#0284C7] hover:text-[#0284C7] transition-colors cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-saas-border text-xs font-bold text-saas-text-main hover:border-[#C8A13C] hover:text-[#C8A13C] transition-colors cursor-pointer"
                   >
                     <History className="w-4 h-4" />
                     {lang === 'fr' ? 'Historique' : 'السجل'}
@@ -472,7 +472,7 @@ export const EntreprisesPage: React.FC<{ lang: Language }> = ({ lang }) => {
                 {can('entreprises', 'edit') && (
                   <button
                     onClick={() => setModal({ open: true, entreprise: e })}
-                    className="p-2.5 rounded-xl bg-white border border-saas-border text-saas-text-muted hover:border-[#0284C7] hover:text-[#0284C7] transition-colors cursor-pointer"
+                    className="p-2.5 rounded-xl bg-white border border-saas-border text-saas-text-muted hover:border-[#C8A13C] hover:text-[#C8A13C] transition-colors cursor-pointer"
                     title={lang === 'fr' ? 'Modifier' : 'تعديل'}
                   >
                     <Pencil className="w-4 h-4" />
@@ -481,7 +481,7 @@ export const EntreprisesPage: React.FC<{ lang: Language }> = ({ lang }) => {
                 {can('entreprises', 'delete') && (
                   <button
                     onClick={() => setConfirmDelete(e)}
-                    className="p-2.5 rounded-xl bg-white border border-saas-border text-saas-text-muted hover:border-[#DC2626] hover:text-[#DC2626] transition-colors cursor-pointer"
+                    className="p-2.5 rounded-xl bg-white border border-saas-border text-saas-text-muted hover:border-[#B8912E] hover:text-[#B8912E] transition-colors cursor-pointer"
                     title={lang === 'fr' ? 'Supprimer' : 'حذف'}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -521,7 +521,7 @@ export const EntreprisesPage: React.FC<{ lang: Language }> = ({ lang }) => {
               className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-saas-border"
             >
               <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-5">
-                <AlertTriangle className="w-7 h-7 text-[#DC2626]" />
+                <AlertTriangle className="w-7 h-7 text-[#B8912E]" />
               </div>
               <h3 className="text-xl font-black text-saas-text-main text-center mb-2">
                 {lang === 'fr' ? 'Supprimer cette entreprise ?' : 'حذف هذه الشركة؟'}

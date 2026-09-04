@@ -247,7 +247,7 @@ export const StepCarDates: React.FC = () => {
               {days} {{ fr: 'jour(s)', ar: 'يوم' }[lang]} ·{' '}
               <span style={{ color: C.accent }}>{total.toLocaleString()} {{ fr: 'DA', ar: 'د.ج' }[lang]}</span>
               {promo && (
-                <span className="ml-2 text-xs px-2 py-0.5 rounded font-bold text-white" style={{ background: '#EF4444' }}>
+                <span className="ml-2 text-xs px-2 py-0.5 rounded font-bold text-white" style={{ background: '#C8A13C' }}>
                   {promo.label || (lang === 'fr' ? 'Promo' : 'عرض')}
                 </span>
               )}

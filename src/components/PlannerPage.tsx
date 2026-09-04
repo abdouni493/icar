@@ -1127,11 +1127,11 @@ export const PlannerPage: React.FC<PlannerPageProps> = ({ lang, isAuthLoading = 
                   {/* Devise choisie par le client (réservations du site) */}
                   {reservation.currency && reservation.currency !== 'DZD' && (
                     <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#0284C7]">
+                      <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#C8A13C]">
                         🌐 {lang === 'fr' ? 'Devise client' : 'عملة العميل'} · {reservation.currency}
                       </span>
                       <span className="text-right">
-                        <span className="block font-black text-[#0284C7]">
+                        <span className="block font-black text-[#C8A13C]">
                           {formatCurrency(
                             convertFromDzd(displayTotalPrice, reservation.currency as CurrencyCode, Number(reservation.currencyRate) || 1),
                             reservation.currency as CurrencyCode
@@ -1159,12 +1159,12 @@ export const PlannerPage: React.FC<PlannerPageProps> = ({ lang, isAuthLoading = 
 
                   {/* Timbre fiscal appliqué */}
                   {reservation.timbreEnabled && (reservation.timbreAmount || 0) > 0 && (
-                    <div className="mt-2 flex items-center justify-between gap-2 rounded-lg px-3 py-2 bg-[#DC2626]/6 border border-[#DC2626]/20">
-                      <span className="text-xs font-bold text-[#B91C1C]">
+                    <div className="mt-2 flex items-center justify-between gap-2 rounded-lg px-3 py-2 bg-[#B8912E]/6 border border-[#B8912E]/20">
+                      <span className="text-xs font-bold text-[#94721B]">
                         🧾 {lang === 'fr' ? 'Timbre fiscal' : 'الطابع الجبائي'}
                         {reservation.timbreRate ? ` (${String(reservation.timbreRate).replace('.', ',')} %)` : ''}
                       </span>
-                      <span className="text-xs font-black text-[#B91C1C]">
+                      <span className="text-xs font-black text-[#94721B]">
                         {(reservation.timbreAmount || 0).toLocaleString('fr-DZ')} DA
                       </span>
                     </div>
@@ -5464,7 +5464,7 @@ export const PersonalizationModal: React.FC<{
                     type="checkbox"
                     checked={showPricesOnContract}
                     onChange={e => setShowPricesOnContract(e.target.checked)}
-                    className="w-5 h-5 accent-[#DC2626] cursor-pointer"
+                    className="w-5 h-5 accent-[#B8912E] cursor-pointer"
                   />
                   <span className="text-xl">&#x1F4B0;</span>
                   <div className="flex-1">
@@ -5478,7 +5478,7 @@ export const PersonalizationModal: React.FC<{
                     </div>
                   </div>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-black ${
-                    showPricesOnContract ? 'bg-[#DC2626] text-white' : 'bg-slate-300 text-slate-700'
+                    showPricesOnContract ? 'bg-[#B8912E] text-white' : 'bg-slate-300 text-slate-700'
                   }`}>
                     {showPricesOnContract
                       ? (lang === 'fr' ? 'VISIBLE' : 'ظاهر')

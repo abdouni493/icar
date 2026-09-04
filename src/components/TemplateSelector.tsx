@@ -150,7 +150,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           flex-direction: column;
           gap: 16px;
           padding: 20px;
-          background: #f9fafb;
+          background: #FAF8F2;
           border-radius: 8px;
           min-width: 400px;
         }
@@ -165,12 +165,12 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 
         .template-selector.error,
         .template-selector.empty {
-          background: #fef2f2;
-          border: 1px solid #fecaca;
+          background: #FBF7EA;
+          border: 1px solid #F6ECCB;
         }
 
         .error-message {
-          color: #dc2626;
+          color: #B8912E;
           text-align: center;
           margin-bottom: 16px;
         }
@@ -189,20 +189,20 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           gap: 12px;
           padding: 12px;
           background: white;
-          border: 2px solid #e5e7eb;
+          border: 2px solid #E8E0CD;
           border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s;
         }
 
         .template-item:hover {
-          border-color: #3b82f6;
-          background: #f0f9ff;
+          border-color: #C8A13C;
+          background: #FBF7EA;
         }
 
         .template-item.selected {
-          border-color: #3b82f6;
-          background: #eff6ff;
+          border-color: #C8A13C;
+          background: #FBF7EA;
         }
 
         .template-item input[type='radio'] {
@@ -220,7 +220,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 
         .template-name {
           font-weight: 500;
-          color: #1f2937;
+          color: #201D15;
         }
 
         .badge {
@@ -232,13 +232,13 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         }
 
         .badge-primary {
-          background: #dbeafe;
-          color: #1e40af;
+          background: #F6ECCB;
+          color: #B8912E;
         }
 
         .badge-info {
-          background: #dbeafe;
-          color: #1e40af;
+          background: #F6ECCB;
+          color: #B8912E;
         }
 
         .template-actions {
@@ -246,7 +246,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           gap: 8px;
           justify-content: flex-end;
           padding-top: 12px;
-          border-top: 1px solid #e5e7eb;
+          border-top: 1px solid #E8E0CD;
         }
 
         .btn {
@@ -259,27 +259,27 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         }
 
         .btn-primary {
-          background: #3b82f6;
+          background: #C8A13C;
           color: white;
         }
 
         .btn-primary:hover:not(:disabled) {
-          background: #2563eb;
+          background: #C8A13C;
         }
 
         .btn-primary:disabled {
-          background: #d1d5db;
+          background: #E8E0CD;
           cursor: not-allowed;
         }
 
         .btn-secondary {
-          background: #f3f4f6;
-          color: #374151;
-          border: 1px solid #d1d5db;
+          background: #F3EEE1;
+          color: #302C21;
+          border: 1px solid #E8E0CD;
         }
 
         .btn-secondary:hover {
-          background: #e5e7eb;
+          background: #E8E0CD;
         }
       `}</style>
     </div>

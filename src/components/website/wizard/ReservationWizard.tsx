@@ -106,11 +106,11 @@ const WizardShell: React.FC<{ websiteSettings?: WebsiteSettings | null; onBackHo
                       className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500"
                       style={{
                         background: isCompleted
-                          ? 'linear-gradient(135deg, #DC2626, #B91C1C)'
+                          ? 'linear-gradient(135deg, #C8A13C, #B8912E)'
                           : isCurrent
                           ? 'linear-gradient(135deg, rgba(220,38,38,0.16), rgba(217,119,6,0.18))'
                           : 'rgba(15,23,42,0.05)',
-                        border: isCompleted || isCurrent ? '2px solid #DC2626' : '2px solid rgba(15,23,42,0.1)',
+                        border: isCompleted || isCurrent ? '2px solid #C8A13C' : '2px solid rgba(15,23,42,0.1)',
                         boxShadow: isCurrent ? '0 0 20px rgba(220,38,38,0.25)' : 'none',
                         color: isCompleted ? '#FFFFFF' : isCurrent ? C.accent : '#64748B',
                       }}
@@ -124,7 +124,7 @@ const WizardShell: React.FC<{ websiteSettings?: WebsiteSettings | null; onBackHo
                   </button>
                   {n < WIZARD_STEP_COUNT && (
                     <div className="flex-1 max-w-16 h-0.5 mx-1.5 sm:mx-3 mt-5 rounded-full transition-all duration-700"
-                      style={{ background: step > n ? 'linear-gradient(90deg, #DC2626, #B91C1C)' : 'rgba(15,23,42,0.06)' }}
+                      style={{ background: step > n ? 'linear-gradient(90deg, #C8A13C, #B8912E)' : 'rgba(15,23,42,0.06)' }}
                     />
                   )}
                 </React.Fragment>

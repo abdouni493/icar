@@ -5,8 +5,8 @@ import { Language } from '../../../types';
 
 // ─── Palette claire "Automotive" (voir design-system/auto_location/MASTER.md) ──
 export const C = {
-  accent:    '#DC2626',
-  amber:     '#D97706',
+  accent:    '#C8A13C',
+  amber:     '#B8912E',
   bg:        '#F8FAFC',
   surface:   '#FFFFFF',
   elevated:  '#FFFFFF',
@@ -36,10 +36,10 @@ export const fromYmd = (s: string): Date => {
 export const inputStyle: React.CSSProperties = {
   background: '#FFFFFF',
   border: '1px solid rgba(15,23,42,0.1)',
-  color: '#0F172A',
+  color: '#14130E',
 };
 export const focusInput = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-  (e.target as HTMLElement).style.borderColor = '#DC2626';
+  (e.target as HTMLElement).style.borderColor = '#C8A13C';
   (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(220,38,38,0.2)';
 };
 export const blurInput = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

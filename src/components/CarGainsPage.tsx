@@ -204,21 +204,21 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
       value: fmtDA(stats.totalInvoiced),
       sub: `${stats.active.length} ${T('location(s)', 'إيجار', lang)}`,
       icon: <FileText className="w-5 h-5" />,
-      bar: 'bg-[#0F172A]', text: 'text-[#0F172A]',
+      bar: 'bg-[#14130E]', text: 'text-[#14130E]',
     },
     {
       label: T('Encaissé', 'المحصّل', lang),
       value: fmtDA(stats.totalPaid),
       sub: T('Recettes réelles', 'الإيرادات الفعلية', lang),
       icon: <HandCoins className="w-5 h-5" />,
-      bar: 'bg-[#0284C7]', text: 'text-[#0284C7]',
+      bar: 'bg-[#C8A13C]', text: 'text-[#C8A13C]',
     },
     {
       label: T('Dépenses', 'المصاريف', lang),
       value: fmtDA(stats.totalExpenses),
       sub: `${expenses.length} ${T('poste(s)', 'بند', lang)}`,
       icon: <Receipt className="w-5 h-5" />,
-      bar: 'bg-[#DC2626]', text: 'text-[#DC2626]',
+      bar: 'bg-[#B8912E]', text: 'text-[#B8912E]',
     },
     {
       label: T('Bénéfice net', 'صافي الربح', lang),
@@ -237,14 +237,14 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
         initial={{ opacity: 0, y: -14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden rounded-3xl bg-[#0F172A] text-white"
+        className="relative overflow-hidden rounded-3xl bg-[#14130E] text-white"
       >
-        <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-[#DC2626]/20 blur-3xl" />
-        <div className="absolute -left-16 -bottom-24 w-64 h-64 rounded-full bg-[#0284C7]/20 blur-3xl" />
+        <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-[#B8912E]/20 blur-3xl" />
+        <div className="absolute -left-16 -bottom-24 w-64 h-64 rounded-full bg-[#C8A13C]/20 blur-3xl" />
 
         <div className="relative p-8">
           <div className="flex items-center gap-4 mb-7">
-            <span className="w-14 h-14 rounded-2xl bg-[#DC2626] flex items-center justify-center shadow-lg shadow-[#DC2626]/30">
+            <span className="w-14 h-14 rounded-2xl bg-[#B8912E] flex items-center justify-center shadow-lg shadow-[#B8912E]/30">
               <PieChart className="w-7 h-7" />
             </span>
             <div>
@@ -265,13 +265,13 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
               <select
                 value={selectedCarId}
                 onChange={e => { setSelectedCarId(e.target.value); setGenerated(false); }}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white outline-none text-sm font-semibold backdrop-blur-sm hover:bg-white/15 focus:border-[#DC2626] transition-all cursor-pointer"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white outline-none text-sm font-semibold backdrop-blur-sm hover:bg-white/15 focus:border-[#B8912E] transition-all cursor-pointer"
               >
-                <option value="" className="bg-[#0F172A]">
+                <option value="" className="bg-[#14130E]">
                   {T('-- Choisir une voiture --', '-- اختر سيارة --', lang)}
                 </option>
                 {cars.map(car => (
-                  <option key={car.id} value={car.id} className="bg-[#0F172A]">
+                  <option key={car.id} value={car.id} className="bg-[#14130E]">
                     {car.brand} {car.model} ({car.registration})
                     {car.ownerType === 'third_party' ? ` — ${car.ownerName || T('Tiers', 'طرف ثالث', lang)}` : ''}
                   </option>
@@ -287,7 +287,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white outline-none text-sm font-semibold backdrop-blur-sm focus:border-[#DC2626] transition-all"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white outline-none text-sm font-semibold backdrop-blur-sm focus:border-[#B8912E] transition-all"
               />
             </div>
 
@@ -299,7 +299,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white outline-none text-sm font-semibold backdrop-blur-sm focus:border-[#DC2626] transition-all"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white outline-none text-sm font-semibold backdrop-blur-sm focus:border-[#B8912E] transition-all"
               />
             </div>
           </div>
@@ -318,7 +318,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
             {selectedCar && (
               <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider border ${
                 selectedCar.ownerType === 'third_party'
-                  ? 'bg-[#0284C7]/15 border-[#0284C7]/40 text-[#7DD3FC]'
+                  ? 'bg-[#C8A13C]/15 border-[#C8A13C]/40 text-[#E0C16D]'
                   : 'bg-white/10 border-white/20 text-white/70'
               }`}>
                 {selectedCar.ownerType === 'third_party' ? <Users size={13} /> : <User size={13} />}
@@ -333,7 +333,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
 
       {error && (
         <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-5">
-          <AlertCircle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-[#B8912E] shrink-0 mt-0.5" />
           <p className="text-sm font-semibold text-red-700">{error}</p>
         </div>
       )}
@@ -379,7 +379,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
           >
             {/* Fiche véhicule */}
             <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
-              <span className="block h-1 bg-linear-to-r from-[#DC2626] to-[#0284C7]" />
+              <span className="block h-1 bg-linear-to-r from-[#B8912E] to-[#C8A13C]" />
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6">
                 <div className="w-40 h-28 rounded-2xl overflow-hidden shrink-0 bg-saas-bg border border-saas-border">
                   <img
@@ -392,19 +392,19 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                   <h2 className="text-2xl font-black text-saas-text-main uppercase tracking-tighter">
                     {selectedCar.brand} {selectedCar.model}
                   </h2>
-                  <p className="text-[#DC2626] font-black text-sm tracking-wide">{selectedCar.registration}</p>
+                  <p className="text-[#B8912E] font-black text-sm tracking-wide">{selectedCar.registration}</p>
                   <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-saas-bg border border-saas-border text-saas-text-main px-3 py-1.5 rounded-lg">
-                      <Calendar size={12} className="text-[#0284C7]" />{selectedCar.year}
+                      <Calendar size={12} className="text-[#C8A13C]" />{selectedCar.year}
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-saas-bg border border-saas-border text-saas-text-main px-3 py-1.5 rounded-lg">
                       ⛽ {selectedCar.energy}
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-saas-bg border border-saas-border text-saas-text-main px-3 py-1.5 rounded-lg">
-                      <Gauge size={12} className="text-[#0284C7]" />{(selectedCar.mileage || 0).toLocaleString('fr-DZ')} km
+                      <Gauge size={12} className="text-[#C8A13C]" />{(selectedCar.mileage || 0).toLocaleString('fr-DZ')} km
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-saas-bg border border-saas-border text-saas-text-main px-3 py-1.5 rounded-lg">
-                      <Clock size={12} className="text-[#0284C7]" />{stats.rentedDays} {T('jours loués', 'يوم مؤجر', lang)}
+                      <Clock size={12} className="text-[#C8A13C]" />{stats.rentedDays} {T('jours loués', 'يوم مؤجر', lang)}
                     </span>
                   </div>
                 </div>
@@ -442,9 +442,9 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white rounded-3xl border border-saas-border overflow-hidden"
               >
-                <div className="px-6 py-4 bg-[#0F172A] text-white flex items-center justify-between flex-wrap gap-2">
+                <div className="px-6 py-4 bg-[#14130E] text-white flex items-center justify-between flex-wrap gap-2">
                   <h3 className="font-black uppercase tracking-tight flex items-center gap-2.5">
-                    <Users size={17} className="text-[#0284C7]" />
+                    <Users size={17} className="text-[#C8A13C]" />
                     {T('Répartition des bénéfices', 'توزيع الأرباح', lang)}
                   </h3>
                   <span className="text-[11px] font-bold text-white/60">
@@ -457,15 +457,15 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-saas-text-muted">
                       {T('Recettes encaissées', 'الإيرادات المحصلة', lang)}
                     </p>
-                    <p className="text-2xl font-black text-[#0284C7] mt-1.5">{fmtDA(stats.totalPaid)}</p>
+                    <p className="text-2xl font-black text-[#C8A13C] mt-1.5">{fmtDA(stats.totalPaid)}</p>
                   </div>
 
                   {maySeeAgencyShare ? (
-                    <div className="rounded-2xl border-2 border-[#DC2626]/30 bg-[#DC2626]/5 p-5">
-                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-[#DC2626]">
+                    <div className="rounded-2xl border-2 border-[#B8912E]/30 bg-[#B8912E]/5 p-5">
+                      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-[#B8912E]">
                         {T("Part de l'agence", 'حصة الوكالة', lang)}
                       </p>
-                      <p className="text-2xl font-black text-[#DC2626] mt-1.5">{fmtDA(stats.agencyShare)}</p>
+                      <p className="text-2xl font-black text-[#B8912E] mt-1.5">{fmtDA(stats.agencyShare)}</p>
                       <p className="text-[11px] text-saas-text-muted mt-1">
                         {T('Non affichée sur le rapport propriétaire', 'لا تظهر في تقرير المالك', lang)}
                       </p>
@@ -494,20 +494,20 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                   <div className="px-6 pb-6">
                     <div className="h-3 rounded-full overflow-hidden bg-saas-bg border border-saas-border flex">
                       <div
-                        className="bg-[#DC2626] h-full"
+                        className="bg-[#B8912E] h-full"
                         style={{ width: `${Math.min(100, (stats.agencyShare / stats.totalPaid) * 100)}%` }}
                         title={T("Part agence", 'حصة الوكالة', lang)}
                       />
                       <div
-                        className="bg-[#DC2626]/25 h-full"
+                        className="bg-[#B8912E]/25 h-full"
                         style={{ width: `${Math.min(100, (stats.totalExpenses / stats.totalPaid) * 100)}%` }}
                         title={T('Dépenses', 'المصاريف', lang)}
                       />
                       <div className="bg-emerald-500 h-full flex-1" title={T('Propriétaire', 'المالك', lang)} />
                     </div>
                     <div className="flex flex-wrap gap-4 mt-3 text-[11px] font-bold text-saas-text-muted">
-                      <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-[#DC2626] inline-block" />{T('Agence', 'الوكالة', lang)}</span>
-                      <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-[#DC2626]/25 inline-block" />{T('Dépenses', 'المصاريف', lang)}</span>
+                      <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-[#B8912E] inline-block" />{T('Agence', 'الوكالة', lang)}</span>
+                      <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-[#B8912E]/25 inline-block" />{T('Dépenses', 'المصاريف', lang)}</span>
                       <span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />{T('Propriétaire', 'المالك', lang)}</span>
                     </div>
                   </div>
@@ -519,11 +519,11 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
             <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
               <div className="px-6 py-4 border-b border-saas-border flex items-center justify-between bg-saas-bg">
                 <h3 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                  <Calendar size={17} className="text-[#0284C7]" />
+                  <Calendar size={17} className="text-[#C8A13C]" />
                   {T('Locations', 'الإيجارات', lang)}
                   <span className="text-xs font-bold text-saas-text-muted">({reservations.length})</span>
                 </h3>
-                <span className="text-sm font-black text-[#0284C7]">+{fmtDA(stats.totalPaid)}</span>
+                <span className="text-sm font-black text-[#C8A13C]">+{fmtDA(stats.totalPaid)}</span>
               </div>
 
               {reservations.length === 0 ? (
@@ -547,7 +547,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                           <span className={`w-2 h-10 rounded-full shrink-0 ${
                             res.status === 'cancelled' ? 'bg-slate-300'
                               : res.status === 'completed' ? 'bg-emerald-500'
-                              : res.status === 'active' ? 'bg-[#0284C7]' : 'bg-[#DC2626]'
+                              : res.status === 'active' ? 'bg-[#C8A13C]' : 'bg-[#B8912E]'
                           }`} />
                           <div className="flex-1 min-w-0">
                             <p className="font-black text-saas-text-main truncate">
@@ -563,7 +563,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                             <p className="font-black text-emerald-600 flex items-center gap-1 justify-end">
                               <CheckCircle2 size={14} />{fmtDA(paid)}
                             </p>
-                            {debt > 0 && <p className="text-xs font-bold text-[#DC2626] mt-0.5">{T('Reste', 'المتبقي', lang)} {fmtDA(debt)}</p>}
+                            {debt > 0 && <p className="text-xs font-bold text-[#B8912E] mt-0.5">{T('Reste', 'المتبقي', lang)} {fmtDA(debt)}</p>}
                           </div>
                           <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-saas-text-muted shrink-0">
                             <ChevronDown size={18} />
@@ -582,9 +582,9 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                               <div className="px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 {[
                                   { l: T('Total', 'الإجمالي', lang), v: fmtDA(total), c: 'text-saas-text-main' },
-                                  { l: T('Avance', 'الدفعة الأولى', lang), v: fmtDA(Number(res.advancePayment) || 0), c: 'text-[#0284C7]' },
+                                  { l: T('Avance', 'الدفعة الأولى', lang), v: fmtDA(Number(res.advancePayment) || 0), c: 'text-[#C8A13C]' },
                                   { l: T('Payé', 'المدفوع', lang), v: fmtDA(paid), c: 'text-emerald-600' },
-                                  { l: T('Reste', 'المتبقي', lang), v: fmtDA(debt), c: debt > 0 ? 'text-[#DC2626]' : 'text-emerald-600' },
+                                  { l: T('Reste', 'المتبقي', lang), v: fmtDA(debt), c: debt > 0 ? 'text-[#B8912E]' : 'text-emerald-600' },
                                 ].map(cell => (
                                   <div key={cell.l} className="bg-white rounded-xl border border-saas-border p-3">
                                     <p className="text-[9px] font-black uppercase tracking-[0.15em] text-saas-text-muted">{cell.l}</p>
@@ -594,7 +594,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                               </div>
                               {stats.isThirdParty && maySeeAgencyShare && (
                                 <div className="px-6 pb-4 flex flex-wrap gap-3 text-xs">
-                                  <span className="px-3 py-1.5 rounded-lg bg-[#DC2626]/8 border border-[#DC2626]/20 font-bold text-[#DC2626]">
+                                  <span className="px-3 py-1.5 rounded-lg bg-[#B8912E]/8 border border-[#B8912E]/20 font-bold text-[#B8912E]">
                                     {T('Part agence', 'حصة الوكالة', lang)} : {fmtDA(stats.sharePerDay * (Number(res.totalDays) || 0))}
                                   </span>
                                   <span className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 font-bold text-emerald-700">
@@ -616,11 +616,11 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
             <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
               <div className="px-6 py-4 border-b border-saas-border flex items-center justify-between bg-saas-bg">
                 <h3 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                  <Receipt size={17} className="text-[#DC2626]" />
+                  <Receipt size={17} className="text-[#B8912E]" />
                   {T('Dépenses', 'المصاريف', lang)}
                   <span className="text-xs font-bold text-saas-text-muted">({expenses.length})</span>
                 </h3>
-                <span className="text-sm font-black text-[#DC2626]">−{fmtDA(stats.totalExpenses)}</span>
+                <span className="text-sm font-black text-[#B8912E]">−{fmtDA(stats.totalExpenses)}</span>
               </div>
 
               {expenses.length === 0 ? (
@@ -637,7 +637,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                           onClick={() => setExpandedExp(isOpen ? null : exp.id)}
                           className="w-full text-left px-6 py-4 hover:bg-saas-bg transition-colors flex items-center gap-4 cursor-pointer"
                         >
-                          <span className="w-2 h-10 rounded-full bg-[#DC2626] shrink-0" />
+                          <span className="w-2 h-10 rounded-full bg-[#B8912E] shrink-0" />
                           <div className="flex-1 min-w-0">
                             <p className="font-black text-saas-text-main truncate">
                               {exp.expenseName || (exp.type || '').toUpperCase()}
@@ -646,7 +646,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                               <Calendar size={12} />{fmtD(exp.date)}
                             </p>
                           </div>
-                          <p className="font-black text-[#DC2626] shrink-0">−{fmtDA(Number(exp.cost) || 0)}</p>
+                          <p className="font-black text-[#B8912E] shrink-0">−{fmtDA(Number(exp.cost) || 0)}</p>
                           <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-saas-text-muted shrink-0">
                             <ChevronDown size={18} />
                           </motion.span>
@@ -668,7 +668,7 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-saas-text-muted">{T('Montant', 'المبلغ', lang)}</span>
-                                  <span className="font-black text-[#DC2626]">{fmtDA(Number(exp.cost) || 0)}</span>
+                                  <span className="font-black text-[#B8912E]">{fmtDA(Number(exp.cost) || 0)}</span>
                                 </div>
                                 {exp.note && (
                                   <div className="flex justify-between gap-6">
@@ -697,17 +697,17 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
             <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
               <div className="px-6 py-4 border-b border-saas-border bg-saas-bg">
                 <h3 className="font-black uppercase tracking-tight text-saas-text-main flex items-center gap-2.5">
-                  <Wallet size={17} className="text-[#0F172A]" />
+                  <Wallet size={17} className="text-[#14130E]" />
                   {T('Résumé financier', 'الملخص المالي', lang)}
                 </h3>
               </div>
 
               <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-5">
                 {[
-                  { l: T('Facturé', 'المفوتر', lang), v: stats.totalInvoiced, c: 'text-[#0F172A]' },
-                  { l: T('Encaissé', 'المحصّل', lang), v: stats.totalPaid, c: 'text-[#0284C7]' },
+                  { l: T('Facturé', 'المفوتر', lang), v: stats.totalInvoiced, c: 'text-[#14130E]' },
+                  { l: T('Encaissé', 'المحصّل', lang), v: stats.totalPaid, c: 'text-[#C8A13C]' },
                   { l: T('Reste dû', 'المتبقي', lang), v: stats.totalRemaining, c: 'text-orange-600' },
-                  { l: T('Dépenses', 'المصاريف', lang), v: stats.totalExpenses, c: 'text-[#DC2626]' },
+                  { l: T('Dépenses', 'المصاريف', lang), v: stats.totalExpenses, c: 'text-[#B8912E]' },
                 ].map(item => (
                   <div key={item.l} className="text-center">
                     <p className="text-[9px] font-black uppercase tracking-[0.18em] text-saas-text-muted mb-2">{item.l}</p>

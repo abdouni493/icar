@@ -8,11 +8,19 @@
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", "DM Sans", sans-serif;
 
-  /* === PALETTE "iCar" — OR & NOIR ================================════════
-     Identité : or métallique #C8A13C sur noir profond #0A0A08.
-     Mode clair (défaut) : fond crème #FAF8F2, surfaces blanches, texte
-     quasi-noir, accents dorés. Mode sombre : noir chaud + or lumineux.
-     Les noms vel-* historiques sont conservés (échelle de profondeur). */
+  /* === PALETTE "iCar" — OR & NOIR (bichromie stricte) ═══════════════════
+     Deux teintes seulement : OR métallique + NOIR chaud (déclinés en crème
+     et charbon). Toute la palette Tailwind est ré-aliasée sur deux échelles :
+       • --g-*  : OR   → familles accent/positif/attention
+                  (blue, sky, cyan, indigo, violet, purple, fuchsia, pink,
+                   teal, emerald, green, lime, amber, yellow, orange)
+       • --k-*  : NOIR chaud / crème → familles neutres & danger
+                  (slate, gray, zinc, neutral, stone, red, rose)
+     Les échelles d'ancrage (--g-*, --k-*) vivent dans :root (toujours
+     émises) puis sont inversées sous .dark — un seul point de bascule.
+     Les jetons vel-* / saas-* historiques restent inchangés côté noms. */
+
+  /* ── Jetons applicatifs (clair) ─────────────────────────────────────── */
   --color-vel-void:        #FAF8F2;  /* fond de page (crème) */
   --color-vel-abyss:       #F3EEE1;  /* bandes / placeholders d'image */
   --color-vel-deep:        #E8E0CD;  /* creux plus profonds (bordure) */
@@ -21,24 +29,24 @@
 
   --color-vel-primary:     #14130E;  /* noir chaud (titres, nav) */
   --color-vel-primary-soft:#2A2820;  /* noir secondaire */
-  --color-vel-cta:         #B8912E;  /* or (boutons, accents) */
-  --color-vel-cta-dark:    #9A741A;  /* or — survol */
+  --color-vel-cta:         var(--g-600);  /* or (boutons, accents) */
+  --color-vel-cta-dark:    var(--g-700);  /* or — survol */
 
-  /* Accent secondaire = noir profond (ex bleu) */
+  /* Accent secondaire = noir profond */
   --color-vel-blue:        #26241C;
   --color-vel-blue-dark:   #14130E;
   --color-vel-blue-glow:   rgba(200, 161, 60, 0.10);
 
-  --color-vel-gold:        #B8912E;  /* or lisible sur fond clair */
-  --color-vel-gold-light:  #C8A13C;
-  --color-vel-gold-dark:   #8A6A16;
+  --color-vel-gold:        var(--g-600);
+  --color-vel-gold-light:  var(--g-500);
+  --color-vel-gold-dark:   var(--g-800);
   --color-vel-gold-glow:   rgba(200, 161, 60, 0.14);
 
-  --color-vel-red:         #DC2626;
-  --color-vel-red-dark:    #B91C1C;
-  --color-vel-red-glow:    rgba(220, 38, 38, 0.08);
+  /* Danger = noir chaud (aucune couleur hors or & noir) */
+  --color-vel-red:         var(--k-600);
+  --color-vel-red-dark:    var(--k-700);
+  --color-vel-red-glow:    rgba(20, 19, 14, 0.06);
 
-  /* Texte (ex vel-white/silver, renommés ink/slate) */
   --color-vel-ink:         #16150F;  /* texte principal */
   --color-vel-slate:       #3A362C;  /* texte secondaire */
   --color-vel-muted:       #6E6656;  /* texte atténué */
@@ -50,101 +58,86 @@
   --color-vel-border-strong: #D8CFB8;
   --color-vel-border-gold: rgba(200, 161, 60, 0.35);
 
-  /* ── Alias admin (saas-*) alignés sur l'identité or & noir ─────────────
-     primary   = or (actions principales : créer / modifier…)
-     secondary = noir profond (accents secondaires) */
-  --color-saas-primary-start:   #C8A13C;
-  --color-saas-primary-via:     #B8912E;
-  --color-saas-primary-end:     #9A741A;
+  /* ── Alias admin (saas-*) — or & noir ───────────────────────────────── */
+  --color-saas-primary-start:   var(--g-400);
+  --color-saas-primary-via:     var(--g-600);
+  --color-saas-primary-end:     var(--g-700);
   --color-saas-secondary-start: #2B2820;
   --color-saas-secondary-end:   #0D0C09;
-  --color-saas-warning-start:   #f59e0b;
-  --color-saas-warning-end:     #d97706;
-  --color-saas-success-start:   #10b981;
-  --color-saas-success-end:     #0d9488;
-  --color-saas-danger-start:    #DC2626;
-  --color-saas-danger-end:      #B91C1C;
+  --color-saas-warning-start:   var(--g-500);
+  --color-saas-warning-end:     var(--g-700);
+  --color-saas-success-start:   var(--g-400);
+  --color-saas-success-end:     var(--g-600);
+  --color-saas-danger-start:    #2B2820;   /* danger = noir profond */
+  --color-saas-danger-end:      #0C0B08;
   --color-saas-bg:              #FAF8F2;
   --color-saas-surface:         #FFFFFF;
   --color-saas-border:          #EAE3D2;
   --color-saas-text-main:       #16150F;
   --color-saas-text-muted:      #6E6656;
+
+  /* ── Ré-alias de TOUTE la palette Tailwind → or (--g-*) ─────────────── */
+  --color-blue-50:var(--g-50);--color-blue-100:var(--g-100);--color-blue-200:var(--g-200);--color-blue-300:var(--g-300);--color-blue-400:var(--g-400);--color-blue-500:var(--g-500);--color-blue-600:var(--g-600);--color-blue-700:var(--g-700);--color-blue-800:var(--g-800);--color-blue-900:var(--g-900);--color-blue-950:var(--g-950);
+  --color-sky-50:var(--g-50);--color-sky-100:var(--g-100);--color-sky-200:var(--g-200);--color-sky-300:var(--g-300);--color-sky-400:var(--g-400);--color-sky-500:var(--g-500);--color-sky-600:var(--g-600);--color-sky-700:var(--g-700);--color-sky-800:var(--g-800);--color-sky-900:var(--g-900);--color-sky-950:var(--g-950);
+  --color-cyan-50:var(--g-50);--color-cyan-100:var(--g-100);--color-cyan-200:var(--g-200);--color-cyan-300:var(--g-300);--color-cyan-400:var(--g-400);--color-cyan-500:var(--g-500);--color-cyan-600:var(--g-600);--color-cyan-700:var(--g-700);--color-cyan-800:var(--g-800);--color-cyan-900:var(--g-900);--color-cyan-950:var(--g-950);
+  --color-indigo-50:var(--g-50);--color-indigo-100:var(--g-100);--color-indigo-200:var(--g-200);--color-indigo-300:var(--g-300);--color-indigo-400:var(--g-400);--color-indigo-500:var(--g-500);--color-indigo-600:var(--g-600);--color-indigo-700:var(--g-700);--color-indigo-800:var(--g-800);--color-indigo-900:var(--g-900);--color-indigo-950:var(--g-950);
+  --color-violet-50:var(--g-50);--color-violet-100:var(--g-100);--color-violet-200:var(--g-200);--color-violet-300:var(--g-300);--color-violet-400:var(--g-400);--color-violet-500:var(--g-500);--color-violet-600:var(--g-600);--color-violet-700:var(--g-700);--color-violet-800:var(--g-800);--color-violet-900:var(--g-900);--color-violet-950:var(--g-950);
+  --color-purple-50:var(--g-50);--color-purple-100:var(--g-100);--color-purple-200:var(--g-200);--color-purple-300:var(--g-300);--color-purple-400:var(--g-400);--color-purple-500:var(--g-500);--color-purple-600:var(--g-600);--color-purple-700:var(--g-700);--color-purple-800:var(--g-800);--color-purple-900:var(--g-900);--color-purple-950:var(--g-950);
+  --color-fuchsia-50:var(--g-50);--color-fuchsia-100:var(--g-100);--color-fuchsia-200:var(--g-200);--color-fuchsia-300:var(--g-300);--color-fuchsia-400:var(--g-400);--color-fuchsia-500:var(--g-500);--color-fuchsia-600:var(--g-600);--color-fuchsia-700:var(--g-700);--color-fuchsia-800:var(--g-800);--color-fuchsia-900:var(--g-900);--color-fuchsia-950:var(--g-950);
+  --color-pink-50:var(--g-50);--color-pink-100:var(--g-100);--color-pink-200:var(--g-200);--color-pink-300:var(--g-300);--color-pink-400:var(--g-400);--color-pink-500:var(--g-500);--color-pink-600:var(--g-600);--color-pink-700:var(--g-700);--color-pink-800:var(--g-800);--color-pink-900:var(--g-900);--color-pink-950:var(--g-950);
+  --color-teal-50:var(--g-50);--color-teal-100:var(--g-100);--color-teal-200:var(--g-200);--color-teal-300:var(--g-300);--color-teal-400:var(--g-400);--color-teal-500:var(--g-500);--color-teal-600:var(--g-600);--color-teal-700:var(--g-700);--color-teal-800:var(--g-800);--color-teal-900:var(--g-900);--color-teal-950:var(--g-950);
+  --color-emerald-50:var(--g-50);--color-emerald-100:var(--g-100);--color-emerald-200:var(--g-200);--color-emerald-300:var(--g-300);--color-emerald-400:var(--g-400);--color-emerald-500:var(--g-500);--color-emerald-600:var(--g-600);--color-emerald-700:var(--g-700);--color-emerald-800:var(--g-800);--color-emerald-900:var(--g-900);--color-emerald-950:var(--g-950);
+  --color-green-50:var(--g-50);--color-green-100:var(--g-100);--color-green-200:var(--g-200);--color-green-300:var(--g-300);--color-green-400:var(--g-400);--color-green-500:var(--g-500);--color-green-600:var(--g-600);--color-green-700:var(--g-700);--color-green-800:var(--g-800);--color-green-900:var(--g-900);--color-green-950:var(--g-950);
+  --color-lime-50:var(--g-50);--color-lime-100:var(--g-100);--color-lime-200:var(--g-200);--color-lime-300:var(--g-300);--color-lime-400:var(--g-400);--color-lime-500:var(--g-500);--color-lime-600:var(--g-600);--color-lime-700:var(--g-700);--color-lime-800:var(--g-800);--color-lime-900:var(--g-900);--color-lime-950:var(--g-950);
+  --color-amber-50:var(--g-50);--color-amber-100:var(--g-100);--color-amber-200:var(--g-200);--color-amber-300:var(--g-300);--color-amber-400:var(--g-400);--color-amber-500:var(--g-500);--color-amber-600:var(--g-600);--color-amber-700:var(--g-700);--color-amber-800:var(--g-800);--color-amber-900:var(--g-900);--color-amber-950:var(--g-950);
+  --color-yellow-50:var(--g-50);--color-yellow-100:var(--g-100);--color-yellow-200:var(--g-200);--color-yellow-300:var(--g-300);--color-yellow-400:var(--g-400);--color-yellow-500:var(--g-500);--color-yellow-600:var(--g-600);--color-yellow-700:var(--g-700);--color-yellow-800:var(--g-800);--color-yellow-900:var(--g-900);--color-yellow-950:var(--g-950);
+  --color-orange-50:var(--g-50);--color-orange-100:var(--g-100);--color-orange-200:var(--g-200);--color-orange-300:var(--g-300);--color-orange-400:var(--g-400);--color-orange-500:var(--g-500);--color-orange-600:var(--g-600);--color-orange-700:var(--g-700);--color-orange-800:var(--g-800);--color-orange-900:var(--g-900);--color-orange-950:var(--g-950);
+
+  /* ── Neutres & danger → noir chaud (--k-*) ──────────────────────────── */
+  --color-slate-50:var(--k-50);--color-slate-100:var(--k-100);--color-slate-200:var(--k-200);--color-slate-300:var(--k-300);--color-slate-400:var(--k-400);--color-slate-500:var(--k-500);--color-slate-600:var(--k-600);--color-slate-700:var(--k-700);--color-slate-800:var(--k-800);--color-slate-900:var(--k-900);--color-slate-950:var(--k-950);
+  --color-gray-50:var(--k-50);--color-gray-100:var(--k-100);--color-gray-200:var(--k-200);--color-gray-300:var(--k-300);--color-gray-400:var(--k-400);--color-gray-500:var(--k-500);--color-gray-600:var(--k-600);--color-gray-700:var(--k-700);--color-gray-800:var(--k-800);--color-gray-900:var(--k-900);--color-gray-950:var(--k-950);
+  --color-zinc-50:var(--k-50);--color-zinc-100:var(--k-100);--color-zinc-200:var(--k-200);--color-zinc-300:var(--k-300);--color-zinc-400:var(--k-400);--color-zinc-500:var(--k-500);--color-zinc-600:var(--k-600);--color-zinc-700:var(--k-700);--color-zinc-800:var(--k-800);--color-zinc-900:var(--k-900);--color-zinc-950:var(--k-950);
+  --color-neutral-50:var(--k-50);--color-neutral-100:var(--k-100);--color-neutral-200:var(--k-200);--color-neutral-300:var(--k-300);--color-neutral-400:var(--k-400);--color-neutral-500:var(--k-500);--color-neutral-600:var(--k-600);--color-neutral-700:var(--k-700);--color-neutral-800:var(--k-800);--color-neutral-900:var(--k-900);--color-neutral-950:var(--k-950);
+  --color-stone-50:var(--k-50);--color-stone-100:var(--k-100);--color-stone-200:var(--k-200);--color-stone-300:var(--k-300);--color-stone-400:var(--k-400);--color-stone-500:var(--k-500);--color-stone-600:var(--k-600);--color-stone-700:var(--k-700);--color-stone-800:var(--k-800);--color-stone-900:var(--k-900);--color-stone-950:var(--k-950);
+  --color-red-50:var(--k-50);--color-red-100:var(--k-100);--color-red-200:var(--k-200);--color-red-300:var(--k-300);--color-red-400:var(--k-400);--color-red-500:var(--k-500);--color-red-600:var(--k-600);--color-red-700:var(--k-700);--color-red-800:var(--k-800);--color-red-900:var(--k-900);--color-red-950:var(--k-950);
+  --color-rose-50:var(--k-50);--color-rose-100:var(--k-100);--color-rose-200:var(--k-200);--color-rose-300:var(--k-300);--color-rose-400:var(--k-400);--color-rose-500:var(--k-500);--color-rose-600:var(--k-600);--color-rose-700:var(--k-700);--color-rose-800:var(--k-800);--color-rose-900:var(--k-900);--color-rose-950:var(--k-950);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   MODE SOMBRE
-   Les composants historiques utilisent massivement `bg-white`,
-   `text-slate-900`, `bg-blue-50`… Plutôt que de réécrire 50 000 lignes,
-   on redéfinit les variables de la palette Tailwind sous `.dark` : toutes
-   les utilitaires basculent d'un coup, et la sémantique (fond clair /
-   texte foncé) reste correcte en inversant les échelles neutres.
+   ÉCHELLES D'ANCRAGE  —  la seule source de vérité des couleurs.
+   OR (--g-*)  &  NOIR chaud / crème (--k-*).  Inversées sous .dark.
+   ══════════════════════════════════════════════════════════════════════ */
+:root {
+  /* OR — clair : 50 = crème dorée → 950 = or brûlé */
+  --g-50:#FBF7EA; --g-100:#F6ECCB; --g-200:#ECD9A0; --g-300:#E0C16D;
+  --g-400:#D2AB44; --g-500:#C8A13C; --g-600:#B8912E; --g-700:#94721B;
+  --g-800:#6C5413; --g-900:#49380E; --g-950:#2A2008;
+
+  /* NOIR chaud — clair : 50 = crème → 950 = charbon */
+  --k-50:#FAF8F2; --k-100:#F3EEE1; --k-200:#E8E0CD; --k-300:#D6CDB5;
+  --k-400:#A79C86; --k-500:#6E6656; --k-600:#4A4436; --k-700:#302C21;
+  --k-800:#1F1C14; --k-900:#14120C; --k-950:#0A0906;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MODE SOMBRE — on inverse les deux échelles d'ancrage : tout le reste
+   (palette Tailwind ré-aliasée + jetons vel/saas) bascule automatiquement.
    ══════════════════════════════════════════════════════════════════════ */
 .dark {
   color-scheme: dark;
 
-  /* Neutres inversés — noir chaud (or & noir) ------------------------ */
-  --color-white:      #0F0E0A;
-  --color-slate-50:   #17150E;
-  --color-slate-100:  #1E1B13;
-  --color-slate-200:  #2C2920;
-  --color-slate-300:  #45412F;
-  --color-slate-400:  #6E6656;
-  --color-slate-500:  #948A73;
-  --color-slate-600:  #C6BDA6;
-  --color-slate-700:  #E4DCC8;
-  --color-slate-800:  #F1EBDC;
-  --color-slate-900:  #F8F4E9;
-  --color-slate-950:  #FFFFFF;
+  /* OR — sombre : 50 = or profond (fonds) → 950 = or clair (textes) */
+  --g-50:#241B08; --g-100:#2E2410; --g-200:#4A3A12; --g-300:#6E5518;
+  --g-400:#93741F; --g-500:#C8A13C; --g-600:#D4AF37; --g-700:#E4C878;
+  --g-800:#EED9A0; --g-900:#F5EBCD; --g-950:#FBF7EA;
 
-  --color-gray-50:   #172033;
-  --color-gray-100:  #1E293B;
-  --color-gray-200:  #334155;
-  --color-gray-300:  #475569;
-  --color-gray-400:  #64748B;
-  --color-gray-500:  #94A3B8;
-  --color-gray-600:  #CBD5E1;
-  --color-gray-700:  #E2E8F0;
-  --color-gray-800:  #F1F5F9;
-  --color-gray-900:  #F8FAFC;
+  /* NOIR chaud — sombre : 50 = charbon (fonds) → 950 = crème (textes) */
+  --k-50:#17150E; --k-100:#1E1B13; --k-200:#2C2920; --k-300:#45412F;
+  --k-400:#6E6656; --k-500:#948A73; --k-600:#C6BDA6; --k-700:#E4DCC8;
+  --k-800:#F1EBDC; --k-900:#F8F4E9; --k-950:#FFFFFF;
 
-  --color-zinc-50:   #172033;
-  --color-zinc-100:  #1E293B;
-  --color-zinc-200:  #334155;
-  --color-zinc-800:  #F1F5F9;
-  --color-zinc-900:  #F8FAFC;
-
-  /* Teintes colorées : les nuances 50/100 deviennent des fonds sombres,
-     les nuances 700/800/900 deviennent du texte clair lisible. */
-  --color-red-50:    #2A1416;  --color-red-100:    #3B191C;  --color-red-200: #7F1D1D;
-  --color-red-700:   #FCA5A5;  --color-red-800:    #FECACA;  --color-red-900: #FEE2E2;
-  --color-blue-50:   #0F1E33;  --color-blue-100:   #14263F;  --color-blue-200: #1E3A5F;
-  --color-blue-700:  #93C5FD;  --color-blue-800:   #BFDBFE;  --color-blue-900: #DBEAFE;
-  --color-sky-50:    #0C1E2C;  --color-sky-100:    #102636;  --color-sky-200: #17405C;
-  --color-sky-700:   #7DD3FC;  --color-sky-800:    #BAE6FD;  --color-sky-900: #E0F2FE;
-  --color-cyan-50:   #0B1F26;  --color-cyan-100:   #0F2A33;  --color-cyan-200: #155E75;
-  --color-cyan-700:  #67E8F9;  --color-cyan-800:   #A5F3FC;  --color-cyan-900: #CFFAFE;
-  --color-green-50:  #0D2018;  --color-green-100:  #12291F;  --color-green-200: #14532D;
-  --color-green-700: #86EFAC;  --color-green-800:  #BBF7D0;  --color-green-900: #DCFCE7;
-  --color-emerald-50:#0C201A;  --color-emerald-100:#112A22;  --color-emerald-200: #065F46;
-  --color-emerald-700:#6EE7B7; --color-emerald-800:#A7F3D0;  --color-emerald-900: #D1FAE5;
-  --color-teal-50:   #0C2020;  --color-teal-100:   #112A2A;  --color-teal-200: #115E59;
-  --color-teal-700:  #5EEAD4;  --color-teal-800:   #99F6E4;  --color-teal-900: #CCFBF1;
-  --color-amber-50:  #241B0B;  --color-amber-100:  #2E220E;  --color-amber-200: #78350F;
-  --color-amber-700: #FCD34D;  --color-amber-800:  #FDE68A;  --color-amber-900: #FEF3C7;
-  --color-yellow-50: #241F0B;  --color-yellow-100: #2E270E;  --color-yellow-200: #713F12;
-  --color-yellow-700:#FDE047;  --color-yellow-800: #FEF08A;  --color-yellow-900: #FEF9C3;
-  --color-orange-50: #26170D;  --color-orange-100: #301C10;  --color-orange-200: #7C2D12;
-  --color-orange-700:#FDBA74;  --color-orange-800: #FED7AA;  --color-orange-900: #FFEDD5;
-  --color-purple-50: #1D1230;  --color-purple-100: #26173D;  --color-purple-200: #581C87;
-  --color-purple-700:#D8B4FE;  --color-purple-800: #E9D5FF;  --color-purple-900: #F3E8FF;
-  --color-violet-50: #1B1436;  --color-violet-100: #221942;  --color-violet-200: #4C1D95;
-  --color-violet-700:#C4B5FD;  --color-violet-800: #DDD6FE;  --color-violet-900: #EDE9FE;
-  --color-indigo-50: #141a35;  --color-indigo-100: #1A2143;  --color-indigo-200: #312E81;
-  --color-indigo-700:#A5B4FC;  --color-indigo-800: #C7D2FE;  --color-indigo-900: #E0E7FF;
-  --color-pink-50:   #2A1120;  --color-pink-100:   #351628;  --color-pink-200: #831843;
-  --color-pink-700:  #F9A8D4;  --color-pink-800:   #FBCFE8;  --color-pink-900: #FCE7F3;
-  --color-rose-50:   #2A121A;  --color-rose-100:   #351720;  --color-rose-200: #881337;
-  --color-rose-700:  #FDA4AF;  --color-rose-800:   #FECDD3;  --color-rose-900: #FFE4E6;
+  /* bg-white / text-black basculent avec la surface sombre */
+  --color-white: #0F0E0A;
 
   /* Jetons applicatifs — noir profond + or --------------------------- */
   --color-vel-void:     #0A0A08;
@@ -153,6 +146,7 @@
   --color-vel-surface:  #121109;
   --color-vel-elevated: #17150D;
   --color-vel-primary:  #F5F0E1;
+  --color-vel-primary-soft:#D2CAB5;
   --color-vel-ink:      #F5F0E1;
   --color-vel-slate:    #D2CAB5;
   --color-vel-muted:    #9C947E;
@@ -160,19 +154,30 @@
   --color-vel-glass:    #121109;
   --color-vel-border:   #272319;
   --color-vel-border-strong: #37311F;
-  --color-vel-cta:         #C8A13C;
-  --color-vel-cta-dark:    #E4C878;
-  --color-vel-gold:        #C8A13C;
-  --color-vel-gold-light:  #E4C878;
+  --color-vel-blue:     #17150D;
+  --color-vel-blue-dark:#0A0A08;
+  --color-vel-cta:         var(--g-500);
+  --color-vel-cta-dark:    var(--g-700);
+  --color-vel-gold:        var(--g-500);
+  --color-vel-gold-light:  var(--g-700);
+  --color-vel-gold-dark:   var(--g-400);
 
   --color-saas-bg:         #0A0A08;
   --color-saas-surface:    #121109;
   --color-saas-border:     #272319;
   --color-saas-text-main:  #F5F0E1;
   --color-saas-text-muted: #9C947E;
-  --color-saas-primary-start: #D4AF37;
-  --color-saas-primary-via:   #C8A13C;
-  --color-saas-primary-end:   #A9821F;
+  --color-saas-primary-start: var(--g-600);
+  --color-saas-primary-via:   var(--g-500);
+  --color-saas-primary-end:   var(--g-400);
+  --color-saas-warning-start: var(--g-600);
+  --color-saas-warning-end:   var(--g-400);
+  --color-saas-success-start: var(--g-600);
+  --color-saas-success-end:   var(--g-400);
+  --color-saas-secondary-start:#1E1B13;
+  --color-saas-secondary-end:  #0A0A08;
+  --color-saas-danger-start:   #1E1B13;
+  --color-saas-danger-end:     #0A0A08;
 }
 
 /* ── Global ── */
@@ -308,17 +313,23 @@ body {
   transform: translateY(-2px);
 }
 
-/* ── Bouton rouge (conservé pour les actions destructrices) ── */
+/* ── Bouton destructeur (noir profond + or, secousse au survol) ──
+   La bichromie or & noir ne laisse pas de rouge : l'action destructrice
+   se signale par le fond noir, le liseré doré et la micro-secousse. */
 .btn-vel-red {
   @apply relative overflow-hidden font-display font-bold tracking-wider
-         text-white px-8 py-4 rounded-xl transition-all duration-200
+         px-8 py-4 rounded-xl transition-all duration-200
          active:scale-95 flex items-center justify-center gap-2 cursor-pointer;
-  background: linear-gradient(135deg, #DC2626, #B91C1C);
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+  color: #EBD08A;
+  background: linear-gradient(135deg, #201C12, #0A0A08);
+  border: 1px solid rgba(200, 161, 60, 0.5);
+  box-shadow: 0 4px 14px rgba(10, 10, 8, 0.30);
 }
 .btn-vel-red:hover {
-  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.32);
+  box-shadow: 0 8px 24px rgba(200, 161, 60, 0.28);
+  border-color: rgba(200, 161, 60, 0.95);
   transform: translateY(-2px);
+  animation: shake 0.2s ease-in-out infinite;
 }
 
 /* ── Bouton fantôme ── */
@@ -339,7 +350,7 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-vel-abyss); }
 ::-webkit-scrollbar-thumb { background: var(--color-vel-border-strong); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-vel-cta); }
 
 /* ── RTL Support ── */
 [dir="rtl"] { font-family: 'Noto Sans Arabic', sans-serif; }
@@ -371,21 +382,25 @@ body {
   }
   .btn-saas-warning {
     @apply relative overflow-hidden rounded-xl px-6 py-3 font-semibold transition-all duration-300
-           text-white shadow-md active:scale-95 flex items-center justify-center gap-2
+           shadow-md active:scale-95 flex items-center justify-center gap-2
            hover:shadow-xl hover:scale-[1.03] hover:-translate-y-0.5
            bg-linear-to-r from-saas-warning-start to-saas-warning-end;
+    color: #14130E;
   }
   .btn-saas-success {
     @apply relative overflow-hidden rounded-xl px-6 py-3 font-semibold transition-all duration-300
-           text-white shadow-md active:scale-95 flex items-center justify-center gap-2
+           shadow-md active:scale-95 flex items-center justify-center gap-2
            hover:shadow-xl hover:scale-[1.03] hover:-translate-y-0.5
            bg-linear-to-r from-saas-success-start to-saas-success-end;
+    color: #14130E;
   }
   .btn-saas-danger {
     @apply relative overflow-hidden rounded-xl px-6 py-3 font-semibold transition-all duration-300
-           text-white shadow-md active:scale-95 flex items-center justify-center gap-2
+           shadow-md active:scale-95 flex items-center justify-center gap-2
            hover:shadow-xl hover:scale-[1.03] hover:-translate-y-0.5
            bg-linear-to-r from-saas-danger-start to-saas-danger-end;
+    color: #EBD08A;
+    border: 1px solid rgba(200, 161, 60, 0.45);
   }
   .btn-saas-danger:hover { animation: shake 0.2s ease-in-out infinite; }
   .btn-saas-outline {
@@ -394,11 +409,12 @@ body {
            hover:border-saas-primary-via hover:text-saas-primary-via hover:bg-saas-bg active:scale-95;
   }
   .glass-card {
-    @apply bg-white border border-saas-border rounded-2xl shadow-sm hover:shadow-md transition-shadow;
+    @apply bg-white border border-saas-border rounded-2xl shadow-sm transition-all duration-300
+           hover:shadow-md hover:border-saas-primary-via/40;
   }
   .input-saas {
     @apply w-full bg-white border border-saas-border rounded-xl px-4 py-2.5 outline-none
-           focus:ring-2 focus:ring-saas-primary-via/10 focus:border-saas-primary-via transition-all duration-200
+           focus:ring-4 focus:ring-saas-primary-via/12 focus:border-saas-primary-via transition-all duration-200
            text-saas-text-main font-medium placeholder:text-saas-text-muted;
   }
   .label-saas {
@@ -447,8 +463,119 @@ body {
 .anim-stagger > *:nth-child(n+11) { animation-delay: 0.42s }
 
 /* Élévation douce au survol, utilisée par les cartes cliquables */
-.hover-lift { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease; }
-.hover-lift:hover { transform: translateY(-4px); box-shadow: 0 18px 38px -18px rgba(15, 23, 42, 0.35); }
+.hover-lift { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease; }
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 48px -20px rgba(120, 90, 20, 0.45), 0 0 0 1px var(--color-vel-border-gold);
+}
+.dark .hover-lift:hover {
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(200, 161, 60, 0.35);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   EFFETS PREMIUM OR & NOIR
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Balayage lumineux (sheen) qui traverse les boutons dorés au survol. */
+.btn-saas-primary, .btn-saas-secondary, .btn-vel-cta, .btn-vel-blue,
+.btn-vel-gold, .btn-vel-red, .btn-saas-danger {
+  position: relative;
+}
+.btn-saas-primary::after, .btn-saas-secondary::after, .btn-vel-cta::after,
+.btn-vel-blue::after, .btn-vel-gold::after, .btn-vel-red::after,
+.btn-saas-danger::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 240, 200, 0.55), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.btn-saas-primary:hover::after, .btn-saas-secondary:hover::after,
+.btn-vel-cta:hover::after, .btn-vel-blue:hover::after,
+.btn-vel-gold:hover::after, .btn-vel-red:hover::after,
+.btn-saas-danger:hover::after { left: 130%; }
+
+/* Texte doré en dégradé, avec option d'animation « métal liquide ». */
+.gold-text {
+  background: linear-gradient(92deg, #B8912E 0%, #E4C878 25%, #F5E1A6 50%, #E4C878 75%, #B8912E 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.gold-text-anim { animation: vel-gold-pan 5s linear infinite; }
+
+/* Liseré / soulignement doré animé. */
+.gold-divider {
+  height: 2px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--color-vel-cta), transparent);
+  background-size: 200% 100%;
+  animation: vel-gold-pan 4s linear infinite;
+}
+
+/* Halo doré pulsé (badges, points d'alerte, focus). */
+.gold-glow { animation: vel-gold-glow 2.6s ease-in-out infinite; }
+
+/* Flottement continu (icônes héro, illustrations). */
+.float-slow { animation: vel-float 6s ease-in-out infinite; }
+
+@keyframes vel-gold-pan  { 0% { background-position: 0% 50% } 100% { background-position: 200% 50% } }
+@keyframes vel-gold-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 161, 60, 0.0), 0 0 12px 0 rgba(200, 161, 60, 0.25); }
+  50%      { box-shadow: 0 0 0 4px rgba(200, 161, 60, 0.12), 0 0 22px 4px rgba(200, 161, 60, 0.45); }
+}
+@keyframes vel-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes vel-gradient-pan { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-text-anim, .gold-divider, .gold-glow, .float-slow { animation: none !important; }
+  .btn-saas-primary::after, .btn-saas-secondary::after, .btn-vel-cta::after,
+  .btn-vel-blue::after, .btn-vel-gold::after, .btn-vel-red::after,
+  .btn-saas-danger::after { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FINITIONS GLOBALES — sélection, focus, liseré supérieur des cartes.
+   S'appliquent partout sans toucher aux composants.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Sélection de texte dorée. */
+::selection { background: rgba(200, 161, 60, 0.28); color: inherit; }
+
+/* Anneau de focus doré, cohérent sur toute l'application. */
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-vel-cta);
+  outline-offset: 2px;
+  border-radius: 0.35rem;
+}
+
+/* Liseré doré qui se révèle en haut des cartes au survol. */
+.glass-card, .vel-glass { position: relative; }
+.glass-card::before, .vel-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(90deg, transparent, var(--color-vel-cta), transparent);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.glass-card:hover::before, .vel-glass:hover::before { opacity: 0.9; }
+
+/* Champs : léger halo doré au focus (en complément de l'anneau Tailwind). */
+.input-saas:focus { box-shadow: 0 0 0 4px rgba(200, 161, 60, 0.12); }
 
 /* Placeholder de chargement */
 .vel-skeleton {
