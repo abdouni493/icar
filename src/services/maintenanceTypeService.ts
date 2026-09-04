@@ -80,16 +80,16 @@ export interface TypePalette {
 }
 
 export const TYPE_PALETTES: Record<MaintenanceColor, TypePalette> = {
-  red:    { bg:'bg-red-50',    bgSoft:'bg-red-100/60',    border:'border-red-200',    text:'text-red-700',    textSoft:'text-red-600',    ring:'ring-red-500/30',    dot:'bg-red-500',    gradient:'from-red-500 to-red-600',       swatch:'#DC2626' },
-  blue:   { bg:'bg-blue-50',   bgSoft:'bg-blue-100/60',   border:'border-blue-200',   text:'text-blue-700',   textSoft:'text-blue-600',   ring:'ring-blue-500/30',   dot:'bg-blue-500',   gradient:'from-sky-500 to-sky-600',       swatch:'#0284C7' },
-  amber:  { bg:'bg-amber-50',  bgSoft:'bg-amber-100/60',  border:'border-amber-200',  text:'text-amber-700',  textSoft:'text-amber-600',  ring:'ring-amber-500/30',  dot:'bg-amber-500',  gradient:'from-amber-500 to-orange-500',  swatch:'#D97706' },
-  green:  { bg:'bg-green-50',  bgSoft:'bg-green-100/60',  border:'border-green-200',  text:'text-green-700',  textSoft:'text-green-600',  ring:'ring-green-500/30',  dot:'bg-green-500',  gradient:'from-emerald-500 to-green-600', swatch:'#10B981' },
-  purple: { bg:'bg-purple-50', bgSoft:'bg-purple-100/60', border:'border-purple-200', text:'text-purple-700', textSoft:'text-purple-600', ring:'ring-purple-500/30', dot:'bg-purple-500', gradient:'from-purple-500 to-violet-600', swatch:'#9333EA' },
-  teal:   { bg:'bg-teal-50',   bgSoft:'bg-teal-100/60',   border:'border-teal-200',   text:'text-teal-700',   textSoft:'text-teal-600',   ring:'ring-teal-500/30',   dot:'bg-teal-500',   gradient:'from-teal-500 to-cyan-600',     swatch:'#0D9488' },
-  orange: { bg:'bg-orange-50', bgSoft:'bg-orange-100/60', border:'border-orange-200', text:'text-orange-700', textSoft:'text-orange-600', ring:'ring-orange-500/30', dot:'bg-orange-500', gradient:'from-orange-500 to-red-500',    swatch:'#EA580C' },
-  indigo: { bg:'bg-indigo-50', bgSoft:'bg-indigo-100/60', border:'border-indigo-200', text:'text-indigo-700', textSoft:'text-indigo-600', ring:'ring-indigo-500/30', dot:'bg-indigo-500', gradient:'from-indigo-500 to-blue-600',   swatch:'#4F46E5' },
-  pink:   { bg:'bg-pink-50',   bgSoft:'bg-pink-100/60',   border:'border-pink-200',   text:'text-pink-700',   textSoft:'text-pink-600',   ring:'ring-pink-500/30',   dot:'bg-pink-500',   gradient:'from-pink-500 to-rose-600',     swatch:'#DB2777' },
-  slate:  { bg:'bg-slate-50',  bgSoft:'bg-slate-100/60',  border:'border-slate-200',  text:'text-slate-700',  textSoft:'text-slate-600',  ring:'ring-slate-500/30',  dot:'bg-slate-500',  gradient:'from-slate-500 to-slate-700',   swatch:'#475569' },
+  red:    { bg:'bg-red-50',    bgSoft:'bg-red-100/60',    border:'border-red-200',    text:'text-red-700',    textSoft:'text-red-600',    ring:'ring-red-500/30',    dot:'bg-red-500',    gradient:'from-red-500 to-red-600',       swatch:'#B8912E' },
+  blue:   { bg:'bg-blue-50',   bgSoft:'bg-blue-100/60',   border:'border-blue-200',   text:'text-blue-700',   textSoft:'text-blue-600',   ring:'ring-blue-500/30',   dot:'bg-blue-500',   gradient:'from-sky-500 to-sky-600',       swatch:'#C8A13C' },
+  amber:  { bg:'bg-amber-50',  bgSoft:'bg-amber-100/60',  border:'border-amber-200',  text:'text-amber-700',  textSoft:'text-amber-600',  ring:'ring-amber-500/30',  dot:'bg-amber-500',  gradient:'from-amber-500 to-orange-500',  swatch:'#D4AF37' },
+  green:  { bg:'bg-green-50',  bgSoft:'bg-green-100/60',  border:'border-green-200',  text:'text-green-700',  textSoft:'text-green-600',  ring:'ring-green-500/30',  dot:'bg-green-500',  gradient:'from-emerald-500 to-green-600', swatch:'#E0C16D' },
+  purple: { bg:'bg-purple-50', bgSoft:'bg-purple-100/60', border:'border-purple-200', text:'text-purple-700', textSoft:'text-purple-600', ring:'ring-purple-500/30', dot:'bg-purple-500', gradient:'from-purple-500 to-violet-600', swatch:'#94721B' },
+  teal:   { bg:'bg-teal-50',   bgSoft:'bg-teal-100/60',   border:'border-teal-200',   text:'text-teal-700',   textSoft:'text-teal-600',   ring:'ring-teal-500/30',   dot:'bg-teal-500',   gradient:'from-teal-500 to-cyan-600',     swatch:'#E4C878' },
+  orange: { bg:'bg-orange-50', bgSoft:'bg-orange-100/60', border:'border-orange-200', text:'text-orange-700', textSoft:'text-orange-600', ring:'ring-orange-500/30', dot:'bg-orange-500', gradient:'from-orange-500 to-red-500',    swatch:'#6C5413' },
+  indigo: { bg:'bg-indigo-50', bgSoft:'bg-indigo-100/60', border:'border-indigo-200', text:'text-indigo-700', textSoft:'text-indigo-600', ring:'ring-indigo-500/30', dot:'bg-indigo-500', gradient:'from-indigo-500 to-blue-600',   swatch:'#2A2820' },
+  pink:   { bg:'bg-pink-50',   bgSoft:'bg-pink-100/60',   border:'border-pink-200',   text:'text-pink-700',   textSoft:'text-pink-600',   ring:'ring-pink-500/30',   dot:'bg-pink-500',   gradient:'from-pink-500 to-rose-600',     swatch:'#A79C86' },
+  slate:  { bg:'bg-slate-50',  bgSoft:'bg-slate-100/60',  border:'border-slate-200',  text:'text-slate-700',  textSoft:'text-slate-600',  ring:'ring-slate-500/30',  dot:'bg-slate-500',  gradient:'from-slate-500 to-slate-700',   swatch:'#4A4436' },
 };
 
 export const MAINTENANCE_COLORS = Object.keys(TYPE_PALETTES) as MaintenanceColor[];
