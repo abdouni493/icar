@@ -57,16 +57,22 @@ CREATE TABLE IF NOT EXISTS public.worker_roles (
 
 -- Clients société (facturation / contrats entreprise)
 CREATE TABLE IF NOT EXISTS public.entreprises (
-  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name       text NOT NULL,
-  rc         text,
-  art        text,
-  nis        text,
-  nif        text,
-  address    text,
-  phone      text,
-  email      text,
-  created_at timestamptz DEFAULT now()
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name            text NOT NULL,
+  rc              text,
+  art             text,
+  nis             text,
+  nif             text,
+  address         text,
+  phone           text,
+  email           text,
+  fax             text,
+  city            text,
+  bp              text,   -- Boîte postale
+  forme_juridique text,   -- SARL / SPA / EURL / …
+  activite        text,   -- Activité commerciale
+  capital         text,   -- Capital social
+  created_at      timestamptz DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS entreprises_name_idx ON public.entreprises (lower(name));
 
@@ -89,6 +95,7 @@ CREATE TABLE IF NOT EXISTS public.cars (
   deposit             numeric,
   image_url           text,
   mileage             integer DEFAULT 0,
+  fuel_level          text DEFAULT 'full' CHECK (fuel_level IN ('full', 'half', 'quarter', 'eighth', 'empty')),
   -- Seul 'maintenance' est saisi manuellement ; les autres statuts sont dérivés.
   status              text DEFAULT 'disponible',
   is_hidden_from_site boolean NOT NULL DEFAULT false,
@@ -332,6 +339,18 @@ CREATE TABLE IF NOT EXISTS public.website_settings (
   address            text,
   phone              text,
   landing_background text,
+  -- Identité fiscale / commerciale du FOURNISSEUR (mentions obligatoires facture)
+  email              text,
+  fax                text,
+  city               text,
+  rc                 text,   -- Registre de commerce
+  nif                text,   -- N° d'identification fiscale
+  nis                text,   -- N° d'identification statistique
+  art                text,   -- Article d'imposition (AI)
+  forme_juridique    text,   -- SARL / SPA / EURL / …
+  activite           text,   -- Activité commerciale
+  capital            text,   -- Capital social
+  bank_name          text,   -- Nom de la banque (RIB)
   updated_at         timestamptz DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS public.website_contacts (

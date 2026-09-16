@@ -353,7 +353,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             priceWeek: Math.round(Number(dbCar.price_week || dbCar.price_per_day * 2)),
             priceMonth: Math.round(Number(dbCar.price_month || dbCar.price_per_day * 4)),
             deposit: Math.round(Number(dbCar.deposit || dbCar.price_per_day * 2)),
-            images: dbCar.image_url ? [dbCar.image_url] : ['https://picsum.photos/seed/car/400/300'],
+            images: dbCar.image_url ? [dbCar.image_url] : [],
             mileage: dbCar.mileage || 0,
           })));
         }

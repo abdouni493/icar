@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Building2, Plus, Search, Pencil, Trash2, History, X, Loader2,
   FileText, Landmark, Hash, ReceiptText, Phone, Mail, MapPin, AlertTriangle,
+  Printer, Briefcase, Coins, Inbox, MapPinned,
 } from 'lucide-react';
 import { Language, Entreprise } from '../types';
 import { DatabaseService } from '../services/DatabaseService';
@@ -27,22 +28,51 @@ export const EntrepriseModal: React.FC<{
     art: entreprise?.art || '',
     nis: entreprise?.nis || '',
     nif: entreprise?.nif || '',
+    formeJuridique: entreprise?.formeJuridique || '',
+    activite: entreprise?.activite || '',
+    capital: entreprise?.capital || '',
     address: entreprise?.address || '',
+    city: entreprise?.city || '',
+    bp: entreprise?.bp || '',
     phone: entreprise?.phone || '',
+    fax: entreprise?.fax || '',
     email: entreprise?.email || '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fields: { key: keyof typeof form; icon: React.ReactNode; label: string; placeholder: string }[] = [
-    { key: 'name', icon: <Building2 className="w-4 h-4" />, label: lang === 'fr' ? "Nom de l'entreprise" : 'اسم الشركة', placeholder: lang === 'fr' ? "Nom de l'entreprise" : 'اسم الشركة' },
-    { key: 'rc', icon: <FileText className="w-4 h-4" />, label: 'RC', placeholder: 'Ex: 12/00-0000000B19' },
-    { key: 'art', icon: <Landmark className="w-4 h-4" />, label: 'ART', placeholder: 'Ex: 000000000' },
-    { key: 'nis', icon: <Hash className="w-4 h-4" />, label: 'NIS', placeholder: 'Ex: 000000000000000' },
-    { key: 'nif', icon: <ReceiptText className="w-4 h-4" />, label: 'NIF', placeholder: 'Ex: 000000000000000' },
-    { key: 'address', icon: <MapPin className="w-4 h-4" />, label: lang === 'fr' ? 'Adresse' : 'العنوان', placeholder: lang === 'fr' ? 'Adresse complète' : 'العنوان الكامل' },
-    { key: 'phone', icon: <Phone className="w-4 h-4" />, label: lang === 'fr' ? 'Téléphone' : 'الهاتف', placeholder: '+213 …' },
-    { key: 'email', icon: <Mail className="w-4 h-4" />, label: 'Email', placeholder: 'contact@entreprise.dz' },
+  type FieldDef = { key: keyof typeof form; icon: React.ReactNode; label: string; placeholder: string; full?: boolean };
+  // Regroupé par section pour un formulaire lisible et complet (mentions Décret 05-468).
+  const sections: { title: string; fields: FieldDef[] }[] = [
+    {
+      title: lang === 'fr' ? 'Identité' : 'الهوية',
+      fields: [
+        { key: 'name', icon: <Building2 className="w-4 h-4" />, label: lang === 'fr' ? "Raison sociale / Nom" : 'اسم الشركة', placeholder: lang === 'fr' ? "Nom de l'entreprise" : 'اسم الشركة', full: true },
+        { key: 'formeJuridique', icon: <Briefcase className="w-4 h-4" />, label: lang === 'fr' ? 'Forme juridique' : 'الشكل القانوني', placeholder: 'SARL, SPA, EURL…' },
+        { key: 'activite', icon: <FileText className="w-4 h-4" />, label: lang === 'fr' ? 'Activité commerciale' : 'النشاط التجاري', placeholder: lang === 'fr' ? 'Ex: Marketing, BTP…' : 'مثال: تسويق' },
+        { key: 'capital', icon: <Coins className="w-4 h-4" />, label: lang === 'fr' ? 'Capital social' : 'رأس المال', placeholder: 'Ex: 1 000 000 DA' },
+      ],
+    },
+    {
+      title: lang === 'fr' ? 'Identifiants légaux' : 'المعرّفات القانونية',
+      fields: [
+        { key: 'rc', icon: <FileText className="w-4 h-4" />, label: 'RC', placeholder: 'Ex: 12/00-0000000B19' },
+        { key: 'art', icon: <Landmark className="w-4 h-4" />, label: 'ART / AI', placeholder: 'Ex: 000000000' },
+        { key: 'nis', icon: <Hash className="w-4 h-4" />, label: 'NIS', placeholder: 'Ex: 000000000000000' },
+        { key: 'nif', icon: <ReceiptText className="w-4 h-4" />, label: 'NIF', placeholder: 'Ex: 000000000000000' },
+      ],
+    },
+    {
+      title: lang === 'fr' ? 'Coordonnées' : 'معلومات الاتصال',
+      fields: [
+        { key: 'address', icon: <MapPin className="w-4 h-4" />, label: lang === 'fr' ? 'Adresse du siège' : 'عنوان المقر', placeholder: lang === 'fr' ? 'Adresse complète' : 'العنوان الكامل', full: true },
+        { key: 'city', icon: <MapPinned className="w-4 h-4" />, label: lang === 'fr' ? 'Ville / Wilaya' : 'المدينة / الولاية', placeholder: 'Ex: Alger' },
+        { key: 'bp', icon: <Inbox className="w-4 h-4" />, label: lang === 'fr' ? 'Boîte postale (BP)' : 'صندوق البريد', placeholder: 'Ex: 2000130464' },
+        { key: 'phone', icon: <Phone className="w-4 h-4" />, label: lang === 'fr' ? 'Téléphone' : 'الهاتف', placeholder: '+213 …' },
+        { key: 'fax', icon: <Printer className="w-4 h-4" />, label: 'Fax', placeholder: '+213 …' },
+        { key: 'email', icon: <Mail className="w-4 h-4" />, label: 'Email', placeholder: 'contact@entreprise.dz', full: true },
+      ],
+    },
   ];
 
   const save = async () => {
@@ -102,24 +132,31 @@ export const EntrepriseModal: React.FC<{
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-saas-bg">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {fields.map(f => (
-              <div key={f.key} className={f.key === 'name' || f.key === 'address' ? 'md:col-span-2' : ''}>
-                <label className="flex items-center gap-2 text-xs font-bold text-saas-text-muted uppercase tracking-wider mb-2">
-                  <span className="text-saas-primary-via">{f.icon}</span>
-                  {f.label}
-                  {f.key === 'name' && <span className="text-saas-primary-via">*</span>}
-                </label>
-                <input
-                  value={form[f.key]}
-                  onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
-                  placeholder={f.placeholder}
-                  className="input-saas"
-                />
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-saas-bg space-y-8">
+          {sections.map(section => (
+            <div key={section.title}>
+              <h4 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#B8912E] mb-4 pb-2 border-b border-saas-border">
+                {section.title}
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {section.fields.map(f => (
+                  <div key={f.key} className={f.full ? 'md:col-span-2' : ''}>
+                    <label className="flex items-center gap-2 text-xs font-bold text-saas-text-muted uppercase tracking-wider mb-2">
+                      <span className="text-saas-primary-via">{f.icon}</span>
+                      {f.label}
+                      {f.key === 'name' && <span className="text-saas-primary-via">*</span>}
+                    </label>
+                    <input
+                      value={form[f.key]}
+                      onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                      placeholder={f.placeholder}
+                      className="input-saas"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
 
           {error && (
             <motion.div

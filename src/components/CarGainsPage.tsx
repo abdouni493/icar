@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Calendar, TrendingUp, TrendingDown, Wallet, Car as CarIcon,
   ChevronDown, Printer, Loader2, AlertCircle, Users, User,
-  Clock, Receipt, PieChart, FileText, Gauge, CheckCircle2, HandCoins,
+  Clock, Receipt, PieChart, FileText, Gauge, CheckCircle2, HandCoins, ImageOff,
 } from 'lucide-react';
 import { Language, Car, ReservationDetails, VehicleExpense } from '../types';
 import { DatabaseService } from '../services/DatabaseService';
@@ -381,12 +381,17 @@ export const CarGainsPage: React.FC<CarGainsPageProps> = ({ lang }) => {
             <div className="bg-white rounded-3xl border border-saas-border overflow-hidden">
               <span className="block h-1 bg-linear-to-r from-[#B8912E] to-[#C8A13C]" />
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6">
-                <div className="w-40 h-28 rounded-2xl overflow-hidden shrink-0 bg-saas-bg border border-saas-border">
-                  <img
-                    src={selectedCar.images?.[0] || 'https://picsum.photos/seed/car/400/300'}
-                    alt={`${selectedCar.brand} ${selectedCar.model}`}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-40 h-28 rounded-2xl overflow-hidden shrink-0 bg-saas-bg border border-saas-border flex items-center justify-center">
+                  {selectedCar.images?.[0] ? (
+                    <img
+                      src={selectedCar.images[0]}
+                      alt={`${selectedCar.brand} ${selectedCar.model}`}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <ImageOff size={30} strokeWidth={1.5} className="text-saas-text-muted opacity-40" />
+                  )}
                 </div>
                 <div className="flex-1 text-center sm:text-left">
                   <h2 className="text-2xl font-black text-saas-text-main uppercase tracking-tighter">

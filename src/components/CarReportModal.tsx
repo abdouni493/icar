@@ -7,7 +7,7 @@ import {
   X, TrendingUp, TrendingDown, DollarSign, Calendar, Wrench,
   ShieldCheck, Activity, Droplets, Link as LinkIcon, ChevronDown,
   ChevronUp, FileText, Clock, User, AlertCircle, CheckCircle2,
-  BarChart3, CreditCard, Banknote, AlertTriangle, Printer
+  BarChart3, CreditCard, Banknote, AlertTriangle, Printer, Car as CarIcon
 } from 'lucide-react';
 
 interface CarReportModalProps {
@@ -177,7 +177,7 @@ export const CarReportModal: React.FC<CarReportModalProps> = ({
     }
   };
 
-  const carImage = car.images?.[0] || 'https://picsum.photos/seed/car/400/300';
+  const carImage = car.images?.[0] || '';
 
   return (
     <div className="fixed inset-0 z-[70] flex items-start justify-center p-3 bg-black/50 backdrop-blur-sm overflow-y-auto sm:py-8">
@@ -195,8 +195,10 @@ export const CarReportModal: React.FC<CarReportModalProps> = ({
             style={{ backgroundImage: 'repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%)', backgroundSize: '10px 10px' }}/>
           <div className="relative px-6 py-5 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-11 rounded-xl overflow-hidden border-2 border-white/30 shadow-lg flex-shrink-0">
-                <img src={carImage} alt="" className="w-full h-full object-cover"/>
+              <div className="w-14 h-11 rounded-xl overflow-hidden border-2 border-white/30 shadow-lg flex-shrink-0 bg-white/10 flex items-center justify-center">
+                {carImage
+                  ? <img src={carImage} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer"/>
+                  : <CarIcon size={20} className="text-white/70"/>}
               </div>
               <div>
                 <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2">

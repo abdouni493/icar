@@ -1829,6 +1829,17 @@ export class DatabaseService {
             address: data[0].address,
             phone: data[0].phone,
             landing_background: data[0].landing_background,
+            email: data[0].email,
+            fax: data[0].fax,
+            city: data[0].city,
+            rc: data[0].rc,
+            nif: data[0].nif,
+            nis: data[0].nis,
+            art: data[0].art,
+            forme_juridique: data[0].forme_juridique,
+            activite: data[0].activite,
+            capital: data[0].capital,
+            bank_name: data[0].bank_name,
           };
         }
       } catch (e: any) {
@@ -1845,6 +1856,17 @@ export class DatabaseService {
         address: '',
         phone: '',
         landing_background: '',
+        email: '',
+        fax: '',
+        city: '',
+        rc: '',
+        nif: '',
+        nis: '',
+        art: '',
+        forme_juridique: '',
+        activite: '',
+        capital: '',
+        bank_name: '',
       };
     });
   }
@@ -1853,7 +1875,7 @@ export class DatabaseService {
     // Les appels partiels (ConfigPage, upload de logo…) ne doivent pas effacer
     // les champs non fournis : on fusionne avec l'enregistrement existant.
     const current = await this.getWebsiteSettings();
-    const merged = {
+    const merged: Record<string, any> = {
       name: settings.name ?? current.name,
       description: settings.description ?? current.description,
       logo: settings.logo ?? current.logo,
@@ -1862,6 +1884,17 @@ export class DatabaseService {
       address: settings.address ?? current.address,
       phone: settings.phone ?? current.phone,
       landing_background: settings.landing_background ?? current.landing_background,
+      email: settings.email ?? current.email,
+      fax: settings.fax ?? current.fax,
+      city: settings.city ?? current.city,
+      rc: settings.rc ?? current.rc,
+      nif: settings.nif ?? current.nif,
+      nis: settings.nis ?? current.nis,
+      art: settings.art ?? current.art,
+      forme_juridique: settings.forme_juridique ?? current.forme_juridique,
+      activite: settings.activite ?? current.activite,
+      capital: settings.capital ?? current.capital,
+      bank_name: settings.bank_name ?? current.bank_name,
     };
 
     // First, delete all existing records to ensure only one record exists
@@ -1870,28 +1903,26 @@ export class DatabaseService {
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records
 
-    // Then insert the new record
-    let { data, error } = await supabase
-      .from('website_settings')
-      .insert([{
-        ...merged,
-        updated_at: new Date().toISOString(),
-      }])
-      .select()
-      .single();
-
-    // Colonne landing_background absente (migration 20260706 non appliquée) :
-    // on réessaie sans la colonne pour ne pas bloquer la sauvegarde des autres champs.
-    if (error && (error.message || '').includes('landing_background')) {
-      const { landing_background: _lb, ...withoutBackground } = merged;
+    // Then insert the new record. Si une colonne est absente (migration non
+    // appliquée), PostgREST renvoie "Could not find the 'X' column" : on retire
+    // la colonne fautive et on réessaie, afin de ne jamais bloquer la sauvegarde.
+    const payload: Record<string, any> = { ...merged, updated_at: new Date().toISOString() };
+    let data: any = null;
+    let error: any = null;
+    for (let attempt = 0; attempt < 12; attempt++) {
       ({ data, error } = await supabase
         .from('website_settings')
-        .insert([{
-          ...withoutBackground,
-          updated_at: new Date().toISOString(),
-        }])
+        .insert([payload])
         .select()
         .single());
+      if (!error) break;
+      const msg = error.message || '';
+      const m = msg.match(/'([a-z_]+)' column/i);
+      if (m && m[1] && m[1] in payload) {
+        delete payload[m[1]];
+        continue;
+      }
+      break;
     }
 
     if (error) throw error;
@@ -1906,6 +1937,17 @@ export class DatabaseService {
       address: data.address,
       phone: data.phone,
       landing_background: data.landing_background,
+      email: data.email,
+      fax: data.fax,
+      city: data.city,
+      rc: data.rc,
+      nif: data.nif,
+      nis: data.nis,
+      art: data.art,
+      forme_juridique: data.forme_juridique,
+      activite: data.activite,
+      capital: data.capital,
+      bank_name: data.bank_name,
     };
   }
 
@@ -2492,6 +2534,12 @@ export class DatabaseService {
       address: row.address || undefined,
       phone: row.phone || undefined,
       email: row.email || undefined,
+      fax: row.fax || undefined,
+      city: row.city || undefined,
+      bp: row.bp || undefined,
+      formeJuridique: row.forme_juridique || undefined,
+      activite: row.activite || undefined,
+      capital: row.capital || undefined,
       createdAt: row.created_at,
     };
   }
@@ -2540,6 +2588,12 @@ export class DatabaseService {
         address: entreprise.address || null,
         phone: entreprise.phone || null,
         email: entreprise.email || null,
+        fax: entreprise.fax || null,
+        city: entreprise.city || null,
+        bp: entreprise.bp || null,
+        forme_juridique: entreprise.formeJuridique || null,
+        activite: entreprise.activite || null,
+        capital: entreprise.capital || null,
       }])
       .select()
       .single();
@@ -2557,6 +2611,12 @@ export class DatabaseService {
     if (updates.address !== undefined) payload.address = updates.address || null;
     if (updates.phone !== undefined) payload.phone = updates.phone || null;
     if (updates.email !== undefined) payload.email = updates.email || null;
+    if (updates.fax !== undefined) payload.fax = updates.fax || null;
+    if (updates.city !== undefined) payload.city = updates.city || null;
+    if (updates.bp !== undefined) payload.bp = updates.bp || null;
+    if (updates.formeJuridique !== undefined) payload.forme_juridique = updates.formeJuridique || null;
+    if (updates.activite !== undefined) payload.activite = updates.activite || null;
+    if (updates.capital !== undefined) payload.capital = updates.capital || null;
 
     const { data, error } = await supabase
       .from('entreprises')

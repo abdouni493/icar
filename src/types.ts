@@ -287,6 +287,18 @@ export interface Entreprise {
   address?: string;
   phone?: string;
   email?: string;
+  /** Numéro de fax. */
+  fax?: string;
+  /** Ville / commune. */
+  city?: string;
+  /** Boîte postale. */
+  bp?: string;
+  /** Forme juridique (SARL, SPA, EURL…). */
+  formeJuridique?: string;
+  /** Activité commerciale. */
+  activite?: string;
+  /** Capital social. */
+  capital?: string;
   createdAt: string;
 }
 export interface StoreExpense {
@@ -406,6 +418,26 @@ export interface WebsiteSettings {
   phone?: string;
   /** Image de fond du landing du site public (URL storage, affichée floutée). */
   landing_background?: string;
+  // ── Identité fiscale / commerciale du fournisseur (mentions facture) ──
+  email?: string;
+  fax?: string;
+  city?: string;
+  /** Registre de commerce. */
+  rc?: string;
+  /** N° d'identification fiscale. */
+  nif?: string;
+  /** N° d'identification statistique. */
+  nis?: string;
+  /** Article d'imposition (AI). */
+  art?: string;
+  /** Forme juridique (SARL, SPA, EURL…). */
+  forme_juridique?: string;
+  /** Activité commerciale. */
+  activite?: string;
+  /** Capital social. */
+  capital?: string;
+  /** Nom de la banque (RIB). */
+  bank_name?: string;
 }
 
 // Code promo utilisable sur la réservation du site public

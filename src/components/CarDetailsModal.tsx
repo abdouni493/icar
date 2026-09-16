@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Car, Language } from '../types';
-import { X } from 'lucide-react';
+import { X, ImageOff } from 'lucide-react';
 
 interface CarDetailsModalProps {
   isOpen: boolean;
@@ -39,11 +39,20 @@ export const CarDetailsModal: React.FC<CarDetailsModalProps> = ({ isOpen, onClos
             {/* Images Gallery */}
             <div className="p-8 space-y-6 bg-white border-r border-saas-border">
               <div className="aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-white group">
-                <img 
-                  src={car.images[0] || 'https://picsum.photos/seed/car/800/600'} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                  referrerPolicy="no-referrer" 
-                />
+                {car.images?.[0] ? (
+                  <img
+                    src={car.images[0]}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-saas-bg text-saas-text-muted">
+                    <ImageOff size={44} strokeWidth={1.5} className="opacity-40" />
+                    <span className="text-xs font-bold uppercase tracking-widest opacity-60">
+                      {lang === 'fr' ? 'Pas de photo' : 'لا توجد صورة'}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-3 gap-4">
                 {car.images.slice(1).map((img, idx) => (

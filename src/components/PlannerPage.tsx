@@ -35,6 +35,59 @@ const ltrPhone = (value: any): string =>
  */
 const ltr = ltrPhone;
 
+/** Convertit un entier (0 → 999 999 999) en toutes lettres françaises. */
+const numberToFrenchWords = (value: number): string => {
+  const n = Math.floor(Math.abs(Number(value) || 0));
+  if (n === 0) return 'zéro';
+  const units = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf',
+    'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+  const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt'];
+
+  const below100 = (x: number): string => {
+    if (x < 20) return units[x];
+    const t = Math.floor(x / 10);
+    const u = x % 10;
+    if (t === 7 || t === 9) {
+      if (t === 7 && u === 1) return 'soixante et onze';
+      return tens[t] + '-' + units[10 + u];
+    }
+    if (u === 0) return t === 8 ? 'quatre-vingts' : tens[t];
+    if (u === 1 && t >= 2 && t <= 6) return tens[t] + ' et un';
+    return tens[t] + '-' + units[u];
+  };
+
+  const below1000 = (x: number): string => {
+    const h = Math.floor(x / 100);
+    const rem = x % 100;
+    let str = '';
+    if (h > 0) {
+      str = h === 1 ? 'cent' : units[h] + ' cent';
+      if (rem === 0 && h > 1) str += 's';
+    }
+    if (rem > 0) str = str ? str + ' ' + below100(rem) : below100(rem);
+    return str;
+  };
+
+  const millions = Math.floor(n / 1_000_000);
+  const thousands = Math.floor((n % 1_000_000) / 1000);
+  const rest = n % 1000;
+  let result = '';
+  if (millions > 0) result += millions === 1 ? 'un million' : below1000(millions) + ' millions';
+  if (thousands > 0) result += (result ? ' ' : '') + (thousands === 1 ? 'mille' : below1000(thousands) + ' mille');
+  if (rest > 0) result += (result ? ' ' : '') + below1000(rest);
+  return result.trim();
+};
+
+/** Montant en toutes lettres pour une facture (dinars algériens + centimes), en MAJUSCULES. */
+const amountInWordsDZD = (amount: number): string => {
+  const abs = Math.abs(Number(amount) || 0);
+  const dinars = Math.floor(abs);
+  const centimes = Math.round((abs - dinars) * 100);
+  let words = `${numberToFrenchWords(dinars)} dinar${dinars > 1 ? 's' : ''} algérien${dinars > 1 ? 's' : ''}`;
+  if (centimes > 0) words += ` et ${numberToFrenchWords(centimes)} centime${centimes > 1 ? 's' : ''}`;
+  return words.toUpperCase();
+};
+
 interface PlannerPageProps {
   lang: Language;
   isAuthLoading?: boolean;
@@ -2466,7 +2519,19 @@ export const PersonalizationModal: React.FC<{
     nis: '',
     nif: '',
     email: '',
+    address: '',
+    city: '',
+    bp: '',
+    phone: '',
+    fax: '',
+    formeJuridique: '',
+    activite: '',
+    capital: '',
   });
+  // Mode de règlement affiché sur la facture (Espèces, Virement, Chèque…)
+  const [paymentMode, setPaymentMode] = useState('Espèces');
+  // Numéro de facture (par défaut dérivé de la réservation, éditable)
+  const [factureNumber, setFactureNumber] = useState('');
 
   // Recherche / création d'entreprise enregistrée (module Entreprises)
   const [entrepriseQuery, setEntrepriseQuery] = useState('');
@@ -2507,6 +2572,14 @@ export const PersonalizationModal: React.FC<{
       nis: e.nis || '',
       nif: e.nif || '',
       email: e.email || prev.email,
+      address: e.address || '',
+      city: e.city || '',
+      bp: e.bp || '',
+      phone: e.phone || '',
+      fax: e.fax || '',
+      formeJuridique: e.formeJuridique || '',
+      activite: e.activite || '',
+      capital: e.capital || '',
     }));
     setEntrepriseQuery(e.name);
   };
@@ -2626,7 +2699,8 @@ export const PersonalizationModal: React.FC<{
     try {
       const { data: settings } = await supabase
         .from('website_settings')
-        .select('logo, name, address, phone, phone_number_2, bank_number')
+        .select('*')
+        .order('updated_at', { ascending: false })
         .limit(1)
         .single();
       if (settings) {
@@ -3777,7 +3851,14 @@ export const PersonalizationModal: React.FC<{
     return html;
   };
 
-  const generateFactureHTML = (templateLang: 'fr' | 'ar', societe?: { conducteur: string; rc: string; art: string; nis: string; nif: string; email: string } | null): string => {
+  const generateFactureHTML = (
+    templateLang: 'fr' | 'ar',
+    societe?: {
+      entreprise?: string; conducteur?: string; rc?: string; art?: string; nis?: string; nif?: string;
+      email?: string; address?: string; city?: string; bp?: string; phone?: string; fax?: string;
+      formeJuridique?: string; activite?: string; capital?: string;
+    } | null,
+  ): string => {
     const subtotal = reservation.totalPrice || 0;
     const tvaAmount = reservation.tvaApplied ? subtotal * 0.19 : 0;
     const timbre = 200;
@@ -3787,88 +3868,146 @@ export const PersonalizationModal: React.FC<{
     const days = reservation?.totalDays || 0;
     const pricePerDay = (reservation?.car as any)?.priceDay || (reservation?.car as any)?.price_per_day || 0;
 
+    const a = agencySettings || {};
+    const today = new Date().toLocaleDateString('fr-FR');
+    const factNo = (factureNumber && factureNumber.trim())
+      ? factureNumber.trim()
+      : `${reservation?.id ? reservation.id.toString().substring(0, 6).toUpperCase() : '000000'}/${new Date().getFullYear()}`;
+    const ref = reservation?.id ? reservation.id.toString().substring(0, 4).toUpperCase() : '0001';
+
+    // Ligne clé/valeur : n'est rendue que si la valeur existe.
+    const kv = (label: string, value: any, ltrValue = false) =>
+      value ? `<div class="kv"><span class="kv-k">${label}</span><span class="kv-v">${ltrValue ? ltr(value) : value}</span></div>` : '';
+    // Badge identifiant légal (RC / NIF / NIS / ART) — rendu seulement si présent.
+    const idBadge = (label: string, value: any) =>
+      value ? `<div class="id-badge"><span class="id-k">${label}</span><span class="id-v">${ltr(value)}</span></div>` : '';
+
+    // ── FOURNISSEUR (agence) ──
+    const agencyName = a.name || 'NOM DE L’AGENCE';
+    const agencyIdBadges = [
+      idBadge('RC', a.rc), idBadge('ART/AI', a.art), idBadge('NIF', a.nif), idBadge('NIS', a.nis),
+    ].join('');
+    const agencyBody = [
+      kv('Forme juridique', a.forme_juridique),
+      kv('Activité', a.activite),
+      kv('Capital', a.capital),
+      kv('Adresse', [a.address, a.city].filter(Boolean).join(', ')),
+      kv('Téléphone', [a.phone, a.phone_number_2].filter(Boolean).map((p: string) => ltr(p)).join(' / ')),
+      kv('Fax', a.fax, true),
+      kv('Email', a.email),
+    ].join('');
+
+    // ── CLIENT (société ou particulier) ──
+    const isSoc = !!societe;
+    const clientName = isSoc
+      ? (societe!.entreprise || `${reservation?.client?.firstName || ''} ${reservation?.client?.lastName || ''}`.trim())
+      : `${reservation?.client?.firstName || ''} ${reservation?.client?.lastName || ''}`.trim() || 'Client';
+    const clientIdBadges = isSoc
+      ? [idBadge('RC', societe!.rc), idBadge('ART/AI', societe!.art), idBadge('NIF', societe!.nif), idBadge('NIS', societe!.nis)].join('')
+      : '';
+    const clientBody = isSoc
+      ? [
+          kv('Forme juridique', societe!.formeJuridique),
+          kv('Activité', societe!.activite),
+          kv('Conducteur société', societe!.conducteur),
+          kv('Adresse', [societe!.address, societe!.city].filter(Boolean).join(', ') || reservation?.client?.completeAddress || reservation?.client?.wilaya),
+          kv('Boîte postale', societe!.bp, true),
+          kv('Téléphone', societe!.phone || reservation?.client?.phone, true),
+          kv('Fax', societe!.fax, true),
+          kv('Email', societe!.email),
+        ].join('')
+      : [
+          kv('Adresse', reservation?.client?.completeAddress || reservation?.client?.wilaya),
+          kv('Téléphone', reservation?.client?.phone, true),
+          kv('N° CIN', reservation?.client?.idCardNumber, true),
+          kv('N° Permis', (reservation?.client as any)?.licenseNumber, true),
+        ].join('');
+
+    const clientTitle = isSoc ? 'Client — Société (Locataire)' : 'Client (Locataire)';
+
     const html = `
     <!DOCTYPE html>
     <html dir="ltr" lang="fr">
     <head>
       <meta charset="UTF-8">
-      <title>Facture</title>
+      <title>Facture ${factNo}</title>
       <style>
         ${goldPrintOverrideCSS(false)}
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --or: #B8912E; --or-2: #C8A13C; --noir: #14130E; --line: #e6ddc7; --soft: #fbf7ee; }
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          line-height: 1.5;
-          color: #1a1a1a;
-          background: #f5f5f5;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+          line-height: 1.45; color: #1a1a1a; background: #f5f5f5;
+          -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
-        .page {
-          width: 210mm;
-          min-height: 297mm;
-          padding: 8mm 10mm;
-          margin: 10px auto;
-          background: white;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .header {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin-bottom: 10px;
-          border-bottom: 3px solid #d97706;
-          padding-bottom: 10px;
-        }
-        .logo { width: 55px; height: 55px; object-fit: contain; flex-shrink: 0; border-radius: 4px; }
-        .logo-placeholder { width: 55px; height: 55px; border: 2px solid #e5e5e5; display: flex; align-items: center; justify-content: center; font-size: 36px; flex-shrink: 0; border-radius: 4px; background: #f9f9f9; }
-        .header-text { flex: 1; }
-        .agency-name { font-size: 20px; font-weight: 700; color: #d97706; margin: 0 0 2px 0; }
-        .invoice-title { font-size: 15px; font-weight: 700; color: #d97706; margin: 0; text-decoration: underline; }
-        .invoice-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .meta-box { padding: 6px 10px; border-radius: 4px; background: #fff8f0; border-left: 3px solid #d97706; font-size: 12px; }
-        .meta-label { font-weight: 600; color: #92400e; font-size: 10px; text-transform: uppercase; }
-        .meta-value { color: #1a1a1a; font-weight: 600; margin-top: 1px; }
-        .two-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .info-section { border: 1.5px solid #d97706; border-radius: 5px; padding: 10px 12px; background: #fffcf8; }
-        .info-section .sec-title { font-weight: 700; font-size: 11px; color: #d97706; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #fde68a; padding-bottom: 5px; margin-bottom: 7px; }
-        .info-row { display: flex; gap: 6px; margin: 4px 0; font-size: 12px; }
-        .info-label { font-weight: 600; color: #92400e; min-width: 80px; flex-shrink: 0; }
-        .info-value { color: #1a1a1a; }
-        .agency-inner { display: flex; gap: 10px; align-items: flex-start; }
-        .agency-inner img { width: 40px; height: 40px; object-fit: contain; border-radius: 3px; flex-shrink: 0; }
-        .agency-name-sm { font-weight: 700; color: #d97706; font-size: 13px; margin-bottom: 3px; }
-        .agency-detail { font-size: 11px; color: #444; margin: 1px 0; }
-        /* Societe block */
-        .societe-block { border: 2px solid #d97706; border-radius: 5px; padding: 10px 12px; margin-bottom: 10px; background: linear-gradient(135deg, #fff8f0 0%, #fef3e2 100%); }
-        .societe-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #fde68a; }
-        .societe-header-icon { width: 26px; height: 26px; background: #d97706; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
-        .societe-title { font-weight: 800; font-size: 12px; color: #d97706; text-transform: uppercase; letter-spacing: 0.5px; }
-        .societe-subtitle { font-size: 10px; color: #92400e; font-weight: 500; }
-        .societe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .societe-field { padding: 6px 8px; background: white; border-radius: 4px; border: 1px solid #fde68a; border-left: 3px solid #d97706; }
-        .societe-field-label { font-weight: 700; font-size: 9px; color: #92400e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-        .societe-field-value { font-size: 12px; color: #1a1a1a; font-weight: 600; word-break: break-all; }
-        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; border: 1.5px solid #d97706; overflow: hidden; border-radius: 4px; }
-        .items-table th { background: #d97706; color: white; border: 1px solid #d97706; padding: 8px 6px; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; }
-        .items-table td { border: 1px solid #e5e5e5; padding: 8px 6px; text-align: center; vertical-align: middle; }
-        .items-table td.left { text-align: left; padding-left: 10px; }
-        .items-table tbody tr:nth-child(odd) { background: #fffcf8; }
-        .totals-wrapper { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .totals-table { width: 260px; border-collapse: collapse; font-size: 12px; border: 1.5px solid #d97706; border-radius: 4px; overflow: hidden; }
-        .totals-table tr td { border: 1px solid #e5e5e5; padding: 7px 10px; }
-        .totals-table tr td:first-child { font-weight: 600; background: #fff8f0; color: #92400e; white-space: nowrap; }
-        .totals-table tr td:last-child { text-align: right; font-weight: 600; }
-        .totals-table tr.grand-total td { background: #d97706; color: white; font-weight: 700; font-size: 13px; border-color: #d97706; }
-        .agency-strip { width: 100%; border: 1.5px solid #d97706; border-radius: 4px; padding: 8px 12px; margin-bottom: 10px; background: #fff8f0; }
-        .strip-row { display: flex; gap: 5px; margin: 3px 0; font-size: 11px; }
-        .strip-label { font-weight: 700; color: #d97706; min-width: 160px; }
-        .strip-value { color: #333; font-weight: 500; }
+        .page { width: 210mm; min-height: 297mm; padding: 10mm 11mm; margin: 10px auto; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,.1); display: flex; flex-direction: column; }
+
+        /* HEADER */
+        .fx-header { display: flex; align-items: stretch; gap: 14px; border: 2px solid var(--noir); border-radius: 8px; overflow: hidden; }
+        .fx-brand { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--noir); color: #fff; flex: 1; }
+        .fx-logo { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 6px; padding: 3px; flex-shrink: 0; }
+        .fx-logo-ph { width: 60px; height: 60px; border-radius: 6px; background: var(--or); display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+        .fx-brand-name { font-size: 20px; font-weight: 800; letter-spacing: .3px; color: var(--or-2); }
+        .fx-brand-sub { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #d8cba6; margin-top: 2px; }
+        .fx-title { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 22px; background: var(--or); color: #fff; }
+        .fx-title b { font-size: 22px; font-weight: 900; letter-spacing: 3px; }
+        .fx-title span { font-size: 10px; letter-spacing: 1px; opacity: .9; }
+
+        /* META BAR */
+        .fx-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .fx-meta .cell { border: 1px solid var(--line); border-left: 3px solid var(--or); border-radius: 6px; padding: 6px 10px; background: var(--soft); }
+        .fx-meta .k { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #8a6d1f; }
+        .fx-meta .v { font-size: 13px; font-weight: 700; color: var(--noir); margin-top: 1px; }
+
+        /* PARTIES */
+        .fx-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .party { border: 1.5px solid var(--or); border-radius: 8px; overflow: hidden; background: #fff; }
+        .party-h { background: linear-gradient(135deg, var(--noir), #2a271d); color: #fff; padding: 7px 12px; display: flex; align-items: center; gap: 8px; }
+        .party-h .p-ic { width: 22px; height: 22px; border-radius: 50%; background: var(--or); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .party-h .p-t { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--or-2); }
+        .party-b { padding: 9px 12px; }
+        .party-name { font-size: 14px; font-weight: 800; color: var(--noir); margin-bottom: 6px; }
+        .id-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 7px; }
+        .id-badge { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 5px; padding: 3px 7px; background: var(--soft); min-width: 0; }
+        .id-k { font-size: 8px; font-weight: 800; color: var(--or); text-transform: uppercase; letter-spacing: .5px; }
+        .id-v { font-size: 11px; font-weight: 700; color: var(--noir); }
+        .kv { display: flex; gap: 6px; font-size: 11.5px; margin: 2px 0; }
+        .kv-k { font-weight: 700; color: #8a6d1f; min-width: 92px; flex-shrink: 0; }
+        .kv-v { color: #1a1a1a; word-break: break-word; }
+
+        /* ITEMS */
+        .fx-items { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11.5px; border: 1.5px solid var(--noir); border-radius: 6px; overflow: hidden; }
+        .fx-items th { background: var(--noir); color: var(--or-2); padding: 8px 6px; text-align: center; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; border: 1px solid #2a271d; }
+        .fx-items td { border: 1px solid var(--line); padding: 8px 6px; text-align: center; vertical-align: middle; }
+        .fx-items td.left { text-align: left; padding-left: 10px; font-weight: 700; }
+        .fx-items tbody tr:nth-child(even) { background: var(--soft); }
+
+        /* BOTTOM */
+        .fx-bottom { display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px; margin-top: 10px; align-items: start; }
+        .fx-words { border: 1.5px solid var(--or); border-radius: 8px; padding: 10px 12px; background: var(--soft); }
+        .fx-words .lab { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--or); margin-bottom: 4px; }
+        .fx-words .val { font-size: 12px; font-weight: 700; color: var(--noir); font-style: italic; }
+        .fx-totals { border: 1.5px solid var(--noir); border-radius: 8px; overflow: hidden; }
+        .fx-totals table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .fx-totals td { padding: 7px 12px; border-bottom: 1px solid var(--line); }
+        .fx-totals td:first-child { font-weight: 700; color: #8a6d1f; }
+        .fx-totals td:last-child { text-align: right; font-weight: 700; color: var(--noir); }
+        .fx-totals tr.grand td { background: var(--or); color: #fff; font-size: 14px; font-weight: 900; border-bottom: none; }
+
+        /* FOOTER */
+        .fx-footer { margin-top: 12px; border-top: 2px solid var(--or); padding-top: 8px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+        .fx-bank { font-size: 11px; }
+        .fx-bank .bt { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--or); margin-bottom: 3px; }
+        .fx-bank .brow { margin: 1px 0; color: #333; }
+        .fx-sign { text-align: center; }
+        .fx-sign .sl { border-top: 1px solid var(--noir); margin: 34px 10px 4px; }
+        .fx-sign .st { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--noir); }
+        .fx-spacer { flex: 1; }
+
         @media print {
           @page { size: A4; margin: 0; }
-          html, body { width: 210mm; height: 297mm; margin: 0; padding: 0; background: white; overflow: hidden; }
-          body { margin: 0; padding: 0; background: white; display: flex; justify-content: center; align-items: flex-start; }
-          .page { margin: 0 auto; padding: 8mm 10mm; width: 190mm; min-height: 277mm; box-sizing: border-box; box-shadow: none; }
+          html, body { width: 210mm; margin: 0; padding: 0; background: #fff; }
+          .page { margin: 0 auto; width: 210mm; min-height: 297mm; box-shadow: none; }
         }
       </style>
     </head>
@@ -3876,85 +4015,55 @@ export const PersonalizationModal: React.FC<{
       <div class="page">
 
         <!-- HEADER -->
-        <div class="header">
-          ${agencySettings?.logo ? `<img src="${agencySettings.logo}" alt="Logo" class="logo">` : '<div class="logo-placeholder">\u{1F3E2}</div>'}
-          <div class="header-text">
-            <div class="agency-name">${agencySettings?.name || 'NOM AGENCE'}</div>
-            <div class="invoice-title">FACTURE</div>
-          </div>
-          <div style="text-align:right;font-size:11px;color:#92400e;">
-            <div style="font-weight:700;">N\u00b0 ${reservation?.id ? reservation.id.toString().substring(0, 8).toUpperCase() : '000'}</div>
-            <div>${new Date().toLocaleDateString('fr-FR')}</div>
-          </div>
-        </div>
-
-        <!-- AGENCY STRIP -->
-        <div class="agency-strip">
-          ${agencySettings?.name ? `<div class="strip-row"><span class="strip-label">Nom de l\u2019enseigne :</span><span class="strip-value">${agencySettings.name}</span></div>` : ''}
-          ${agencySettings?.address ? `<div class="strip-row"><span class="strip-label">Adresse :</span><span class="strip-value">${agencySettings.address}</span></div>` : ''}
-          ${agencySettings?.phone ? `<div class="strip-row"><span class="strip-label">\u{1F4DE} T\u00e9l\u00e9phone :</span><span class="strip-value">${ltrPhone(agencySettings.phone)}${agencySettings.phone_number_2 ? ' / ' + ltrPhone(agencySettings.phone_number_2) : ''}</span></div>` : ''}
-          ${agencySettings?.bank_number ? `<div class="strip-row"><span class="strip-label">\u{1F3E6} Num\u00e9ro de compte :</span><span class="strip-value">${agencySettings.bank_number}</span></div>` : ''}
-        </div>
-
-        <!-- AGENCE + CLIENT SIDE BY SIDE -->
-        <div class="two-col">
-          <div class="info-section">
-            <div class="sec-title">\u{1F3E2} Agence / Fournisseur</div>
-            <div class="agency-inner">
-              ${agencySettings?.logo ? `<img src="${agencySettings.logo}" alt="Logo">` : ''}
-              <div>
-                <div class="agency-name-sm">${agencySettings?.name || 'NOM AGENCE'}</div>
-                ${agencySettings?.address ? `<div class="agency-detail">${agencySettings.address}</div>` : ''}
-                ${agencySettings?.phone ? `<div class="agency-detail">T\u00e9l: ${ltrPhone(agencySettings.phone)}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          <div class="info-section">
-            <div class="sec-title">\u{1F464} Client</div>
-            <div class="info-row"><span class="info-label">Nom :</span><span class="info-value">${reservation?.client?.firstName || ''} ${reservation?.client?.lastName || ''}</span></div>
-            <div class="info-row"><span class="info-label">Adresse :</span><span class="info-value">${reservation?.client?.completeAddress || reservation?.client?.wilaya || 'N/A'}</span></div>
-            ${reservation?.client?.phone ? `<div class="info-row"><span class="info-label">T\u00e9l :</span><span class="info-value">${ltrPhone(reservation.client.phone)}</span></div>` : ''}
-            ${reservation?.client?.idCardNumber ? `<div class="info-row"><span class="info-label">N\u00b0 CIN :</span><span class="info-value">${reservation.client.idCardNumber}</span></div>` : ''}
-          </div>
-        </div>
-
-        ${societe ? `
-        <!-- SOCIETE BLOCK -->
-        <div class="societe-block">
-          <div class="societe-header">
-            <div class="societe-header-icon">\u{1F3E2}</div>
+        <div class="fx-header">
+          <div class="fx-brand">
+            ${a.logo ? `<img src="${a.logo}" alt="Logo" class="fx-logo">` : '<div class="fx-logo-ph">\u{1F3E2}</div>'}
             <div>
-              <div class="societe-title">Informations Soci\u00e9t\u00e9</div>
-              <div class="societe-subtitle">Donn\u00e9es fiscales et commerciales</div>
+              <div class="fx-brand-name">${agencyName}</div>
+              ${a.activite ? `<div class="fx-brand-sub">${a.activite}</div>` : '<div class="fx-brand-sub">Location de véhicules</div>'}
             </div>
           </div>
-          <div class="societe-grid">
-            ${societe.conducteur ? `<div class="societe-field"><div class="societe-field-label">Conducteur</div><div class="societe-field-value">${societe.conducteur}</div></div>` : ''}
-            ${societe.rc ? `<div class="societe-field"><div class="societe-field-label">RC</div><div class="societe-field-value">${societe.rc}</div></div>` : ''}
-            ${societe.art ? `<div class="societe-field"><div class="societe-field-label">ART</div><div class="societe-field-value">${societe.art}</div></div>` : ''}
-            ${societe.nis ? `<div class="societe-field"><div class="societe-field-label">NIS</div><div class="societe-field-value">${societe.nis}</div></div>` : ''}
-            ${societe.nif ? `<div class="societe-field"><div class="societe-field-label">NIF</div><div class="societe-field-value">${societe.nif}</div></div>` : ''}
-            ${societe.email ? `<div class="societe-field"><div class="societe-field-label">Email</div><div class="societe-field-value">${societe.email}</div></div>` : ''}
-          </div>
-        </div>` : ''}
+          <div class="fx-title"><b>FACTURE</b><span>الفاتورة</span></div>
+        </div>
 
-        <!-- ITEMS TABLE -->
-        <table class="items-table">
+        <!-- META -->
+        <div class="fx-meta">
+          <div class="cell"><div class="k">N° Facture</div><div class="v">${ltr(factNo)}</div></div>
+          <div class="cell"><div class="k">Faite le</div><div class="v">${today}</div></div>
+          <div class="cell"><div class="k">Mode de paiement</div><div class="v">${paymentMode || '—'}</div></div>
+        </div>
+
+        <!-- PARTIES -->
+        <div class="fx-parties">
+          <div class="party">
+            <div class="party-h"><span class="p-ic">\u{1F3E2}</span><span class="p-t">Fournisseur (Agence)</span></div>
+            <div class="party-b">
+              <div class="party-name">${agencyName}</div>
+              ${agencyIdBadges ? `<div class="id-badges">${agencyIdBadges}</div>` : ''}
+              ${agencyBody}
+            </div>
+          </div>
+          <div class="party">
+            <div class="party-h"><span class="p-ic">${isSoc ? '\u{1F4BC}' : '\u{1F464}'}</span><span class="p-t">${clientTitle}</span></div>
+            <div class="party-b">
+              <div class="party-name">${clientName}</div>
+              ${clientIdBadges ? `<div class="id-badges">${clientIdBadges}</div>` : ''}
+              ${clientBody}
+            </div>
+          </div>
+        </div>
+
+        <!-- ITEMS -->
+        <table class="fx-items">
           <thead>
             <tr>
-              <th>R\u00e9f</th>
-              <th>D\u00e9signation</th>
-              <th>Immatricul\u00e9</th>
-              <th>Du</th>
-              <th>Au</th>
-              <th>Jours</th>
-              <th>Prix/J</th>
-              <th>HT</th>
+              <th>Réf</th><th>Marque / Désignation</th><th>Immatricule</th>
+              <th>Du</th><th>Au</th><th>Nb jours</th><th>Prix unitaire</th><th>Montant HT</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>${reservation?.id ? reservation.id.toString().substring(0, 3).toUpperCase() : '001'}</td>
+              <td>${ref}</td>
               <td class="left">${ltr((reservation?.car?.brand || '') + ' ' + (reservation?.car?.model || ''))}</td>
               <td>${ltr((reservation?.car as any)?.registration || (reservation?.car as any)?.plate_number || 'N/A')}</td>
               <td>${departDate}</td>
@@ -3966,14 +4075,38 @@ export const PersonalizationModal: React.FC<{
           </tbody>
         </table>
 
-        <!-- TOTALS -->
-        <div class="totals-wrapper">
-          <table class="totals-table">
-            <tr><td>TOTAL HT :</td><td>${subtotal.toLocaleString('fr-FR')} DA</td></tr>
-            <tr><td>TVA (19%) :</td><td>${tvaAmount.toLocaleString('fr-FR')} DA</td></tr>
-            <tr><td>TIMBRE :</td><td>${timbre.toLocaleString('fr-FR')} DA</td></tr>
-            <tr class="grand-total"><td>TOTAL \u00c0 PAYER :</td><td>${total.toLocaleString('fr-FR')} DA</td></tr>
-          </table>
+        <!-- BOTTOM : montant en lettres + totaux -->
+        <div class="fx-bottom">
+          <div class="fx-words">
+            <div class="lab">Arrêtée la présente facture à la somme de :</div>
+            <div class="val">${amountInWordsDZD(total)}</div>
+          </div>
+          <div class="fx-totals">
+            <table>
+              <tr><td>Total HT</td><td>${subtotal.toLocaleString('fr-FR')} DA</td></tr>
+              <tr><td>TVA (19%)</td><td>${tvaAmount.toLocaleString('fr-FR')} DA</td></tr>
+              <tr><td>Timbre</td><td>${timbre.toLocaleString('fr-FR')} DA</td></tr>
+              <tr class="grand"><td>Total à payer</td><td>${total.toLocaleString('fr-FR')} DA</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="fx-spacer"></div>
+
+        <!-- FOOTER : banque + signature -->
+        <div class="fx-footer">
+          <div class="fx-bank">
+            <div class="bt">Coordonnées bancaires</div>
+            ${a.bank_name ? `<div class="brow"><b>Banque :</b> ${a.bank_name}</div>` : ''}
+            ${a.bank_number ? `<div class="brow"><b>Compte / RIB :</b> ${ltr(a.bank_number)}</div>` : ''}
+            ${[a.address, a.city].filter(Boolean).length ? `<div class="brow"><b>Adresse :</b> ${[a.address, a.city].filter(Boolean).join(', ')}</div>` : ''}
+            ${a.email ? `<div class="brow"><b>Email :</b> ${a.email}</div>` : ''}
+            ${a.phone ? `<div class="brow"><b>Tél :</b> ${ltr(a.phone)}${a.fax ? ` &nbsp; <b>Fax :</b> ${ltr(a.fax)}` : ''}</div>` : ''}
+          </div>
+          <div class="fx-sign">
+            <div class="sl"></div>
+            <div class="st">Cachet & Signature</div>
+          </div>
         </div>
 
       </div>
@@ -5391,18 +5524,18 @@ export const PersonalizationModal: React.FC<{
                     </p>
                     <div className="grid grid-cols-2 gap-3">
 
-                      {type === 'contract' ? (
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-amber-700 uppercase tracking-wide block">&#x1F3E2; {lang === 'fr' ? 'Raison sociale / Entreprise' : 'اسم الشركة'}</label>
+                        <input type="text" value={societeData.entreprise}
+                          onChange={e => setSocieteData(prev => ({ ...prev, entreprise: e.target.value }))}
+                          placeholder={lang === 'fr' ? "Nom de l'entreprise" : 'اسم الشركة'}
+                          className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-300"
+                        />
+                      </div>
+
+                      {type !== 'contract' && (
                         <div className="space-y-1">
-                          <label className="text-xs font-bold text-amber-700 uppercase tracking-wide block">&#x1F3E2; {lang === 'fr' ? 'Entreprise' : 'اسم الشركة'}</label>
-                          <input type="text" value={societeData.entreprise}
-                            onChange={e => setSocieteData(prev => ({ ...prev, entreprise: e.target.value }))}
-                            placeholder={lang === 'fr' ? "Nom de l'entreprise" : 'اسم الشركة'}
-                            className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-300"
-                          />
-                        </div>
-                      ) : (
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold text-amber-700 uppercase tracking-wide block">&#x1F464; {lang === 'fr' ? 'Conducteur' : 'المسؤول'}</label>
+                          <label className="text-xs font-bold text-amber-700 uppercase tracking-wide block">&#x1F464; {lang === 'fr' ? 'Conducteur société' : 'المسؤول'}</label>
                           <input type="text" value={societeData.conducteur}
                             onChange={e => setSocieteData(prev => ({ ...prev, conducteur: e.target.value }))}
                             placeholder={lang === 'fr' ? 'Nom du conducteur' : 'اسم المسؤول'}
@@ -5458,9 +5591,65 @@ export const PersonalizationModal: React.FC<{
                         </div>
                       )}
 
+                      {/* Champs société détaillés — facture uniquement */}
+                      {type !== 'contract' && ([
+                        { key: 'formeJuridique' as const, icon: '\u{1F4BC}', label: lang === 'fr' ? 'Forme juridique' : 'الشكل القانوني', ph: 'SARL, SPA, EURL…' },
+                        { key: 'activite' as const, icon: '\u{1F4C4}', label: lang === 'fr' ? 'Activité' : 'النشاط', ph: lang === 'fr' ? 'Activité commerciale' : 'النشاط التجاري' },
+                        { key: 'capital' as const, icon: '\u{1F4B0}', label: lang === 'fr' ? 'Capital' : 'رأس المال', ph: 'Ex: 1 000 000 DA' },
+                        { key: 'address' as const, icon: '\u{1F4CD}', label: lang === 'fr' ? 'Adresse' : 'العنوان', ph: lang === 'fr' ? 'Adresse du siège' : 'عنوان المقر' },
+                        { key: 'city' as const, icon: '\u{1F3D9}\u{FE0F}', label: lang === 'fr' ? 'Ville' : 'المدينة', ph: 'Ex: Alger' },
+                        { key: 'bp' as const, icon: '\u{1F4EC}', label: lang === 'fr' ? 'Boîte postale' : 'صندوق البريد', ph: 'Ex: 2000130464' },
+                        { key: 'phone' as const, icon: '\u{1F4DE}', label: lang === 'fr' ? 'Téléphone' : 'الهاتف', ph: '+213 …' },
+                        { key: 'fax' as const, icon: '\u{1F4E0}', label: 'Fax', ph: '+213 …' },
+                      ].map(f => (
+                        <div key={f.key} className="space-y-1">
+                          <label className="text-xs font-bold text-amber-700 uppercase tracking-wide block">{f.icon} {f.label}</label>
+                          <input type="text" value={(societeData as any)[f.key]}
+                            onChange={e => setSocieteData(prev => ({ ...prev, [f.key]: e.target.value }))}
+                            placeholder={f.ph}
+                            className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-300"
+                          />
+                        </div>
+                      )))}
+
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Paramètres de la facture : N° et mode de paiement */}
+            {(type === 'invoice' || type === 'facture') && (
+              <div className="mb-5 border-2 border-slate-300 rounded-xl p-4 bg-slate-50">
+                <div className="text-xs font-black uppercase tracking-wider text-slate-700 mb-3">
+                  &#x1F9FE; {lang === 'fr' ? 'Paramètres de la facture' : 'إعدادات الفاتورة'}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide block">
+                      {lang === 'fr' ? 'N° de facture' : 'رقم الفاتورة'}
+                    </label>
+                    <input type="text" value={factureNumber}
+                      onChange={e => setFactureNumber(e.target.value)}
+                      placeholder={lang === 'fr' ? 'Auto (laisser vide)' : 'تلقائي'}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide block">
+                      {lang === 'fr' ? 'Mode de paiement' : 'طريقة الدفع'}
+                    </label>
+                    <select value={paymentMode}
+                      onChange={e => setPaymentMode(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
+                    >
+                      <option value="Espèces">{lang === 'fr' ? 'Espèces' : 'نقداً'}</option>
+                      <option value="Virement">{lang === 'fr' ? 'Virement bancaire' : 'تحويل بنكي'}</option>
+                      <option value="Chèque">{lang === 'fr' ? 'Chèque' : 'شيك'}</option>
+                      <option value="Carte">{lang === 'fr' ? 'Carte bancaire' : 'بطاقة بنكية'}</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             )}
             {/* Affichage des prix sur le contrat imprimé */}

@@ -21,10 +21,22 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
     agencyName: '',
     slogan: '',
     address: '',
+    city: '',
     phone: '',
     phoneNumber2: '',
+    fax: '',
+    email: '',
     bankNumber: '',
+    bankName: '',
     logo: '',
+    // Identité fiscale / commerciale (mentions obligatoires facture)
+    rc: '',
+    nif: '',
+    nis: '',
+    art: '',
+    formeJuridique: '',
+    activite: '',
+    capital: '',
   });
 
   // Profile Settings - Load from workers table
@@ -121,10 +133,21 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
           agencyName: websiteSettings.name || '',
           slogan: websiteSettings.description || 'Votre partenaire de confiance en location de véhicules',
           address: websiteSettings.address || 'Alger, Algeria',
+          city: websiteSettings.city || '',
           phone: websiteSettings.phone || '+213 5 1234 5678',
           phoneNumber2: websiteSettings.phone_number_2 || '',
+          fax: websiteSettings.fax || '',
+          email: websiteSettings.email || '',
           bankNumber: websiteSettings.bank_number || '',
-          logo: websiteSettings.logo || 'https://picsum.photos/seed/logo/200/200',
+          bankName: websiteSettings.bank_name || '',
+          logo: websiteSettings.logo || '',
+          rc: websiteSettings.rc || '',
+          nif: websiteSettings.nif || '',
+          nis: websiteSettings.nis || '',
+          art: websiteSettings.art || '',
+          formeJuridique: websiteSettings.forme_juridique || '',
+          activite: websiteSettings.activite || '',
+          capital: websiteSettings.capital || '',
         });
 
         // Load worker data for profile and security
@@ -188,8 +211,19 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
         logo: generalData.logo,
         phone_number_2: generalData.phoneNumber2,
         bank_number: generalData.bankNumber,
+        bank_name: generalData.bankName,
         address: generalData.address,
+        city: generalData.city,
         phone: generalData.phone,
+        fax: generalData.fax,
+        email: generalData.email,
+        rc: generalData.rc,
+        nif: generalData.nif,
+        nis: generalData.nis,
+        art: generalData.art,
+        forme_juridique: generalData.formeJuridique,
+        activite: generalData.activite,
+        capital: generalData.capital,
       });
 
       setNotification({ type: 'success', message: lang === 'fr' ? 'Informations de l\'agence mises à jour avec succès!' : 'تم تحديث معلومات الوكالة بنجاح!' });
@@ -585,78 +619,114 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
                 </h2>
               </div>
 
-              <form className="p-8 space-y-6" onSubmit={handleSaveAgencyInfo}>
-                {/* Agency Name */}
-                <div className="space-y-2">
-                  <label className="label-saas">{{fr: 'Nom de l\'enseigne *', ar: 'اسم الإشارة *'}[lang]}</label>
-                  <input
-                    type="text"
-                    name="agencyName"
-                    value={generalData.agencyName}
-                    onChange={handleGeneralChange}
-                    className="input-saas"
-                  />
-                </div>
+              <form className="p-8 space-y-8" onSubmit={handleSaveAgencyInfo}>
+                <p className="text-xs text-saas-text-muted -mt-2">
+                  {{fr: 'Ces informations apparaissent sur les factures, contrats et documents imprimés (mentions obligatoires du Décret 05-468).', ar: 'تظهر هذه المعلومات على الفواتير والعقود والوثائق المطبوعة.'}[lang]}
+                </p>
 
-                {/* Slogan */}
-                <div className="space-y-2">
-                  <label className="label-saas">{{fr: 'Slogan commercial', ar: 'الشعار التجاري'}[lang]}</label>
-                  <textarea
-                    name="slogan"
-                    value={generalData.slogan}
-                    onChange={handleGeneralChange}
-                    rows={2}
-                    className="input-saas resize-none"
-                  />
-                </div>
+                {/* ── Identité ── */}
+                <fieldset className="rounded-2xl border border-saas-border p-5 space-y-5">
+                  <legend className="px-2 text-[11px] font-black uppercase tracking-[0.2em] text-saas-primary-via">
+                    🏢 {{fr: "Identité de l'agence", ar: 'هوية الوكالة'}[lang]}
+                  </legend>
+                  <div className="space-y-2">
+                    <label className="label-saas">{{fr: "Raison sociale / Nom de l'enseigne *", ar: 'اسم الوكالة *'}[lang]}</label>
+                    <input type="text" name="agencyName" value={generalData.agencyName} onChange={handleGeneralChange} className="input-saas" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div className="space-y-2">
+                      <label className="label-saas">{{fr: 'Forme juridique', ar: 'الشكل القانوني'}[lang]}</label>
+                      <input type="text" name="formeJuridique" value={generalData.formeJuridique} onChange={handleGeneralChange} className="input-saas" placeholder="SARL, SPA, EURL…" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">{{fr: 'Activité commerciale', ar: 'النشاط التجاري'}[lang]}</label>
+                      <input type="text" name="activite" value={generalData.activite} onChange={handleGeneralChange} className="input-saas" placeholder={{fr: 'Ex: Location de véhicules', ar: 'مثال: تأجير السيارات'}[lang]} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">{{fr: 'Capital social', ar: 'رأس المال'}[lang]}</label>
+                      <input type="text" name="capital" value={generalData.capital} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: 1 000 000 DA" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="label-saas">{{fr: 'Slogan commercial', ar: 'الشعار التجاري'}[lang]}</label>
+                    <textarea name="slogan" value={generalData.slogan} onChange={handleGeneralChange} rows={2} className="input-saas resize-none" />
+                  </div>
+                </fieldset>
 
-                {/* Address */}
-                <div className="space-y-2">
-                  <label className="label-saas">{{fr: 'Adresse du siège', ar: 'عنوان المقر'}[lang]}</label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={generalData.address}
-                    onChange={handleGeneralChange}
-                    className="input-saas"
-                  />
-                </div>
+                {/* ── Identifiants fiscaux ── */}
+                <fieldset className="rounded-2xl border border-saas-border p-5 space-y-5">
+                  <legend className="px-2 text-[11px] font-black uppercase tracking-[0.2em] text-saas-primary-via">
+                    🧾 {{fr: 'Identifiants légaux', ar: 'المعرّفات القانونية'}[lang]}
+                  </legend>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="label-saas">RC — {{fr: 'Registre de commerce', ar: 'السجل التجاري'}[lang]}</label>
+                      <input type="text" name="rc" value={generalData.rc} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: 09/00-1050589 B22" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">ART / AI — {{fr: "Article d'imposition", ar: 'المادة الضريبية'}[lang]}</label>
+                      <input type="text" name="art" value={generalData.art} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: 16301234109" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">NIF — {{fr: "N° d'identification fiscale", ar: 'الرقم الجبائي'}[lang]}</label>
+                      <input type="text" name="nif" value={generalData.nif} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: 002216105058956" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">NIS — {{fr: "N° d'identification statistique", ar: 'الرقم الإحصائي'}[lang]}</label>
+                      <input type="text" name="nis" value={generalData.nis} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: 199529010181621" />
+                    </div>
+                  </div>
+                </fieldset>
 
-                {/* Phone */}
-                <div className="space-y-2">
-                  <label className="label-saas">📞 {{fr: 'Téléphone', ar: 'الهاتف'}[lang]}</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={generalData.phone}
-                    onChange={handleGeneralChange}
-                    className="input-saas"
-                  />
-                </div>
+                {/* ── Coordonnées ── */}
+                <fieldset className="rounded-2xl border border-saas-border p-5 space-y-5">
+                  <legend className="px-2 text-[11px] font-black uppercase tracking-[0.2em] text-saas-primary-via">
+                    📍 {{fr: 'Coordonnées', ar: 'معلومات الاتصال'}[lang]}
+                  </legend>
+                  <div className="space-y-2">
+                    <label className="label-saas">{{fr: 'Adresse du siège', ar: 'عنوان المقر'}[lang]}</label>
+                    <input type="text" name="address" value={generalData.address} onChange={handleGeneralChange} className="input-saas" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="label-saas">{{fr: 'Ville / Wilaya', ar: 'المدينة / الولاية'}[lang]}</label>
+                      <input type="text" name="city" value={generalData.city} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: Alger" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">📞 {{fr: 'Téléphone', ar: 'الهاتف'}[lang]}</label>
+                      <input type="tel" name="phone" value={generalData.phone} onChange={handleGeneralChange} className="input-saas" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">📱 {{fr: 'Deuxième téléphone', ar: 'رقم الهاتف الثاني'}[lang]}</label>
+                      <input type="tel" name="phoneNumber2" value={generalData.phoneNumber2} onChange={handleGeneralChange} className="input-saas" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">📠 Fax</label>
+                      <input type="tel" name="fax" value={generalData.fax} onChange={handleGeneralChange} className="input-saas" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="label-saas">📧 Email</label>
+                    <input type="email" name="email" value={generalData.email} onChange={handleGeneralChange} className="input-saas" placeholder="contact@agence.dz" />
+                  </div>
+                </fieldset>
 
-                {/* Second Phone Number */}
-                <div className="space-y-2">
-                  <label className="label-saas">📱 {{fr: 'Deuxième numéro de téléphone', ar: 'رقم الهاتف الثاني'}[lang]}</label>
-                  <input
-                    type="tel"
-                    name="phoneNumber2"
-                    value={generalData.phoneNumber2}
-                    onChange={handleGeneralChange}
-                    className="input-saas"
-                  />
-                </div>
-
-                {/* Bank Number */}
-                <div className="space-y-2">
-                  <label className="label-saas">🏦 {{fr: 'Numéro de compte bancaire', ar: 'رقم الحساب البنكي'}[lang]}</label>
-                  <input
-                    type="text"
-                    name="bankNumber"
-                    value={generalData.bankNumber}
-                    onChange={handleGeneralChange}
-                    className="input-saas"
-                  />
-                </div>
+                {/* ── Banque ── */}
+                <fieldset className="rounded-2xl border border-saas-border p-5 space-y-5">
+                  <legend className="px-2 text-[11px] font-black uppercase tracking-[0.2em] text-saas-primary-via">
+                    🏦 {{fr: 'Coordonnées bancaires', ar: 'المعلومات البنكية'}[lang]}
+                  </legend>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="label-saas">{{fr: 'Nom de la banque', ar: 'اسم البنك'}[lang]}</label>
+                      <input type="text" name="bankName" value={generalData.bankName} onChange={handleGeneralChange} className="input-saas" placeholder="Ex: BADR, BNA, CPA…" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="label-saas">{{fr: 'Compte bancaire / RIB', ar: 'رقم الحساب البنكي'}[lang]}</label>
+                      <input type="text" name="bankNumber" value={generalData.bankNumber} onChange={handleGeneralChange} className="input-saas" />
+                    </div>
+                  </div>
+                </fieldset>
 
                 {/* Logo */}
                 <div className="space-y-4">

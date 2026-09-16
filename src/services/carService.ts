@@ -208,12 +208,28 @@ export async function updateCar(
   updates: Partial<Car>
 ): Promise<{ success: boolean; car?: Car; error?: string }> {
   try {
-    const { data, error } = await supabase
-      .from('cars')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
+    // Si une colonne est absente du schéma (ex: migration fuel_level non
+    // appliquée), PostgREST renvoie PGRST204 « Could not find the 'X' column ».
+    // On retire la colonne fautive et on réessaie, pour ne jamais bloquer la
+    // sauvegarde du reste (image, prix, etc.).
+    const payload: Record<string, any> = { ...updates }
+    let data: any = null
+    let error: any = null
+    for (let attempt = 0; attempt < 8; attempt++) {
+      ({ data, error } = await supabase
+        .from('cars')
+        .update(payload)
+        .eq('id', id)
+        .select()
+        .single())
+      if (!error) break
+      const m = (error.message || '').match(/'([a-z_]+)' column/i)
+      if (error.code === 'PGRST204' && m && m[1] && m[1] in payload) {
+        delete payload[m[1]]
+        continue
+      }
+      break
+    }
 
     if (error) {
       console.error('Database error:', error)

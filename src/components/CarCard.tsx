@@ -1,7 +1,7 @@
 import React from 'react';
 import { Car, Language } from '../types';
 import { motion } from 'motion/react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ImageOff } from 'lucide-react';
 
 interface CarCardProps {
   car: Car;
@@ -68,12 +68,21 @@ export const CarCard: React.FC<CarCardProps> = ({
       className="glass-card overflow-hidden bg-white flex flex-col group"
     >
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={car.images[0] || 'https://picsum.photos/seed/car/400/300'}
-          alt={`${car.brand} ${car.model}`}
-          className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isHidden ? 'grayscale' : ''}`}
-          referrerPolicy="no-referrer"
-        />
+        {car.images?.[0] ? (
+          <img
+            src={car.images[0]}
+            alt={`${car.brand} ${car.model}`}
+            className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isHidden ? 'grayscale' : ''}`}
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div className={`w-full h-full flex flex-col items-center justify-center gap-2 bg-saas-bg text-saas-text-muted ${isHidden ? 'grayscale' : ''}`}>
+            <ImageOff size={34} strokeWidth={1.5} className="opacity-40" />
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">
+              {lang === 'fr' ? 'Pas de photo' : 'لا توجد صورة'}
+            </span>
+          </div>
+        )}
         <div className="absolute top-2 right-2 bg-saas-primary-start/80 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm shadow-lg">
           {car.year}
         </div>
