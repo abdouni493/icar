@@ -276,6 +276,7 @@ export const buildFactureHTML = (
 
       /* BOTTOM */
       .fx-bottom { display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px; margin-top: 10px; align-items: start; }
+      .fx-bottom-left { display: flex; flex-direction: column; gap: 10px; }
       .fx-words { border: 1.5px solid var(--or); border-radius: 8px; padding: 10px 12px; background: var(--soft); }
       .fx-words .lab { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--or); margin-bottom: 4px; }
       .fx-words .val { font-size: 12px; font-weight: 700; color: var(--noir); font-style: italic; }
@@ -286,8 +287,9 @@ export const buildFactureHTML = (
       .fx-totals td:last-child { text-align: right; font-weight: 700; color: var(--noir); }
       .fx-totals tr.grand td { background: var(--or); color: #fff; font-size: 14px; font-weight: 900; border-bottom: none; }
 
-      /* PIED : échéance à gauche, signatures client & agence à droite */
-      .fx-footer { margin-top: 12px; border-top: 2px solid var(--or); padding-top: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: stretch; }
+      /* PIED : signatures client & agence */
+      .fx-footer { margin-top: 12px; border-top: 2px solid var(--or); padding-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+      /* Échéance : encart placé juste sous le montant en toutes lettres */
       .fx-due { border: 1.5px solid var(--or); border-left: 4px solid var(--or); border-radius: 8px; background: var(--soft); padding: 8px 11px; }
       .fx-due .dk { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: var(--or); }
       .fx-due .dv { font-size: 15px; font-weight: 900; color: var(--noir); margin-top: 3px; }
@@ -378,11 +380,18 @@ export const buildFactureHTML = (
         </tbody>
       </table>
 
-      <!-- BOTTOM : montant en lettres + totaux -->
+      <!-- BAS DE FACTURE : montant en lettres + échéance, puis totaux -->
       <div class="fx-bottom">
-        <div class="fx-words">
-          <div class="lab">Arrêtée la présente facture à la somme de :</div>
-          <div class="val">${amountInWordsDZD(total)}</div>
+        <div class="fx-bottom-left">
+          <div class="fx-words">
+            <div class="lab">Arrêtée la présente facture à la somme de :</div>
+            <div class="val">${amountInWordsDZD(total)}</div>
+          </div>
+          <div class="fx-due">
+            <div class="dk">Date d’échéance</div>
+            <div class="dv">${ltr(dueDateLabel)}</div>
+            <div class="dn">Règlement exigible à cette date.</div>
+          </div>
         </div>
         <div class="fx-totals">
           <table>
@@ -396,13 +405,8 @@ export const buildFactureHTML = (
 
       <div class="fx-spacer"></div>
 
-      <!-- PIED : date d’échéance (gauche) · signatures client & agence -->
+      <!-- PIED : signatures client & agence -->
       <div class="fx-footer">
-        <div class="fx-due">
-          <div class="dk">Date d’échéance</div>
-          <div class="dv">${ltr(dueDateLabel)}</div>
-          <div class="dn">Règlement exigible à cette date.</div>
-        </div>
         <div class="fx-sign">
           <div class="st">Signature du client</div>
           <div class="sl"></div>
