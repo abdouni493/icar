@@ -2481,6 +2481,8 @@ export const PersonalizationModal: React.FC<{
   const [paymentMode, setPaymentMode] = useState('Espèces');
   // Numéro de facture (par défaut dérivé de la réservation, éditable)
   const [factureNumber, setFactureNumber] = useState('');
+  // Date d'échéance de la facture : initialisée sur la date de début de la location
+  const [dueDate, setDueDate] = useState(reservation?.step1?.departureDate || '');
 
   // Recherche / création d'entreprise enregistrée (module Entreprises)
   const [entrepriseQuery, setEntrepriseQuery] = useState('');
@@ -3947,6 +3949,7 @@ export const PersonalizationModal: React.FC<{
     societe,
     paymentMode,
     factureNumber,
+    dueDate,
   });
 
   const generateEngagementHTML = (templateLang: 'fr' | 'ar'): string => {
@@ -5461,7 +5464,7 @@ export const PersonalizationModal: React.FC<{
                 <div className="text-xs font-black uppercase tracking-wider text-slate-700 mb-3">
                   &#x1F9FE; {lang === 'fr' ? 'Paramètres de la facture' : 'إعدادات الفاتورة'}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-600 uppercase tracking-wide block">
                       {lang === 'fr' ? 'N° de facture' : 'رقم الفاتورة'}
@@ -5485,6 +5488,20 @@ export const PersonalizationModal: React.FC<{
                       <option value="Chèque">{lang === 'fr' ? 'Chèque' : 'شيك'}</option>
                       <option value="Carte">{lang === 'fr' ? 'Carte bancaire' : 'بطاقة بنكية'}</option>
                     </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide block">
+                      {lang === 'fr' ? 'Date d’échéance' : 'تاريخ الاستحقاق'}
+                    </label>
+                    <input type="date" value={dueDate}
+                      onChange={e => setDueDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
+                    />
+                    <div className="text-[11px] text-slate-500">
+                      {lang === 'fr'
+                        ? 'Par défaut : date de début de la location.'
+                        : 'افتراضياً: تاريخ بداية الإيجار.'}
+                    </div>
                   </div>
                 </div>
               </div>
