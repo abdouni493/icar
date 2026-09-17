@@ -24,9 +24,29 @@ const COLORS = [
 
 export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = ({ 
   lang, 
-  reservations,
+  reservations: incomingReservations,
   onSelectReservation 
 }) => {
+  /**
+   * Certaines réservations arrivent incomplètes : véhicule ou client supprimé,
+   * jointure vide côté base, brouillon sans dates… Le calendrier lit partout
+   * `res.car.id`, `res.client.firstName` ou `res.step1.departureDate` : une
+   * seule ligne cassée faisait planter toute la vue
+   * (« Cannot read properties of null (reading 'id') »).
+   * On les écarte une bonne fois ici plutôt qu'à chaque accès.
+   */
+  const reservations = useMemo(
+    () => (incomingReservations || []).filter(
+      (res): res is ReservationDetails =>
+        !!res && !!res.car && !!res.client && !!res.step1 &&
+        !!res.step1.departureDate && !!res.step1.returnDate
+    ),
+    [incomingReservations]
+  );
+
+  /** Nombre de réservations écartées, signalé à l'utilisateur. */
+  const skippedCount = (incomingReservations?.length || 0) - reservations.length;
+
   const [currentDate, setCurrentDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'cars' | 'fleet'>('month');
@@ -105,8 +125,8 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
   const uniqueCars = useMemo(() => {
     const carsMap = new Map();
     reservations.forEach(res => {
-      const key = res.car.id;
-      if (!carsMap.has(key)) {
+      const key = res.car?.id;
+      if (key && !carsMap.has(key)) {
         carsMap.set(key, { ...res.car, id: key });
       }
     });
@@ -117,7 +137,7 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
     return reservations.filter(res => {
       const resStart = new Date(res.step1.departureDate);
       const resEnd = new Date(res.step1.returnDate);
-      return res.car.id === carId && resStart <= endDate && resEnd >= startDate;
+      return res.car?.id === carId && resStart <= endDate && resEnd >= startDate;
     });
   };
 
@@ -372,6 +392,19 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
 
   return (
     <div className="space-y-6">
+      {/* Les réservations écartées faute de véhicule / client / dates sont signalées
+          plutôt que de disparaître en silence. */}
+      {skippedCount > 0 && (
+        <div className="flex items-start gap-3 px-4 py-3 rounded-lg border-2 border-amber-300 bg-amber-50 text-amber-900">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <p className="text-sm font-bold">
+            {lang === 'fr'
+              ? `${skippedCount} réservation(s) ne sont pas affichées : véhicule, client ou dates manquants.`
+              : `${skippedCount} حجز/حجوزات غير معروضة: المركبة أو العميل أو التواريخ مفقودة.`}
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -562,7 +595,7 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
                               whileHover={{ scaleY: 1.2, y: -1 }}
                             >
                               <div className={`w-full h-full bg-gradient-to-r ${color.bg} rounded shadow-xs flex items-center justify-center text-[7px] font-bold text-white px-0.5 border border-white/30`}>
-                                {res.client.firstName.substring(0, 2)}
+                                {(res.client.firstName || '?').substring(0, 2)}
                               </div>
 
                               {/* Compact Tooltip */}
@@ -724,7 +757,7 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
                                   >
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <span className="text-[7px] font-black text-white opacity-90">
-                                        {dayReservations[0].client.firstName[0]}{dayReservations[0].client.lastName[0]}
+                                        {(dayReservations[0].client.firstName || '?')[0]}{(dayReservations[0].client.lastName || '')[0] || ''}
                                       </span>
                                     </div>
                                     <div className="absolute -inset-full opacity-0 group-hover:opacity-100 bg-white/20 transition-opacity pointer-events-none" />
@@ -762,7 +795,7 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
                               className={`p-1.5 rounded-md bg-gradient-to-r ${color.bg} text-white text-[9px] font-bold cursor-pointer hover:shadow-md transition-all border border-white/30`}
                             >
                               <div className="flex items-center justify-between gap-1">
-                                <span className="truncate">{res.client.firstName} {res.client.lastName[0]}</span>
+                                <span className="truncate">{res.client.firstName} {(res.client.lastName || '')[0] || ''}</span>
                                 <span className="opacity-90 text-[7px] whitespace-nowrap">{startDate} → {endDate}</span>
                               </div>
                             </motion.div>
@@ -874,7 +907,7 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
                               whileHover={{ scaleY: 1.2, y: -1 }}
                             >
                               <div className={`w-full h-full bg-gradient-to-r ${color.bg} rounded shadow-xs flex items-center justify-center text-[7px] font-bold text-white px-0.5 border border-white/30`}>
-                                {res.client.firstName.substring(0, 2)}
+                                {(res.client.firstName || '?').substring(0, 2)}
                               </div>
 
                               {/* Compact Tooltip */}
@@ -1290,7 +1323,7 @@ export const ReservationTimelineView: React.FC<ReservationTimelineViewProps> = (
                                       {isFirst && (
                                         <div className="absolute inset-0 flex items-center px-2 overflow-hidden">
                                           <span className="text-white text-[9px] font-bold truncate drop-shadow">
-                                            {res.client.firstName} {res.client.lastName.charAt(0)}.
+                                            {res.client.firstName} {(res.client.lastName || '').charAt(0)}.
                                           </span>
                                         </div>
                                       )}

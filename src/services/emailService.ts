@@ -1,6 +1,7 @@
 import { supabase } from '../supabase';
 import { ReservationDetails } from '../types';
 import html2pdf from 'html2pdf.js';
+import { buildFactureHTML, loadFactureAgency, FactureOptions } from '../components/FactureTemplate';
 
 /**
  * Email Service for handling contract email operations
@@ -31,12 +32,18 @@ export class EmailService {
       try {
         const element = document.createElement('div');
         element.innerHTML = htmlContent;
-        
+        // Largeur A4 imposée et fond blanc : sans cela le rendu html2canvas prend
+        // la largeur de la fenêtre et le PDF sort décadré / grisé.
+        element.style.width = '210mm';
+        element.style.background = '#ffffff';
+
         const options = {
           margin: 0,
           filename: `${fileName}.pdf`,
           image: { type: 'jpeg' as const, quality: 0.98 },
-          html2canvas: { scale: 2 },
+          // useCORS : indispensable pour que le logo de l'agence (URL distante)
+          // apparaisse sur le PDF au lieu d'un trou blanc.
+          html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', windowWidth: 794 },
           jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
           pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
@@ -470,7 +477,9 @@ export class EmailService {
   static async generateDocumentHTML(
     reservation: ReservationDetails,
     templateLang: 'fr' | 'ar',
-    documentType: 'contract' | 'devis' | 'recu' | 'engagement' | 'facture' | 'inspection' | 'reservation'
+    documentType: 'contract' | 'devis' | 'recu' | 'engagement' | 'facture' | 'inspection' | 'reservation',
+    /** Options propres à la facture (société, mode de paiement, n°) — ignorées pour les autres documents. */
+    factureOptions: FactureOptions = {},
   ): Promise<string> {
     // Get the base contract HTML
     let htmlContent = await this.generateContractHTML(reservation, templateLang);
@@ -540,7 +549,7 @@ export class EmailService {
       case 'recu':
         return await this.generateRecuEmailHTML(reservation, templateLang);
       case 'facture':
-        return await this.generateFactureEmailHTML(reservation, templateLang);
+        return await this.generateFactureEmailHTML(reservation, templateLang, factureOptions);
       case 'devis':
         return await this.generateDevisEmailHTML(reservation, templateLang);
       case 'reservation':
@@ -1212,146 +1221,23 @@ export class EmailService {
   }
 
   /**
-   * Generate facture email — same design as printed facture (amber #d97706)
+   * Facture envoyée par email : exactement le même gabarit que la facture
+   * imprimée (module partagé `FactureTemplate`), converti en PDF avant envoi.
+   * Les options société / mode de paiement / n° de facture peuvent être
+   * fournies par l'appelant (modale d'impression) ; sinon on retombe sur les
+   * valeurs par défaut.
    */
-  private static async generateFactureEmailHTML(reservation: ReservationDetails, templateLang: string = 'ar'): Promise<string> {
-    const ag = await this.loadAgency();
-    const isFrench = templateLang === 'fr';
-    const locale   = isFrench ? 'fr-FR' : 'ar-DZ';
-    const today    = new Date().toLocaleDateString(locale);
-    const client   = reservation.client;
-    const car      = reservation.car;
-    const depDate  = reservation.step1?.departureDate || '';
-    const retDate  = reservation.step1?.returnDate    || '';
-    const days     = reservation.totalDays || 0;
-    const pricePerDay = (car as any).priceDay || (car as any).price_per_day || 0;
-    const subtotal = reservation.totalPrice || 0;
-    const tva      = reservation.tvaApplied ? subtotal * 0.19 : 0;
-    const timbre   = 200;
-    const total    = subtotal + tva + timbre;
-
-    return `<!DOCTYPE html>
-<html dir="ltr" lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Facture</title>
-  <style>
-    * { margin:0;padding:0;box-sizing:border-box; }
-    body { font-family:'Segoe UI',Arial,sans-serif;color:#1a1a1a;background:white;font-size:12px;line-height:1.5; }
-    .page { width:100%;max-width:210mm;padding:10mm;margin:0 auto; }
-    .header { border-bottom:3px solid #d97706;padding-bottom:10px;margin-bottom:10px;display:flex;align-items:center;gap:14px; }
-    .logo { width:50px;height:50px;object-fit:contain;flex-shrink:0;border-radius:4px; }
-    .agency-name { font-size:20px;font-weight:700;color:#d97706;margin-bottom:2px; }
-    .doc-title { font-size:15px;font-weight:700;color:#d97706;text-decoration:underline; }
-    .invoice-meta { display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px; }
-    .meta-box { padding:6px 10px;border-radius:4px;background:#fff8f0;border-left:3px solid #d97706;font-size:11px; }
-    .meta-label { font-weight:600;color:#92400e;font-size:10px;text-transform:uppercase; }
-    .meta-value { color:#1a1a1a;font-weight:600;margin-top:1px; }
-    .agency-strip { width:100%;border:1.5px solid #d97706;border-radius:4px;padding:8px 12px;margin-bottom:10px;background:#fff8f0; }
-    .strip-row { display:flex;gap:5px;margin:3px 0;font-size:11px; }
-    .strip-label { font-weight:700;color:#d97706;min-width:150px; }
-    .strip-value { color:#333; }
-    .two-col { display:grid;grid-template-columns:1.1fr 1fr;gap:10px;margin-bottom:10px; }
-    .info-section { border:1.5px solid #d97706;border-radius:5px;padding:10px 12px;background:#fffcf8; }
-    .sec-title { font-weight:700;font-size:11px;color:#d97706;text-transform:uppercase;border-bottom:1px solid #fde68a;padding-bottom:5px;margin-bottom:7px; }
-    .irow { display:flex;gap:6px;margin:4px 0;font-size:11px; }
-    .ilabel { font-weight:600;color:#92400e;min-width:70px;flex-shrink:0; }
-    .ivalue { color:#1a1a1a; }
-    .items-table { width:100%;border-collapse:collapse;margin-bottom:10px;font-size:11px;border:1.5px solid #d97706; }
-    .items-table th { background:#d97706;color:white;border:1px solid #d97706;padding:7px 6px;text-align:center;font-weight:700;font-size:10px;text-transform:uppercase; }
-    .items-table td { border:1px solid #e5e5e5;padding:7px 6px;text-align:center;vertical-align:middle; }
-    .items-table td.left { text-align:left;padding-left:10px; }
-    .items-table tbody tr { background:#fffcf8; }
-    .totals-wrap { display:flex;justify-content:flex-end;margin-bottom:10px; }
-    .totals-table { width:250px;border-collapse:collapse;font-size:12px;border:1.5px solid #d97706; }
-    .totals-table tr td { border:1px solid #e5e5e5;padding:7px 10px; }
-    .totals-table tr td:first-child { font-weight:600;background:#fff8f0;color:#92400e;white-space:nowrap; }
-    .totals-table tr td:last-child { text-align:right;font-weight:600; }
-    .totals-table tr.grand td { background:#d97706;color:white;font-weight:700;font-size:13px;border-color:#d97706; }
-  </style>
-</head>
-<body>
-  <div class="page">
-
-    <!-- Header -->
-    <div class="header">
-      ${ag.logo ? `<img src="${ag.logo}" alt="Logo" class="logo">` : ''}
-      <div style="flex:1;">
-        <div class="agency-name">${ag.name}</div>
-        <div class="doc-title">FACTURE</div>
-      </div>
-      <div style="text-align:right;font-size:11px;color:#92400e;">
-        <div style="font-weight:700;">N° ${reservation.id?.substring(0, 8).toUpperCase() || '000'}</div>
-        <div>${today}</div>
-      </div>
-    </div>
-
-    <!-- Agency strip -->
-    <div class="agency-strip">
-      ${ag.name    ? `<div class="strip-row"><span class="strip-label">Nom de l'enseigne :</span><span class="strip-value">${ag.name}</span></div>` : ''}
-      ${ag.address ? `<div class="strip-row"><span class="strip-label">Adresse :</span><span class="strip-value">${ag.address}</span></div>` : ''}
-      ${ag.phone   ? `<div class="strip-row"><span class="strip-label">📞 Téléphone :</span><span class="strip-value">${ag.phone}${ag.phone2 ? ' / ' + ag.phone2 : ''}</span></div>` : ''}
-      ${ag.bank    ? `<div class="strip-row"><span class="strip-label">🏦 Numéro de compte :</span><span class="strip-value">${ag.bank}</span></div>` : ''}
-    </div>
-
-    <!-- Agency + Client -->
-    <div class="two-col">
-      <div class="info-section">
-        <div class="sec-title">🏢 Agence / Fournisseur</div>
-        <div class="irow"><span class="ilabel">Agence :</span><span class="ivalue">${ag.name}</span></div>
-        ${ag.address ? `<div class="irow"><span class="ilabel">Adresse :</span><span class="ivalue">${ag.address}</span></div>` : ''}
-        ${ag.phone   ? `<div class="irow"><span class="ilabel">Tél :</span><span class="ivalue">${ag.phone}</span></div>` : ''}
-      </div>
-      <div class="info-section">
-        <div class="sec-title">👤 Client</div>
-        <div class="irow"><span class="ilabel">Nom :</span><span class="ivalue">${client.firstName || ''} ${client.lastName || ''}</span></div>
-        ${client.completeAddress || client.wilaya ? `<div class="irow"><span class="ilabel">Adresse :</span><span class="ivalue">${client.completeAddress || client.wilaya}</span></div>` : ''}
-        ${client.phone ? `<div class="irow"><span class="ilabel">Tél :</span><span class="ivalue">${client.phone}</span></div>` : ''}
-        ${client.idCardNumber ? `<div class="irow"><span class="ilabel">N° CIN :</span><span class="ivalue">${client.idCardNumber}</span></div>` : ''}
-      </div>
-    </div>
-
-    <!-- Invoice meta row -->
-    <div class="invoice-meta">
-      <div class="meta-box"><div class="meta-label">📅 Date</div><div class="meta-value">${today}</div></div>
-      <div class="meta-box"><div class="meta-label">🔢 N° Facture</div><div class="meta-value">${reservation.id?.substring(0, 8).toUpperCase()}</div></div>
-      <div class="meta-box"><div class="meta-label">🚗 Véhicule</div><div class="meta-value">${car.brand || ''} ${car.model || ''}</div></div>
-    </div>
-
-    <!-- Items table -->
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th>Réf</th><th>Désignation</th><th>Immatriculé</th><th>Du</th><th>Au</th><th>Jours</th><th>Prix/J</th><th>HT</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>${reservation.id?.substring(0, 3).toUpperCase() || '001'}</td>
-          <td class="left">${car.brand || ''} ${car.model || ''}</td>
-          <td>${car.registration || 'N/A'}</td>
-          <td>${depDate}</td>
-          <td>${retDate}</td>
-          <td>${days}</td>
-          <td>${pricePerDay.toLocaleString('fr-FR')} DA</td>
-          <td>${subtotal.toLocaleString('fr-FR')} DA</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Totals -->
-    <div class="totals-wrap">
-      <table class="totals-table">
-        <tr><td>TOTAL HT :</td><td>${subtotal.toLocaleString('fr-FR')} DA</td></tr>
-        <tr><td>TVA (19%) :</td><td>${tva.toLocaleString('fr-FR')} DA</td></tr>
-        <tr><td>TIMBRE :</td><td>${timbre.toLocaleString('fr-FR')} DA</td></tr>
-        <tr class="grand"><td>TOTAL À PAYER :</td><td>${total.toLocaleString('fr-FR')} DA</td></tr>
-      </table>
-    </div>
-
-  </div>
-</body>
-</html>`;
+  private static async generateFactureEmailHTML(
+    reservation: ReservationDetails,
+    _templateLang: string = 'ar',
+    options: FactureOptions = {},
+  ): Promise<string> {
+    const agency = options.agency ?? await loadFactureAgency(supabase);
+    return buildFactureHTML(reservation, {
+      ...options,
+      agency,
+      paymentMode: options.paymentMode || 'Espèces',
+    });
   }
 
   /**

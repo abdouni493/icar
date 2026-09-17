@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Language, ReservationDetails, Client, Car, Entreprise } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, Users, Car as CarIcon, Plus, Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MapPin, Fuel, Camera, FileText, CreditCard, DollarSign, Printer, AlertTriangle, Grid3x3, CalendarDays, X, Zap, Gauge, Heart, ChevronDown } from 'lucide-react';
+import { Calendar, Users, Car as CarIcon, Plus, Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MapPin, Fuel, Camera, FileText, CreditCard, DollarSign, Printer, AlertTriangle, Grid3x3, CalendarDays, X, Zap, Gauge, Heart, ChevronDown, Mail, Send, Loader } from 'lucide-react';
 import { ReservationDetailsView } from './ReservationDetailsView';
 import { CreateReservationForm } from './CreateReservationForm';
 import { EditReservationForm } from './EditReservationForm';
@@ -19,6 +19,8 @@ import { getCars } from '../services/carService';
 import { supabase } from '../supabase';
 import { generateConditionsPrintHTML, getConditionsTemplate } from '../constants/ConditionsTemplates';
 import { goldPrintOverrideCSS } from './printTheme';
+import { buildFactureHTML, FactureSociete } from './FactureTemplate';
+import { EmailService } from '../services/emailService';
 
 /**
  * Force a phone number (or any latin/number string) to render strictly left-to-right,
@@ -34,59 +36,6 @@ const ltrPhone = (value: any): string =>
  * Alias of {@link ltrPhone}; named separately for readability at call sites.
  */
 const ltr = ltrPhone;
-
-/** Convertit un entier (0 → 999 999 999) en toutes lettres françaises. */
-const numberToFrenchWords = (value: number): string => {
-  const n = Math.floor(Math.abs(Number(value) || 0));
-  if (n === 0) return 'zéro';
-  const units = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf',
-    'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
-  const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt'];
-
-  const below100 = (x: number): string => {
-    if (x < 20) return units[x];
-    const t = Math.floor(x / 10);
-    const u = x % 10;
-    if (t === 7 || t === 9) {
-      if (t === 7 && u === 1) return 'soixante et onze';
-      return tens[t] + '-' + units[10 + u];
-    }
-    if (u === 0) return t === 8 ? 'quatre-vingts' : tens[t];
-    if (u === 1 && t >= 2 && t <= 6) return tens[t] + ' et un';
-    return tens[t] + '-' + units[u];
-  };
-
-  const below1000 = (x: number): string => {
-    const h = Math.floor(x / 100);
-    const rem = x % 100;
-    let str = '';
-    if (h > 0) {
-      str = h === 1 ? 'cent' : units[h] + ' cent';
-      if (rem === 0 && h > 1) str += 's';
-    }
-    if (rem > 0) str = str ? str + ' ' + below100(rem) : below100(rem);
-    return str;
-  };
-
-  const millions = Math.floor(n / 1_000_000);
-  const thousands = Math.floor((n % 1_000_000) / 1000);
-  const rest = n % 1000;
-  let result = '';
-  if (millions > 0) result += millions === 1 ? 'un million' : below1000(millions) + ' millions';
-  if (thousands > 0) result += (result ? ' ' : '') + (thousands === 1 ? 'mille' : below1000(thousands) + ' mille');
-  if (rest > 0) result += (result ? ' ' : '') + below1000(rest);
-  return result.trim();
-};
-
-/** Montant en toutes lettres pour une facture (dinars algériens + centimes), en MAJUSCULES. */
-const amountInWordsDZD = (amount: number): string => {
-  const abs = Math.abs(Number(amount) || 0);
-  const dinars = Math.floor(abs);
-  const centimes = Math.round((abs - dinars) * 100);
-  let words = `${numberToFrenchWords(dinars)} dinar${dinars > 1 ? 's' : ''} algérien${dinars > 1 ? 's' : ''}`;
-  if (centimes > 0) words += ` et ${numberToFrenchWords(centimes)} centime${centimes > 1 ? 's' : ''}`;
-  return words.toUpperCase();
-};
 
 interface PlannerPageProps {
   lang: Language;
@@ -2543,6 +2492,140 @@ export const PersonalizationModal: React.FC<{
   // Affichage des prix sur le contrat imprimé (activé par défaut)
   const [showPricesOnContract, setShowPricesOnContract] = useState(true);
 
+  // ── Envoi par email depuis la modale d'impression ─────────────────────────
+  // Même mécanique que la modale « Envoyer par email » : le document affiché
+  // dans l'aperçu est converti en PDF puis expédié en pièce jointe.
+  const [showEmailPanel, setShowEmailPanel] = useState(false);
+  const [emailTo, setEmailTo] = useState(reservation?.client?.email || '');
+  const [senderEmail, setSenderEmail] = useState('');
+  const [loadingSender, setLoadingSender] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [saveEmailToClient, setSaveEmailToClient] = useState(false);
+  const [emailNotice, setEmailNotice] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+
+  /** Type de document attendu par le service d'email (et par l'API Brevo). */
+  const emailDocumentType: 'contract' | 'devis' | 'recu' | 'engagement' | 'facture' | 'inspection' = (() => {
+    const t = (type || '').toLowerCase();
+    if (t === 'invoice' || t === 'facture') return 'facture';
+    if (t === 'quote' || t === 'devis') return 'devis';
+    if (t === 'payment' || t === 'versement' || t === 'receipt' || t === 'recu') return 'recu';
+    if (t === 'engagement') return 'engagement';
+    if (t === 'inspection') return 'inspection';
+    return 'contract';
+  })();
+
+  // L'email expéditeur vient des contacts du site, comme dans la modale d'envoi.
+  useEffect(() => {
+    if (!showEmailPanel || senderEmail) return;
+    let cancelled = false;
+    (async () => {
+      setLoadingSender(true);
+      try {
+        const contacts = await DatabaseService.getWebsiteContacts();
+        if (cancelled) return;
+        if (contacts?.email) {
+          setSenderEmail(contacts.email);
+        } else {
+          setEmailNotice({
+            type: 'error',
+            message: lang === 'fr'
+              ? "Email de contact non configuré. Renseignez-le dans les paramètres du site."
+              : 'لم يتم تكوين بريد الاتصال. يرجى تكوينه في الإعدادات.',
+          });
+        }
+      } catch {
+        if (!cancelled) setEmailNotice({
+          type: 'error',
+          message: lang === 'fr' ? "Erreur lors du chargement de l'email de contact" : 'خطأ في تحميل بريد الاتصال',
+        });
+      } finally {
+        if (!cancelled) setLoadingSender(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [showEmailPanel, senderEmail, lang]);
+
+  // Les messages de statut disparaissent d'eux-mêmes (sauf le succès, qui ferme le panneau).
+  useEffect(() => {
+    if (!emailNotice || emailNotice.type === 'success') return;
+    const timer = setTimeout(() => setEmailNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [emailNotice]);
+
+  /**
+   * Envoie en PDF le document exactement tel qu'il est prévisualisé : pour la
+   * facture, cela inclut le n°, le mode de paiement et les informations société
+   * saisis juste au-dessus.
+   */
+  const handleSendByEmail = async () => {
+    const to = emailTo.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      setEmailNotice({
+        type: 'error',
+        message: lang === 'fr' ? 'Veuillez entrer une adresse email valide' : 'يرجى إدخال عنوان بريد إلكتروني صحيح',
+      });
+      return;
+    }
+    if (!senderEmail) {
+      setEmailNotice({
+        type: 'error',
+        message: lang === 'fr' ? 'Email de contact non configuré' : 'بريد الاتصال غير مكون',
+      });
+      return;
+    }
+
+    try {
+      setIsSending(true);
+      setEmailNotice({
+        type: 'info',
+        message: lang === 'fr' ? 'Génération du PDF et envoi en cours…' : 'جاري إنشاء ملف PDF والإرسال...',
+      });
+
+      const result = await EmailService.sendContractEmail({
+        clientEmail: to,
+        clientName: `${reservation?.client?.firstName || ''} ${reservation?.client?.lastName || ''}`.trim(),
+        reservationId: reservation.id,
+        senderEmail,
+        htmlContent: getCurrentTemplate(),
+        templateLang: selectedTemplate,
+        documentType: emailDocumentType,
+      });
+
+      if (!result.success) {
+        setEmailNotice({
+          type: 'error',
+          message: result.message || (lang === 'fr' ? "Erreur lors de l'envoi" : 'خطأ في الإرسال'),
+        });
+        return;
+      }
+
+      if (saveEmailToClient && to !== reservation?.client?.email) {
+        try {
+          await DatabaseService.updateClient(reservation.client.id, { email: to });
+        } catch (updateError) {
+          console.error('Error updating client email:', updateError);
+        }
+      }
+
+      setEmailNotice({
+        type: 'success',
+        message: lang === 'fr' ? `Document envoyé à ${to} ✅` : `تم إرسال المستند إلى ${to} ✅`,
+      });
+      setTimeout(() => {
+        setShowEmailPanel(false);
+        setEmailNotice(null);
+      }, 1800);
+    } catch (error: any) {
+      setEmailNotice({
+        type: 'error',
+        message: error?.message || (lang === 'fr' ? "Erreur lors de l'envoi du document" : 'خطأ في إرسال المستند'),
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // Charge les entreprises dès que l'option société est activée
   useEffect(() => {
     if (!isSociete) return;
@@ -3851,270 +3934,20 @@ export const PersonalizationModal: React.FC<{
     return html;
   };
 
+  /**
+   * La facture utilise le gabarit partage {@link buildFactureHTML} : le meme
+   * HTML sert a l'apercu, a l'impression et a la piece jointe PDF envoyee par
+   * email, de sorte que le client recoit exactement le document affiche ici.
+   */
   const generateFactureHTML = (
-    templateLang: 'fr' | 'ar',
-    societe?: {
-      entreprise?: string; conducteur?: string; rc?: string; art?: string; nis?: string; nif?: string;
-      email?: string; address?: string; city?: string; bp?: string; phone?: string; fax?: string;
-      formeJuridique?: string; activite?: string; capital?: string;
-    } | null,
-  ): string => {
-    const subtotal = reservation.totalPrice || 0;
-    const tvaAmount = reservation.tvaApplied ? subtotal * 0.19 : 0;
-    const timbre = 200;
-    const total = subtotal + tvaAmount + timbre;
-    const departDate = reservation?.step1?.departureDate || '';
-    const returnDate = reservation?.step1?.returnDate || '';
-    const days = reservation?.totalDays || 0;
-    const pricePerDay = (reservation?.car as any)?.priceDay || (reservation?.car as any)?.price_per_day || 0;
-
-    const a = agencySettings || {};
-    const today = new Date().toLocaleDateString('fr-FR');
-    const factNo = (factureNumber && factureNumber.trim())
-      ? factureNumber.trim()
-      : `${reservation?.id ? reservation.id.toString().substring(0, 6).toUpperCase() : '000000'}/${new Date().getFullYear()}`;
-    const ref = reservation?.id ? reservation.id.toString().substring(0, 4).toUpperCase() : '0001';
-
-    // Ligne clé/valeur : n'est rendue que si la valeur existe.
-    const kv = (label: string, value: any, ltrValue = false) =>
-      value ? `<div class="kv"><span class="kv-k">${label}</span><span class="kv-v">${ltrValue ? ltr(value) : value}</span></div>` : '';
-    // Badge identifiant légal (RC / NIF / NIS / ART) — rendu seulement si présent.
-    const idBadge = (label: string, value: any) =>
-      value ? `<div class="id-badge"><span class="id-k">${label}</span><span class="id-v">${ltr(value)}</span></div>` : '';
-
-    // ── FOURNISSEUR (agence) ──
-    const agencyName = a.name || 'NOM DE L’AGENCE';
-    const agencyIdBadges = [
-      idBadge('RC', a.rc), idBadge('ART/AI', a.art), idBadge('NIF', a.nif), idBadge('NIS', a.nis),
-    ].join('');
-    const agencyBody = [
-      kv('Forme juridique', a.forme_juridique),
-      kv('Activité', a.activite),
-      kv('Capital', a.capital),
-      kv('Adresse', [a.address, a.city].filter(Boolean).join(', ')),
-      kv('Téléphone', [a.phone, a.phone_number_2].filter(Boolean).map((p: string) => ltr(p)).join(' / ')),
-      kv('Fax', a.fax, true),
-      kv('Email', a.email),
-    ].join('');
-
-    // ── CLIENT (société ou particulier) ──
-    const isSoc = !!societe;
-    const clientName = isSoc
-      ? (societe!.entreprise || `${reservation?.client?.firstName || ''} ${reservation?.client?.lastName || ''}`.trim())
-      : `${reservation?.client?.firstName || ''} ${reservation?.client?.lastName || ''}`.trim() || 'Client';
-    const clientIdBadges = isSoc
-      ? [idBadge('RC', societe!.rc), idBadge('ART/AI', societe!.art), idBadge('NIF', societe!.nif), idBadge('NIS', societe!.nis)].join('')
-      : '';
-    const clientBody = isSoc
-      ? [
-          kv('Forme juridique', societe!.formeJuridique),
-          kv('Activité', societe!.activite),
-          kv('Conducteur société', societe!.conducteur),
-          kv('Adresse', [societe!.address, societe!.city].filter(Boolean).join(', ') || reservation?.client?.completeAddress || reservation?.client?.wilaya),
-          kv('Boîte postale', societe!.bp, true),
-          kv('Téléphone', societe!.phone || reservation?.client?.phone, true),
-          kv('Fax', societe!.fax, true),
-          kv('Email', societe!.email),
-        ].join('')
-      : [
-          kv('Adresse', reservation?.client?.completeAddress || reservation?.client?.wilaya),
-          kv('Téléphone', reservation?.client?.phone, true),
-          kv('N° CIN', reservation?.client?.idCardNumber, true),
-          kv('N° Permis', (reservation?.client as any)?.licenseNumber, true),
-        ].join('');
-
-    const clientTitle = isSoc ? 'Client — Société (Locataire)' : 'Client (Locataire)';
-
-    const html = `
-    <!DOCTYPE html>
-    <html dir="ltr" lang="fr">
-    <head>
-      <meta charset="UTF-8">
-      <title>Facture ${factNo}</title>
-      <style>
-        ${goldPrintOverrideCSS(false)}
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --or: #B8912E; --or-2: #C8A13C; --noir: #14130E; --line: #e6ddc7; --soft: #fbf7ee; }
-        body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          line-height: 1.45; color: #1a1a1a; background: #f5f5f5;
-          -webkit-print-color-adjust: exact; print-color-adjust: exact;
-        }
-        .page { width: 210mm; min-height: 297mm; padding: 10mm 11mm; margin: 10px auto; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,.1); display: flex; flex-direction: column; }
-
-        /* HEADER */
-        .fx-header { display: flex; align-items: stretch; gap: 14px; border: 2px solid var(--noir); border-radius: 8px; overflow: hidden; }
-        .fx-brand { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--noir); color: #fff; flex: 1; }
-        .fx-logo { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 6px; padding: 3px; flex-shrink: 0; }
-        .fx-logo-ph { width: 60px; height: 60px; border-radius: 6px; background: var(--or); display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
-        .fx-brand-name { font-size: 20px; font-weight: 800; letter-spacing: .3px; color: var(--or-2); }
-        .fx-brand-sub { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #d8cba6; margin-top: 2px; }
-        .fx-title { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 22px; background: var(--or); color: #fff; }
-        .fx-title b { font-size: 22px; font-weight: 900; letter-spacing: 3px; }
-        .fx-title span { font-size: 10px; letter-spacing: 1px; opacity: .9; }
-
-        /* META BAR */
-        .fx-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-        .fx-meta .cell { border: 1px solid var(--line); border-left: 3px solid var(--or); border-radius: 6px; padding: 6px 10px; background: var(--soft); }
-        .fx-meta .k { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #8a6d1f; }
-        .fx-meta .v { font-size: 13px; font-weight: 700; color: var(--noir); margin-top: 1px; }
-
-        /* PARTIES */
-        .fx-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .party { border: 1.5px solid var(--or); border-radius: 8px; overflow: hidden; background: #fff; }
-        .party-h { background: linear-gradient(135deg, var(--noir), #2a271d); color: #fff; padding: 7px 12px; display: flex; align-items: center; gap: 8px; }
-        .party-h .p-ic { width: 22px; height: 22px; border-radius: 50%; background: var(--or); display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .party-h .p-t { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--or-2); }
-        .party-b { padding: 9px 12px; }
-        .party-name { font-size: 14px; font-weight: 800; color: var(--noir); margin-bottom: 6px; }
-        .id-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 7px; }
-        .id-badge { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 5px; padding: 3px 7px; background: var(--soft); min-width: 0; }
-        .id-k { font-size: 8px; font-weight: 800; color: var(--or); text-transform: uppercase; letter-spacing: .5px; }
-        .id-v { font-size: 11px; font-weight: 700; color: var(--noir); }
-        .kv { display: flex; gap: 6px; font-size: 11.5px; margin: 2px 0; }
-        .kv-k { font-weight: 700; color: #8a6d1f; min-width: 92px; flex-shrink: 0; }
-        .kv-v { color: #1a1a1a; word-break: break-word; }
-
-        /* ITEMS */
-        .fx-items { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11.5px; border: 1.5px solid var(--noir); border-radius: 6px; overflow: hidden; }
-        .fx-items th { background: var(--noir); color: var(--or-2); padding: 8px 6px; text-align: center; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; border: 1px solid #2a271d; }
-        .fx-items td { border: 1px solid var(--line); padding: 8px 6px; text-align: center; vertical-align: middle; }
-        .fx-items td.left { text-align: left; padding-left: 10px; font-weight: 700; }
-        .fx-items tbody tr:nth-child(even) { background: var(--soft); }
-
-        /* BOTTOM */
-        .fx-bottom { display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px; margin-top: 10px; align-items: start; }
-        .fx-words { border: 1.5px solid var(--or); border-radius: 8px; padding: 10px 12px; background: var(--soft); }
-        .fx-words .lab { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--or); margin-bottom: 4px; }
-        .fx-words .val { font-size: 12px; font-weight: 700; color: var(--noir); font-style: italic; }
-        .fx-totals { border: 1.5px solid var(--noir); border-radius: 8px; overflow: hidden; }
-        .fx-totals table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .fx-totals td { padding: 7px 12px; border-bottom: 1px solid var(--line); }
-        .fx-totals td:first-child { font-weight: 700; color: #8a6d1f; }
-        .fx-totals td:last-child { text-align: right; font-weight: 700; color: var(--noir); }
-        .fx-totals tr.grand td { background: var(--or); color: #fff; font-size: 14px; font-weight: 900; border-bottom: none; }
-
-        /* FOOTER */
-        .fx-footer { margin-top: 12px; border-top: 2px solid var(--or); padding-top: 8px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
-        .fx-bank { font-size: 11px; }
-        .fx-bank .bt { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--or); margin-bottom: 3px; }
-        .fx-bank .brow { margin: 1px 0; color: #333; }
-        .fx-sign { text-align: center; }
-        .fx-sign .sl { border-top: 1px solid var(--noir); margin: 34px 10px 4px; }
-        .fx-sign .st { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--noir); }
-        .fx-spacer { flex: 1; }
-
-        @media print {
-          @page { size: A4; margin: 0; }
-          html, body { width: 210mm; margin: 0; padding: 0; background: #fff; }
-          .page { margin: 0 auto; width: 210mm; min-height: 297mm; box-shadow: none; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="page">
-
-        <!-- HEADER -->
-        <div class="fx-header">
-          <div class="fx-brand">
-            ${a.logo ? `<img src="${a.logo}" alt="Logo" class="fx-logo">` : '<div class="fx-logo-ph">\u{1F3E2}</div>'}
-            <div>
-              <div class="fx-brand-name">${agencyName}</div>
-              ${a.activite ? `<div class="fx-brand-sub">${a.activite}</div>` : '<div class="fx-brand-sub">Location de véhicules</div>'}
-            </div>
-          </div>
-          <div class="fx-title"><b>FACTURE</b><span>الفاتورة</span></div>
-        </div>
-
-        <!-- META -->
-        <div class="fx-meta">
-          <div class="cell"><div class="k">N° Facture</div><div class="v">${ltr(factNo)}</div></div>
-          <div class="cell"><div class="k">Faite le</div><div class="v">${today}</div></div>
-          <div class="cell"><div class="k">Mode de paiement</div><div class="v">${paymentMode || '—'}</div></div>
-        </div>
-
-        <!-- PARTIES -->
-        <div class="fx-parties">
-          <div class="party">
-            <div class="party-h"><span class="p-ic">\u{1F3E2}</span><span class="p-t">Fournisseur (Agence)</span></div>
-            <div class="party-b">
-              <div class="party-name">${agencyName}</div>
-              ${agencyIdBadges ? `<div class="id-badges">${agencyIdBadges}</div>` : ''}
-              ${agencyBody}
-            </div>
-          </div>
-          <div class="party">
-            <div class="party-h"><span class="p-ic">${isSoc ? '\u{1F4BC}' : '\u{1F464}'}</span><span class="p-t">${clientTitle}</span></div>
-            <div class="party-b">
-              <div class="party-name">${clientName}</div>
-              ${clientIdBadges ? `<div class="id-badges">${clientIdBadges}</div>` : ''}
-              ${clientBody}
-            </div>
-          </div>
-        </div>
-
-        <!-- ITEMS -->
-        <table class="fx-items">
-          <thead>
-            <tr>
-              <th>Réf</th><th>Marque / Désignation</th><th>Immatricule</th>
-              <th>Du</th><th>Au</th><th>Nb jours</th><th>Prix unitaire</th><th>Montant HT</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>${ref}</td>
-              <td class="left">${ltr((reservation?.car?.brand || '') + ' ' + (reservation?.car?.model || ''))}</td>
-              <td>${ltr((reservation?.car as any)?.registration || (reservation?.car as any)?.plate_number || 'N/A')}</td>
-              <td>${departDate}</td>
-              <td>${returnDate}</td>
-              <td>${days}</td>
-              <td>${pricePerDay.toLocaleString('fr-FR')} DA</td>
-              <td>${subtotal.toLocaleString('fr-FR')} DA</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- BOTTOM : montant en lettres + totaux -->
-        <div class="fx-bottom">
-          <div class="fx-words">
-            <div class="lab">Arrêtée la présente facture à la somme de :</div>
-            <div class="val">${amountInWordsDZD(total)}</div>
-          </div>
-          <div class="fx-totals">
-            <table>
-              <tr><td>Total HT</td><td>${subtotal.toLocaleString('fr-FR')} DA</td></tr>
-              <tr><td>TVA (19%)</td><td>${tvaAmount.toLocaleString('fr-FR')} DA</td></tr>
-              <tr><td>Timbre</td><td>${timbre.toLocaleString('fr-FR')} DA</td></tr>
-              <tr class="grand"><td>Total à payer</td><td>${total.toLocaleString('fr-FR')} DA</td></tr>
-            </table>
-          </div>
-        </div>
-
-        <div class="fx-spacer"></div>
-
-        <!-- FOOTER : banque + signature -->
-        <div class="fx-footer">
-          <div class="fx-bank">
-            <div class="bt">Coordonnées bancaires</div>
-            ${a.bank_name ? `<div class="brow"><b>Banque :</b> ${a.bank_name}</div>` : ''}
-            ${a.bank_number ? `<div class="brow"><b>Compte / RIB :</b> ${ltr(a.bank_number)}</div>` : ''}
-            ${[a.address, a.city].filter(Boolean).length ? `<div class="brow"><b>Adresse :</b> ${[a.address, a.city].filter(Boolean).join(', ')}</div>` : ''}
-            ${a.email ? `<div class="brow"><b>Email :</b> ${a.email}</div>` : ''}
-            ${a.phone ? `<div class="brow"><b>Tél :</b> ${ltr(a.phone)}${a.fax ? ` &nbsp; <b>Fax :</b> ${ltr(a.fax)}` : ''}</div>` : ''}
-          </div>
-          <div class="fx-sign">
-            <div class="sl"></div>
-            <div class="st">Cachet & Signature</div>
-          </div>
-        </div>
-
-      </div>
-    </body>
-    </html>
-    `;
-    return html;
-  };
+    _templateLang: 'fr' | 'ar',
+    societe?: FactureSociete | null,
+  ): string => buildFactureHTML(reservation, {
+    agency: agencySettings,
+    societe,
+    paymentMode,
+    factureNumber,
+  });
 
   const generateEngagementHTML = (templateLang: 'fr' | 'ar'): string => {
     const isFrench = templateLang === 'fr';
@@ -5338,7 +5171,8 @@ export const PersonalizationModal: React.FC<{
   const getHeaderColor = (): string => {
     const typeKey = type.toLowerCase();
     if (typeKey === 'engagement') return 'from-amber-600 to-amber-700';
-    if (typeKey === 'invoice' || typeKey === 'facture') return 'from-blue-600 to-blue-700';
+    // La facture est habillée OR & NOIR : la modale reprend la même identité.
+    if (typeKey === 'invoice' || typeKey === 'facture') return 'from-[#B8912E] to-[#14130E]';
     if (typeKey === 'quote' || typeKey === 'devis') return 'from-green-600 to-green-700';
     if (typeKey === 'payment' || typeKey === 'versement' || typeKey === 'receipt' || typeKey === 'recu') return 'from-purple-600 to-purple-700';
     return 'from-blue-600 to-blue-700';
@@ -5385,29 +5219,32 @@ export const PersonalizationModal: React.FC<{
               <h2 className="text-2xl font-bold text-white">
                 {getDocumentTitle()}
               </h2>
-              {/* Template Selector */}
-              <div className="flex gap-2 ml-8">
-                <button
-                  onClick={() => setSelectedTemplate('fr')}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                    selectedTemplate === 'fr'
-                      ? 'bg-white text-blue-600'
-                      : 'bg-blue-500 text-white hover:bg-blue-400'
-                  }`}
-                >
-                  🇫🇷 Français
-                </button>
-                <button
-                  onClick={() => setSelectedTemplate('ar')}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                    selectedTemplate === 'ar'
-                      ? 'bg-white text-blue-600'
-                      : 'bg-blue-500 text-white hover:bg-blue-400'
-                  }`}
-                >
-                  🇸🇦 العربية
-                </button>
-              </div>
+              {/* Sélecteur de langue — inutile pour la facture : le gabarit légal
+                  est unique (français réglementaire, titre bilingue). */}
+              {!(type === 'invoice' || type === 'facture') && (
+                <div className="flex gap-2 ml-8">
+                  <button
+                    onClick={() => setSelectedTemplate('fr')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      selectedTemplate === 'fr'
+                        ? 'bg-white text-slate-900 shadow'
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                  >
+                    🇫🇷 Français
+                  </button>
+                  <button
+                    onClick={() => setSelectedTemplate('ar')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      selectedTemplate === 'ar'
+                        ? 'bg-white text-slate-900 shadow'
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                  >
+                    🇸🇦 العربية
+                  </button>
+                </div>
+              )}
             </div>
             <button
               onClick={onClose}
@@ -5812,22 +5649,137 @@ export const PersonalizationModal: React.FC<{
             </div>
           </div>
 
+          {/* Panneau d'envoi par email — le PDF expédié est l'aperçu ci-dessus */}
+          <AnimatePresence>
+            {showEmailPanel && (
+              <motion.div
+                key="email-panel"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="border-t-2 border-[#B8912E] bg-[#FBF7EA] overflow-hidden flex-shrink-0"
+              >
+                <div className="px-8 py-5 space-y-4 max-h-[46vh] overflow-y-auto">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="font-black text-[#14130E] uppercase tracking-tight flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-[#B8912E]" />
+                        {lang === 'fr' ? `Envoyer « ${getDocumentTitle()} » par email` : `إرسال «${getDocumentTitle()}» بالبريد`}
+                      </div>
+                      <p className="text-xs text-[#8A6A16] font-bold mt-1">
+                        {lang === 'fr'
+                          ? "Le document affiché ci-dessus est converti en PDF et joint à l'email."
+                          : 'يتم تحويل المستند المعروض أعلاه إلى PDF وإرفاقه بالبريد.'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => { setShowEmailPanel(false); setEmailNotice(null); }}
+                      disabled={isSending}
+                      className="p-2 rounded-lg hover:bg-[#F6ECCB] text-[#8A6A16] transition-colors disabled:opacity-50"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black uppercase tracking-wide text-[#8A6A16] block">
+                        {lang === 'fr' ? 'Email du client' : 'بريد العميل'}
+                      </label>
+                      <input
+                        type="email"
+                        value={emailTo}
+                        onChange={e => setEmailTo(e.target.value)}
+                        disabled={isSending}
+                        placeholder="client@example.com"
+                        className="w-full px-3 py-2 border-2 border-[#E4D8B0] rounded-lg text-sm bg-white focus:outline-none focus:border-[#B8912E] disabled:bg-slate-100"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-black uppercase tracking-wide text-[#8A6A16] block">
+                        {lang === 'fr' ? 'Expéditeur (contact agence)' : 'المرسل (بريد الوكالة)'}
+                      </label>
+                      <div className="w-full px-3 py-2 border-2 border-[#E4D8B0] rounded-lg text-sm bg-white text-[#14130E] font-mono break-all min-h-[38px] flex items-center gap-2">
+                        {loadingSender
+                          ? <><Loader className="w-3.5 h-3.5 animate-spin" />{lang === 'fr' ? 'Chargement…' : 'جاري التحميل...'}</>
+                          : (senderEmail || 'N/A')}
+                      </div>
+                    </div>
+                  </div>
+
+                  {emailTo && emailTo !== reservation?.client?.email && (
+                    <label className="flex items-center gap-3 cursor-pointer px-3 py-2 bg-white rounded-lg border-2 border-[#E4D8B0]">
+                      <input
+                        type="checkbox"
+                        checked={saveEmailToClient}
+                        onChange={e => setSaveEmailToClient(e.target.checked)}
+                        disabled={isSending}
+                        className="w-4 h-4 accent-[#B8912E] cursor-pointer"
+                      />
+                      <span className="text-xs font-bold text-[#14130E]">
+                        {lang === 'fr' ? 'Enregistrer cet email dans la fiche client' : 'احفظ هذا البريد في ملف العميل'}
+                      </span>
+                    </label>
+                  )}
+
+                  <AnimatePresence>
+                    {emailNotice && (
+                      <motion.div
+                        key="email-notice"
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className={`px-4 py-3 rounded-lg border-2 text-sm font-bold ${
+                          emailNotice.type === 'success' ? 'bg-green-50 border-green-300 text-green-800'
+                          : emailNotice.type === 'error' ? 'bg-red-50 border-red-300 text-red-800'
+                          : 'bg-white border-[#E4D8B0] text-[#8A6A16]'
+                        }`}
+                      >
+                        {emailNotice.message}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Footer with Actions */}
-          <div className="bg-gray-100 px-8 py-4 flex items-center justify-between border-t border-gray-200">
+          <div className="bg-gray-100 px-8 py-4 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition-all"
+              disabled={isSending}
+              className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition-all disabled:opacity-50"
             >
               {lang === 'fr' ? 'Fermer' : 'إغلاق'}
             </button>
-            <button
-              onClick={handlePrint}
-              disabled={isPrinting}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all disabled:opacity-50 flex items-center gap-2"
-            >
-              <Printer size={18} />
-              {isPrinting ? (lang === 'fr' ? 'Impression...' : 'جاري الطباعة...') : (lang === 'fr' ? 'Imprimer' : 'طباعة')}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  if (showEmailPanel) {
+                    handleSendByEmail();
+                  } else {
+                    setShowEmailPanel(true);
+                  }
+                }}
+                disabled={isSending || isPrinting}
+                className="px-6 py-2 bg-gradient-to-r from-[#B8912E] to-[#8A6A16] hover:from-[#C8A13C] hover:to-[#B8912E] text-white font-semibold rounded-lg transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                {isSending
+                  ? <><Loader size={18} className="animate-spin" />{lang === 'fr' ? 'Envoi…' : 'جاري الإرسال...'}</>
+                  : showEmailPanel
+                    ? <><Send size={18} />{lang === 'fr' ? 'Envoyer le PDF' : 'إرسال PDF'}</>
+                    : <><Mail size={18} />{lang === 'fr' ? 'Envoyer par email' : 'إرسال بالبريد'}</>}
+              </button>
+              <button
+                onClick={handlePrint}
+                disabled={isPrinting || isSending}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                <Printer size={18} />
+                {isPrinting ? (lang === 'fr' ? 'Impression...' : 'جاري الطباعة...') : (lang === 'fr' ? 'Imprimer' : 'طباعة')}
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>
