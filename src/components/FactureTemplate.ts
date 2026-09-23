@@ -126,8 +126,7 @@ export const buildFactureHTML = (
   const { agency, societe, paymentMode, factureNumber, dueDate } = options;
   const subtotal = reservation.totalPrice || 0;
   const tvaAmount = reservation.tvaApplied ? subtotal * 0.19 : 0;
-  const timbre = 200;
-  const total = subtotal + tvaAmount + timbre;
+  const total = subtotal + tvaAmount;
   const departDate = reservation?.step1?.departureDate || '';
   const returnDate = reservation?.step1?.returnDate || '';
   // Échéance : par défaut la date de début de la location.
@@ -397,7 +396,6 @@ export const buildFactureHTML = (
           <table>
             <tr><td>Total HT</td><td>${subtotal.toLocaleString('fr-FR')} DA</td></tr>
             <tr><td>TVA (19%)</td><td>${tvaAmount.toLocaleString('fr-FR')} DA</td></tr>
-            <tr><td>Timbre</td><td>${timbre.toLocaleString('fr-FR')} DA</td></tr>
             <tr class="grand"><td>Total à payer</td><td>${total.toLocaleString('fr-FR')} DA</td></tr>
           </table>
         </div>
