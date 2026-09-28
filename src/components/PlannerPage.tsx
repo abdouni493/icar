@@ -310,7 +310,7 @@ export const PlannerPage: React.FC<PlannerPageProps> = ({ lang, isAuthLoading = 
     }
   };
 
-  const handlePrint = (reservation: ReservationDetails, type: 'quote' | 'contract' | 'invoice' | 'payment' | 'engagement' | 'versement' | 'inspection') => {
+  const handlePrint = (reservation: ReservationDetails, type: 'quote' | 'contract' | 'invoice' | 'proforma' | 'payment' | 'engagement' | 'versement' | 'inspection') => {
     setOpenPrintMenu(null);
     // Go straight to the print preview (no personalisation choice step)
     setShowPersonalization({ reservation, type });
@@ -1326,6 +1326,12 @@ export const PlannerPage: React.FC<PlannerPageProps> = ({ lang, isAuthLoading = 
                             className="w-full text-left px-4 py-3 hover:bg-indigo-50 text-saas-text-main font-bold flex items-center gap-2 border-b border-saas-border transition-colors"
                           >
                             🧾 {lang === 'fr' ? 'Facture' : 'الفاتورة'}
+                          </button>
+                          <button
+                            onClick={() => handlePrint(reservation, 'proforma')}
+                            className="w-full text-left px-4 py-3 hover:bg-indigo-50 text-saas-text-main font-bold flex items-center gap-2 border-b border-saas-border transition-colors"
+                          >
+                            📑 {lang === 'fr' ? 'Facture Proforma' : 'فاتورة شكلية'}
                           </button>
                           <button
                             onClick={() => handlePrint(reservation, 'versement')}
@@ -2484,6 +2490,11 @@ export const PersonalizationModal: React.FC<{
   // Date d'échéance de la facture : initialisée sur la date de début de la location
   const [dueDate, setDueDate] = useState(reservation?.step1?.departureDate || '');
 
+  // Facture proforma : langue + texte supplémentaire demandés à l'ouverture
+  const isProforma = (type || '').toLowerCase() === 'proforma';
+  const [proformaReady, setProformaReady] = useState(false);
+  const [proformaExtraText, setProformaExtraText] = useState('');
+
   // Recherche / création d'entreprise enregistrée (module Entreprises)
   const [entrepriseQuery, setEntrepriseQuery] = useState('');
   const [entrepriseResults, setEntrepriseResults] = useState<Entreprise[]>([]);
@@ -2508,7 +2519,7 @@ export const PersonalizationModal: React.FC<{
   /** Type de document attendu par le service d'email (et par l'API Brevo). */
   const emailDocumentType: 'contract' | 'devis' | 'recu' | 'engagement' | 'facture' | 'inspection' = (() => {
     const t = (type || '').toLowerCase();
-    if (t === 'invoice' || t === 'facture') return 'facture';
+    if (t === 'invoice' || t === 'facture' || t === 'proforma') return 'facture';
     if (t === 'quote' || t === 'devis') return 'devis';
     if (t === 'payment' || t === 'versement' || t === 'receipt' || t === 'recu') return 'recu';
     if (t === 'engagement') return 'engagement';
@@ -3952,6 +3963,21 @@ export const PersonalizationModal: React.FC<{
     dueDate,
   });
 
+  /** Facture proforma : même gabarit que la facture, dans la langue choisie. */
+  const generateProformaHTML = (
+    templateLang: 'fr' | 'ar',
+    societe?: FactureSociete | null,
+  ): string => buildFactureHTML(reservation, {
+    agency: agencySettings,
+    societe,
+    paymentMode,
+    factureNumber,
+    dueDate,
+    variant: 'proforma',
+    lang: templateLang,
+    extraText: proformaExtraText,
+  });
+
   const generateEngagementHTML = (templateLang: 'fr' | 'ar'): string => {
     const isFrench = templateLang === 'fr';
     const textDir = isFrench ? 'ltr' : 'rtl';
@@ -5130,6 +5156,8 @@ export const PersonalizationModal: React.FC<{
       content = generateEngagementHTML(selectedTemplate);
     } else if (type === 'invoice' || type === 'facture') {
       content = generateFactureHTML(selectedTemplate, isSociete ? societeData : null);
+    } else if (type === 'proforma') {
+      content = generateProformaHTML(selectedTemplate, isSociete ? societeData : null);
     } else if (type === 'quote' || type === 'devis') {
       content = generateDevisHTML(selectedTemplate);
     } else if (type === 'payment' || type === 'versement' || type === 'receipt' || type === 'recu') {
@@ -5158,6 +5186,7 @@ export const PersonalizationModal: React.FC<{
       engagement: { fr: 'Lettre d\'Engagement', ar: 'رسالة التزام' },
       invoice: { fr: 'Facture', ar: 'الفاتورة' },
       facture: { fr: 'Facture', ar: 'الفاتورة' },
+      proforma: { fr: 'Facture Proforma', ar: 'فاتورة شكلية' },
       quote: { fr: 'Devis', ar: 'عرض أسعار' },
       devis: { fr: 'Devis', ar: 'عرض أسعار' },
       payment: { fr: 'Reçu de Versement', ar: 'إيصال الدفع' },
@@ -5175,7 +5204,7 @@ export const PersonalizationModal: React.FC<{
     const typeKey = type.toLowerCase();
     if (typeKey === 'engagement') return 'from-amber-600 to-amber-700';
     // La facture est habillée OR & NOIR : la modale reprend la même identité.
-    if (typeKey === 'invoice' || typeKey === 'facture') return 'from-[#B8912E] to-[#14130E]';
+    if (typeKey === 'invoice' || typeKey === 'facture' || typeKey === 'proforma') return 'from-[#B8912E] to-[#14130E]';
     if (typeKey === 'quote' || typeKey === 'devis') return 'from-green-600 to-green-700';
     if (typeKey === 'payment' || typeKey === 'versement' || typeKey === 'receipt' || typeKey === 'recu') return 'from-purple-600 to-purple-700';
     return 'from-blue-600 to-blue-700';
@@ -5187,6 +5216,8 @@ export const PersonalizationModal: React.FC<{
       return generateEngagementHTML(selectedTemplate);
     } else if (typeKey === 'invoice' || typeKey === 'facture') {
       return generateFactureHTML(selectedTemplate, isSociete ? societeData : null);
+    } else if (typeKey === 'proforma') {
+      return generateProformaHTML(selectedTemplate, isSociete ? societeData : null);
     } else if (typeKey === 'quote' || typeKey === 'devis') {
       return generateDevisHTML(selectedTemplate);
     } else if (typeKey === 'payment' || typeKey === 'versement' || typeKey === 'receipt' || typeKey === 'recu') {
@@ -5275,7 +5306,7 @@ export const PersonalizationModal: React.FC<{
           <div className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white p-8">
 
             {/* Société Option - for invoice/facture and contract */}
-            {(type === 'invoice' || type === 'facture' || type === 'contract') && (
+            {(type === 'invoice' || type === 'facture' || type === 'proforma' || type === 'contract') && (
               <div className="mb-5 border-2 border-amber-300 rounded-xl overflow-hidden">
                 {/* Checkbox header */}
                 <label className="flex items-center gap-3 px-4 py-3 bg-amber-50 cursor-pointer select-none hover:bg-amber-100 transition-colors">
@@ -5458,8 +5489,30 @@ export const PersonalizationModal: React.FC<{
               </div>
             )}
 
+            {/* Facture proforma : texte supplémentaire (modifiable après la saisie initiale) */}
+            {isProforma && (
+              <div className="mb-5 border-2 border-[#B8912E]/50 rounded-xl p-4 bg-amber-50/40">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="text-xs font-black uppercase tracking-wider text-[#8A6A16]">
+                    &#x1F4DD; {lang === 'fr' ? 'Texte supplémentaire' : 'نص إضافي'}
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    {lang === 'fr' ? 'Affiché au-dessus des signatures' : 'يظهر فوق الإمضاءات'}
+                  </span>
+                </div>
+                <textarea
+                  value={proformaExtraText}
+                  onChange={e => setProformaExtraText(e.target.value)}
+                  rows={3}
+                  dir={selectedTemplate === 'ar' ? 'rtl' : 'ltr'}
+                  placeholder={selectedTemplate === 'ar' ? 'اكتب النص الإضافي هنا…' : 'Saisissez le texte supplémentaire…'}
+                  className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-300 resize-y"
+                />
+              </div>
+            )}
+
             {/* Paramètres de la facture : N° et mode de paiement */}
-            {(type === 'invoice' || type === 'facture') && (
+            {(type === 'invoice' || type === 'facture' || type === 'proforma') && (
               <div className="mb-5 border-2 border-slate-300 rounded-xl p-4 bg-slate-50">
                 <div className="text-xs font-black uppercase tracking-wider text-slate-700 mb-3">
                   &#x1F9FE; {lang === 'fr' ? 'Paramètres de la facture' : 'إعدادات الفاتورة'}
@@ -5800,6 +5853,88 @@ export const PersonalizationModal: React.FC<{
           </div>
         </div>
       </motion.div>
+
+      {/* Facture proforma : choix de la langue et du texte supplémentaire */}
+      <AnimatePresence>
+        {isProforma && !proformaReady && (
+          <motion.div
+            key="proforma-setup"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 16 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+            >
+              <div className="bg-gradient-to-r from-[#B8912E] to-[#14130E] px-6 py-4">
+                <h3 className="text-lg font-bold text-white">
+                  📑 {lang === 'fr' ? 'Facture Proforma' : 'فاتورة شكلية'}
+                </h3>
+                <p className="text-xs text-white/80 mt-0.5">
+                  {lang === 'fr' ? 'Choisissez la langue et ajoutez un texte si besoin.' : 'اختر اللغة وأضف نصاً إذا لزم الأمر.'}
+                </p>
+              </div>
+              <div className="p-6 space-y-5">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-wider text-slate-700 mb-2">
+                    {lang === 'fr' ? 'Langue du document' : 'لغة الوثيقة'}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {([
+                      { key: 'fr' as const, label: '🇫🇷 Français' },
+                      { key: 'ar' as const, label: '🇩🇿 العربية' },
+                    ]).map(opt => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setSelectedTemplate(opt.key)}
+                        className={`px-4 py-3 rounded-xl font-bold border-2 transition-all cursor-pointer ${
+                          selectedTemplate === opt.key
+                            ? 'border-[#B8912E] bg-amber-50 text-[#8A6A16] shadow'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-amber-300'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs font-black uppercase tracking-wider text-slate-700 mb-2">
+                    {lang === 'fr' ? 'Texte supplémentaire (optionnel)' : 'نص إضافي (اختياري)'}
+                  </div>
+                  <textarea
+                    value={proformaExtraText}
+                    onChange={e => setProformaExtraText(e.target.value)}
+                    rows={4}
+                    autoFocus
+                    dir={selectedTemplate === 'ar' ? 'rtl' : 'ltr'}
+                    placeholder={selectedTemplate === 'ar' ? 'اكتب النص الذي سيظهر أسفل الفاتورة الشكلية…' : 'Texte affiché en bas de la facture proforma, au-dessus des signatures…'}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-300 resize-y"
+                  />
+                </div>
+              </div>
+              <div className="bg-gray-100 px-6 py-4 flex items-center justify-between gap-3 border-t border-gray-200">
+                <button
+                  onClick={onClose}
+                  className="px-5 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition-all"
+                >
+                  {lang === 'fr' ? 'Annuler' : 'إلغاء'}
+                </button>
+                <button
+                  onClick={() => setProformaReady(true)}
+                  className="px-5 py-2 bg-gradient-to-r from-[#B8912E] to-[#8A6A16] hover:from-[#C8A13C] hover:to-[#B8912E] text-white font-semibold rounded-lg transition-all"
+                >
+                  {lang === 'fr' ? 'Continuer' : 'متابعة'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

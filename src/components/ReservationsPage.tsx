@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Eye, Edit, FileText, Printer, Search, X, ChevronDown,
   TrendingUp, Users, AlertCircle, DollarSign, Calendar,
-  Loader2, Receipt
+  Loader2, Receipt, FileSpreadsheet
 } from 'lucide-react';
 import { Language, ReservationDetails } from '../types';
 import { ReservationsService } from '../services/ReservationsService';
@@ -526,6 +526,13 @@ export const ReservationsPage: React.FC<ReservationsPageProps> = ({ lang, isAuth
                               label={T('Facture', 'فاتورة', lang)}
                               color="text-emerald-600 hover:bg-emerald-50"
                               onClick={() => setShowPersonalization({ reservation: r, type: 'invoice' })}
+                            />
+                            {/* Facture proforma */}
+                            <ActionBtn
+                              icon={<FileSpreadsheet size={14} />}
+                              label={T('Facture proforma', 'فاتورة شكلية', lang)}
+                              color="text-[#B8912E] hover:bg-amber-50"
+                              onClick={() => setShowPersonalization({ reservation: r, type: 'proforma' })}
                             />
                           </div>
                         </td>
