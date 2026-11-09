@@ -7,6 +7,7 @@ import { getCurrentSpecialOfferForCar } from '../../utils/specialOffers';
 import { useWebsiteCurrency, CurrencySwitcher } from './CurrencyContext';
 import { CURRENCIES, ALL_CURRENCIES, isCurrencyEnabled, convertFromDzd, formatCurrency, getCarRate, CurrencyCode } from '../../utils/currency';
 import { CarPriceBoard } from './CarPriceBoard';
+import { trackMetaPixel } from '../../utils/metaPixel';
 
 interface OffersListingProps {
   lang: Language;
@@ -42,6 +43,14 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
   const openDetails = (car: Car) => {
     setSelectedCar(car);
     setShowDetails(true);
+    // Suivi Meta Ads : consultation d'une fiche véhicule.
+    trackMetaPixel('ViewContent', {
+      content_type: 'vehicle',
+      content_ids: [car.id],
+      content_name: `${car.brand} ${car.model}`,
+      value: car.priceDay,
+      currency: 'DZD',
+    });
   };
 
   return (

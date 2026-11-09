@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Language, Car, Agency } from '../types';
 import { motion } from 'motion/react';
 import { Menu, X } from 'lucide-react';
+import { initMetaPixel, trackMetaPixel, trackMetaPageView } from '../utils/metaPixel';
 import { Welcome } from './website/Welcome';
 import { OffersListing } from './website/OffersListing';
 import { SpecialOffersListing } from './website/SpecialOffersListing';
@@ -38,6 +39,25 @@ export const Website: React.FC<WebsiteProps> = ({
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   // Recherche de disponibilité lancée depuis le landing (agences + période)
   const [searchCriteria, setSearchCriteria] = useState<WizardSearchCriteria | null>(null);
+
+  // ── Meta (Facebook) Pixel ──────────────────────────────────────────────
+  // Le pixel du site est initialisé dès que l'ID est disponible (réglages du
+  // site ou variable d'env). Un PageView est émis à chaque changement de page ;
+  // l'ouverture du tunnel de réservation déclenche « InitiateCheckout ».
+  useEffect(() => {
+    initMetaPixel(websiteSettings?.meta_pixel_id);
+  }, [websiteSettings?.meta_pixel_id]);
+
+  const firstPixelView = useRef(true);
+  useEffect(() => {
+    // Le premier PageView est déjà émis par initMetaPixel → on ne le double pas.
+    if (firstPixelView.current) { firstPixelView.current = false; }
+    else { trackMetaPageView(); }
+    if (currentPage === 'orders') {
+      trackMetaPixel('InitiateCheckout');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   const handleReserveClick = (car: Car) => {
     setSelectedCar(car);
