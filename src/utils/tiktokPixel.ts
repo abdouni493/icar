@@ -29,13 +29,22 @@ declare global {
 
 let currentId: string | null = null;
 
-/** Résout l'ID du pixel : réglage du site en priorité, puis variable d'env.
+/**
+ * Pixel TikTok par défaut de l'agence.
+ * Permet au pixel de se charger immédiatement sur le site public, sans aucune
+ * configuration en base ni variable d'environnement. Il reste remplaçable :
+ * un ID saisi dans « Gestion du site web » ou la variable VITE_TIKTOK_PIXEL_ID
+ * est prioritaire sur cette valeur par défaut.
+ */
+const DEFAULT_TIKTOK_PIXEL_ID = 'DBOV133C77U4J2JR5OM0';
+
+/** Résout l'ID du pixel : réglage du site > variable d'env > valeur par défaut.
  *  NB : `import.meta.env.VITE_TIKTOK_PIXEL_ID` est écrit tel quel (sans `?.`
  *  avant `.env`) pour que Vite inline la valeur à la compilation. */
 const resolveId = (pixelId?: string | null): string => {
   let fromEnv = '';
   try { fromEnv = (import.meta.env && import.meta.env.VITE_TIKTOK_PIXEL_ID) || ''; } catch { /* ignore */ }
-  return String(pixelId || fromEnv || '').trim();
+  return String(pixelId || fromEnv || DEFAULT_TIKTOK_PIXEL_ID || '').trim();
 };
 
 /**
