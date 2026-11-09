@@ -606,6 +606,172 @@ body {
   .hover-lift { transition: none; }
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   DESIGN « VÖLZ » — langage visuel inspiré de volz.app, décliné en OR & NOIR
+   ──────────────────────────────────────────────────────────────────────
+   Hero cinématographique, grands titres serrés (letter-spacing négatif),
+   cartes à grands rayons, pilules flottantes, révélation au défilement,
+   panneau pied-de-page arrondi, bouton d'aide flottant.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Titres de section façon VÖLZ (44px, 700, tracking -0.8px) ── */
+.volz-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-vel-cta);
+}
+.volz-h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 1.3rem + 2.6vw, 2.9rem);
+  letter-spacing: -0.8px;
+  line-height: 1.04;
+  color: var(--color-vel-ink);
+}
+.volz-h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 1.4rem + 5vw, 4.6rem);
+  letter-spacing: -1.4px;
+  line-height: 0.98;
+}
+
+/* ── Pilule flottante (nav / switcher) façon VÖLZ ── */
+.volz-pill {
+  border-radius: 999px;
+  background: rgba(18, 17, 9, 0.55);
+  border: 1px solid rgba(200, 161, 60, 0.28);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(200, 161, 60, 0.14);
+}
+
+/* ── Carte « feature » façon VÖLZ (grand rayon, verre, image en fond) ── */
+.volz-feature {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(18, 17, 9, 0.62);
+  border: 1px solid rgba(200, 161, 60, 0.16);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s ease, border-color 0.45s ease;
+}
+.volz-feature:hover {
+  transform: translateY(-6px);
+  border-color: rgba(200, 161, 60, 0.42);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(200, 161, 60, 0.25);
+}
+
+/* ── Carte « destination / vedette » : image + dégradé + légende ── */
+.volz-poster {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.5);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+}
+.volz-poster:hover { transform: translateY(-6px); box-shadow: 0 34px 80px rgba(0,0,0,0.62); }
+.volz-poster img { transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.volz-poster:hover img { transform: scale(1.07); }
+
+/* ── Pilule « capsule / hublot » façon VÖLZ (bande des marques) ── */
+.volz-capsule {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px 999px 26px 26px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+}
+.volz-capsule:hover { transform: translateY(-8px); box-shadow: 0 28px 60px rgba(0,0,0,0.6); }
+
+/* ── Panneau pied-de-page arrondi façon VÖLZ ── */
+.volz-footer-panel {
+  border-radius: 28px 28px 0 0;
+  background: linear-gradient(180deg, #14120B 0%, #0A0A08 60%, #050504 100%);
+  border-top: 1px solid rgba(200, 161, 60, 0.22);
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Bouton d'aide flottant « Need help? » façon VÖLZ ── */
+.volz-help-fab {
+  position: fixed;
+  inset-inline-end: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.1rem 0.7rem 0.8rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #F5EBCD;
+  background: linear-gradient(135deg, #201C12, #0A0A08);
+  border: 1px solid rgba(200, 161, 60, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.volz-help-fab:hover {
+  transform: translateY(-3px);
+  border-color: rgba(200, 161, 60, 0.9);
+  box-shadow: 0 16px 40px rgba(200, 161, 60, 0.3);
+}
+.volz-help-dot {
+  width: 9px; height: 9px; border-radius: 999px;
+  background: #4ADE80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  animation: volz-ping 2s ease-in-out infinite;
+}
+@keyframes volz-ping {
+  0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(74, 222, 128, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+/* ── Révélation au défilement (fallback CSS, sans JS) ── */
+.volz-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  animation: volz-reveal-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 55%;
+}
+@keyframes volz-reveal-in {
+  to { opacity: 1; transform: none; }
+}
+@supports not (animation-timeline: view()) {
+  .volz-reveal { opacity: 1; transform: none; animation: none; }
+}
+
+/* ── Défilement infini (marquee) pour une bande de logos/marques ── */
+.volz-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.volz-marquee-track { display: inline-flex; gap: 2.5rem; white-space: nowrap; animation: volz-marquee 32s linear infinite; }
+.volz-marquee:hover .volz-marquee-track { animation-play-state: paused; }
+@keyframes volz-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── Dégradé doré pulsé de fond de section ── */
+.volz-aura::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200, 161, 60, 0.12), transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volz-help-dot, .volz-marquee-track { animation: none !important; }
+  .volz-reveal { opacity: 1; transform: none; animation: none; }
+  .volz-feature, .volz-poster, .volz-capsule, .volz-poster img { transition: none; }
+}
+
 .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-vel-border); border-radius: 10px; }

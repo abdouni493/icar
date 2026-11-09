@@ -69,7 +69,7 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
             style={{ fontFamily: 'var(--font-display)' }}>
             {heading ? heading[lang] : { fr: 'Nos Véhicules', ar: 'سياراتنا' }[lang]}
           </p>
-          <h1 className={`font-black text-vel-ink ${embedded ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'}`} style={{ fontFamily: 'var(--font-display)' }}>
+          <h1 className={`font-black text-vel-ink ${embedded ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'}`} style={{ fontFamily: 'var(--font-display)', letterSpacing: '-1px' }}>
             {subheading ? subheading[lang] : { fr: 'La Flotte', ar: 'الأسطول' }[lang]}
           </h1>
           <p className="text-vel-muted text-lg mt-4 max-w-2xl mx-auto">
@@ -119,7 +119,7 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: reduceMotion ? 0 : Math.min(index % 8, 6) * 0.05, duration: 0.45 }}
                 whileHover={reduceMotion ? {} : { y: -4 }}
-                className="vel-glass rounded-xl overflow-hidden group cursor-pointer transition-shadow duration-300 flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                className="vel-glass rounded-2xl overflow-hidden group cursor-pointer transition-shadow duration-300 flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.25)';
                   (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 30px rgba(200, 161, 60,0.09)';

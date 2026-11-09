@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Language, Car, Agency } from '../types';
 import { motion } from 'motion/react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, HelpCircle } from 'lucide-react';
 import { initMetaPixel, trackMetaPixel, trackMetaPageView } from '../utils/metaPixel';
 import { Welcome } from './website/Welcome';
 import { OffersListing } from './website/OffersListing';
@@ -124,8 +124,8 @@ export const Website: React.FC<WebsiteProps> = ({
               </div>
             </motion.div>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
+            {/* Desktop Nav — pilule flottante façon VÖLZ */}
+            <div className="hidden md:flex items-center gap-1 volz-pill px-2 py-1.5">
               {navItems.map((item, i) => (
                 <motion.button
                   key={item.id}
@@ -133,24 +133,25 @@ export const Website: React.FC<WebsiteProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.07 }}
                   onClick={() => setCurrentPage(item.id as any)}
-                  className={`relative px-5 py-2 font-bold text-xs tracking-[0.15em] uppercase rounded-lg transition-all duration-300 ${
+                  className={`relative px-5 py-2 font-bold text-xs tracking-[0.15em] uppercase rounded-full transition-all duration-300 ${
                     currentPage === item.id
                       ? ''
                       : 'text-vel-muted hover:text-vel-slate'
                   }`}
                   style={{
-                    ...(currentPage === item.id ? { color: '#C8A13C' } : {}),
+                    ...(currentPage === item.id ? { color: '#14130E' } : {}),
                     fontFamily: 'var(--font-display)'
                   }}
                 >
-                  {item.label[lang]}
                   {currentPage === item.id && (
                     <motion.div
-                      layoutId="nav-underline"
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full"
-                      style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(200, 161, 60,0.3)' }}
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full -z-0"
+                      style={{ background: 'linear-gradient(135deg, #E4C878, #B8912E)', boxShadow: '0 4px 14px rgba(200, 161, 60,0.35)' }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
                   )}
+                  <span className="relative z-10">{item.label[lang]}</span>
                 </motion.button>
               ))}
             </div>
@@ -279,8 +280,8 @@ export const Website: React.FC<WebsiteProps> = ({
         )}
       </motion.div>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: 'linear-gradient(180deg, #0A0A08, #050504)', borderTop: '1px solid rgba(200,161,60,0.18)' }}>
+      {/* ── FOOTER — panneau arrondi façon VÖLZ ── */}
+      <footer className="volz-footer-panel relative mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             {/* Brand */}
@@ -389,6 +390,28 @@ export const Website: React.FC<WebsiteProps> = ({
           </div>
         </div>
       </footer>
+
+      {/* ── Bouton d'aide flottant « Besoin d'aide ? » façon VÖLZ ── */}
+      <motion.a
+        href={contactInfo?.whatsapp
+          ? `https://wa.me/${String(contactInfo.whatsapp).replace(/\D/g, '')}`
+          : contactInfo?.phone
+            ? `tel:${String(contactInfo.phone).replace(/\s/g, '')}`
+            : undefined}
+        target={contactInfo?.whatsapp ? '_blank' : undefined}
+        rel={contactInfo?.whatsapp ? 'noopener noreferrer' : undefined}
+        onClick={!contactInfo?.whatsapp && !contactInfo?.phone ? () => setCurrentPage('contacts') : undefined}
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ delay: 1, type: 'spring', stiffness: 300, damping: 20 }}
+        whileHover={{ y: -3 }}
+        whileTap={{ scale: 0.95 }}
+        className="volz-help-fab"
+      >
+        <span className="volz-help-dot" />
+        <HelpCircle size={17} style={{ color: '#E4C878' }} />
+        {{ fr: "Besoin d'aide ?", ar: 'تحتاج مساعدة؟' }[lang]}
+      </motion.a>
     </div>
     </WebsiteCurrencyProvider>
   );
