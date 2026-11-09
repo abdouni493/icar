@@ -6,6 +6,7 @@ import { fromYmd } from './wizardUi';
 import { useWebsiteCurrency } from '../CurrencyContext';
 import { CurrencyCode, convertFromDzd, formatCurrency, isCurrencyEnabled, getCarRate } from '../../../utils/currency';
 import { trackMetaPixel } from '../../../utils/metaPixel';
+import { trackTikTokPixel } from '../../../utils/tiktokPixel';
 
 // ═══ Modèle d'état du wizard de réservation (source unique de vérité) ═══
 // Tout l'état vit ici : naviguer entre les étapes ne perd jamais les saisies.
@@ -535,6 +536,13 @@ export const ReservationWizardProvider: React.FC<ProviderProps> = ({
         value: fxValue(total),
         currency,
         num_items: 1,
+      });
+      // Suivi TikTok Ads : réservation confirmée = paiement (CompletePayment).
+      trackTikTokPixel('CompletePayment', {
+        contents: [{ content_id: car.id, content_type: 'product', content_name: `${car.brand} ${car.model}` }],
+        value: fxValue(total),
+        currency,
+        quantity: 1,
       });
 
       setSubmitted(true);

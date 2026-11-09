@@ -1408,6 +1408,24 @@ export const WebsiteManagementPage: React.FC<WebsiteManagementPageProps> = ({ la
                   </p>
                 </div>
 
+                {/* TikTok Pixel */}
+                <div className="space-y-2">
+                  <label className="label-saas">🎵 {{fr: 'TikTok Pixel ID (TikTok Ads)', ar: 'معرّف TikTok Pixel (إعلانات تيك توك)'}[lang]}</label>
+                  <input
+                    type="text"
+                    value={settings.tiktok_pixel_id || ''}
+                    onChange={e => setSettings({ ...settings, tiktok_pixel_id: e.target.value.trim() })}
+                    placeholder={{fr: 'ex. C9XXXXXXXXXXXXXXXXXX', ar: 'مثال: C9XXXXXXXXXXXXXXXXXX'}[lang]}
+                    className="input-saas"
+                  />
+                  <p className="text-xs text-saas-text-muted">
+                    {{
+                      fr: "Collez l'identifiant de votre Pixel depuis TikTok Ads Manager → Outils → Événements → Web Events. Le même suivi (consultations, réservations, demandes WhatsApp) est envoyé à TikTok.",
+                      ar: 'الصق معرّف البكسل من TikTok Ads Manager ← الأدوات ← الأحداث ← أحداث الويب. يُرسَل نفس التتبّع (المشاهدات، الحجوزات، طلبات واتساب) إلى تيك توك.'
+                    }[lang]}
+                  </p>
+                </div>
+
                 {/* Logo */}
                 <div className="space-y-4">
                   <label className="label-saas">🖼️ {{fr: 'Logo du site', ar: 'شعار الموقع'}[lang]}</label>

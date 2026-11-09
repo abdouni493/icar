@@ -1841,6 +1841,7 @@ export class DatabaseService {
             capital: data[0].capital,
             bank_name: data[0].bank_name,
             meta_pixel_id: data[0].meta_pixel_id,
+            tiktok_pixel_id: data[0].tiktok_pixel_id,
           };
         }
       } catch (e: any) {
@@ -1869,6 +1870,7 @@ export class DatabaseService {
         capital: '',
         bank_name: '',
         meta_pixel_id: '',
+        tiktok_pixel_id: '',
       };
     });
   }
@@ -1898,6 +1900,7 @@ export class DatabaseService {
       capital: settings.capital ?? current.capital,
       bank_name: settings.bank_name ?? current.bank_name,
       meta_pixel_id: settings.meta_pixel_id ?? current.meta_pixel_id,
+      tiktok_pixel_id: settings.tiktok_pixel_id ?? current.tiktok_pixel_id,
     };
 
     // First, delete all existing records to ensure only one record exists
@@ -1952,6 +1955,7 @@ export class DatabaseService {
       capital: data.capital,
       bank_name: data.bank_name,
       meta_pixel_id: data.meta_pixel_id,
+      tiktok_pixel_id: data.tiktok_pixel_id,
     };
   }
 

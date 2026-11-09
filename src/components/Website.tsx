@@ -3,6 +3,7 @@ import { Language, Car, Agency } from '../types';
 import { motion } from 'motion/react';
 import { Menu, X, HelpCircle } from 'lucide-react';
 import { initMetaPixel, trackMetaPixel, trackMetaPageView } from '../utils/metaPixel';
+import { initTikTokPixel, trackTikTokPixel, trackTikTokPageView } from '../utils/tiktokPixel';
 import { Welcome } from './website/Welcome';
 import { OffersListing } from './website/OffersListing';
 import { SpecialOffersListing } from './website/SpecialOffersListing';
@@ -48,13 +49,19 @@ export const Website: React.FC<WebsiteProps> = ({
     initMetaPixel(websiteSettings?.meta_pixel_id);
   }, [websiteSettings?.meta_pixel_id]);
 
+  useEffect(() => {
+    initTikTokPixel(websiteSettings?.tiktok_pixel_id);
+  }, [websiteSettings?.tiktok_pixel_id]);
+
   const firstPixelView = useRef(true);
   useEffect(() => {
-    // Le premier PageView est déjà émis par initMetaPixel → on ne le double pas.
+    // Le premier PageView est déjà émis par l'init de chaque pixel → on ne le
+    // double pas lors du tout premier rendu.
     if (firstPixelView.current) { firstPixelView.current = false; }
-    else { trackMetaPageView(); }
+    else { trackMetaPageView(); trackTikTokPageView(); }
     if (currentPage === 'orders') {
       trackMetaPixel('InitiateCheckout');
+      trackTikTokPixel('InitiateCheckout');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
