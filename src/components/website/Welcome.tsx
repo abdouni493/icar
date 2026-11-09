@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { Shield, Zap, Star, ArrowRight, Car as CarIcon, MapPin, CalendarDays, Search } from 'lucide-react';
 import { ShowcaseBand } from './ShowcaseBand';
 import { OffersListing } from './OffersListing';
+import { ErrorBoundary } from '../ErrorBoundary';
 import { WizardSearchCriteria } from './wizard/WizardContext';
 import { toYmd } from './wizard/wizardUi';
 
@@ -302,15 +303,17 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
               transition={{ duration: 0.8, delay: 0.4 }}
               className="w-full mt-16"
             >
-              <OffersListing
-                lang={lang}
-                cars={cars}
-                specialOffers={specialOffers}
-                onOrder={onOrderCar}
-                embedded
-                heading={{ fr: 'Disponibles maintenant', ar: 'متاحة الآن' }}
-                subheading={{ fr: 'Choisissez votre voiture', ar: 'اختر سيارتك' }}
-              />
+              <ErrorBoundary fallback={null}>
+                <OffersListing
+                  lang={lang}
+                  cars={cars}
+                  specialOffers={specialOffers}
+                  onOrder={onOrderCar}
+                  embedded
+                  heading={{ fr: 'Disponibles maintenant', ar: 'متاحة الآن' }}
+                  subheading={{ fr: 'Choisissez votre voiture', ar: 'اختر سيارتك' }}
+                />
+              </ErrorBoundary>
             </motion.div>
           </div>
         </div>
