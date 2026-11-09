@@ -8,6 +8,7 @@ import { useWebsiteCurrency, CurrencySwitcher } from './CurrencyContext';
 import { CURRENCIES, ALL_CURRENCIES, isCurrencyEnabled, convertFromDzd, formatCurrency, getCarRate, CurrencyCode } from '../../utils/currency';
 import { CarPriceBoard } from './CarPriceBoard';
 import { trackMetaPixel } from '../../utils/metaPixel';
+import { trackTikTokPixel } from '../../utils/tiktokPixel';
 
 interface OffersListingProps {
   lang: Language;
@@ -48,6 +49,12 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
       content_type: 'vehicle',
       content_ids: [car.id],
       content_name: `${car.brand} ${car.model}`,
+      value: car.priceDay,
+      currency: 'DZD',
+    });
+    // Suivi TikTok Ads : même événement (format « contents »).
+    trackTikTokPixel('ViewContent', {
+      contents: [{ content_id: car.id, content_type: 'product', content_name: `${car.brand} ${car.model}` }],
       value: car.priceDay,
       currency: 'DZD',
     });

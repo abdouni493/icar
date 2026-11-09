@@ -440,6 +440,8 @@ export interface WebsiteSettings {
   bank_name?: string;
   /** Identifiant du Meta (Facebook) Pixel pour le suivi Ads Manager. */
   meta_pixel_id?: string;
+  /** Identifiant du TikTok Pixel pour le suivi TikTok Ads. */
+  tiktok_pixel_id?: string;
 }
 
 // Code promo utilisable sur la réservation du site public

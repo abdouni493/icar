@@ -4,6 +4,7 @@ import { Check, Loader2, MessageCircle, ArrowRight } from 'lucide-react';
 import { useWizard } from './WizardContext';
 import { SectionCard, SectionTitle, C, fromYmd } from './wizardUi';
 import { trackMetaPixel } from '../../../utils/metaPixel';
+import { trackTikTokPixel } from '../../../utils/tiktokPixel';
 
 /**
  * Étape 4 — Services (optionnel).
@@ -85,6 +86,12 @@ export const StepServices: React.FC = () => {
       content_type: 'vehicle',
       content_ids: car ? [car.id] : [],
       content_name: car ? `${car.brand} ${car.model}` : undefined,
+      value: fxValue(total),
+      currency,
+    });
+    // Suivi TikTok Ads : demande WhatsApp = prise de contact (Contact).
+    trackTikTokPixel('Contact', {
+      contents: car ? [{ content_id: car.id, content_type: 'product', content_name: `${car.brand} ${car.model}` }] : [],
       value: fxValue(total),
       currency,
     });
