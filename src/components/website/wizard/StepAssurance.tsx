@@ -49,16 +49,16 @@ export const StepAssurance: React.FC = () => {
                   className="text-left rounded-2xl overflow-hidden transition-all duration-300 group cursor-pointer flex flex-col"
                   style={{
                     background: C.elevated,
-                    border: isSelected ? '1px solid rgba(220,38,38,0.5)' : '1px solid rgba(15,23,42,0.06)',
-                    boxShadow: isSelected ? '0 0 30px rgba(220,38,38,0.1)' : 'none',
+                    border: isSelected ? '1px solid rgba(200, 161, 60,0.5)' : '1px solid rgba(245,240,225,0.06)',
+                    boxShadow: isSelected ? '0 0 30px rgba(200, 161, 60,0.1)' : 'none',
                   }}
                 >
                   {/* En-tête : icône + nom + prix/jour */}
                   <div className="p-5 flex items-start justify-between gap-3"
-                    style={{ borderBottom: '1px solid rgba(15,23,42,0.06)' }}>
+                    style={{ borderBottom: '1px solid rgba(245,240,225,0.06)' }}>
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'rgba(220,38,38,0.09)', border: '1px solid rgba(220,38,38,0.2)' }}>
+                        style={{ background: 'rgba(200, 161, 60,0.09)', border: '1px solid rgba(200, 161, 60,0.2)' }}>
                         <Shield size={20} style={{ color: C.accent }} />
                       </div>
                       <div className="min-w-0">
@@ -67,7 +67,7 @@ export const StepAssurance: React.FC = () => {
                         </h3>
                         <p className="font-black text-sm" style={{ color: C.accent, fontFamily: 'var(--font-display)' }}>
                           {a.pricePerDay.toLocaleString()}
-                          <span className="text-xs ml-1" style={{ color: 'rgba(220,38,38,0.75)' }}>
+                          <span className="text-xs ml-1" style={{ color: 'rgba(200, 161, 60,0.75)' }}>
                             {{ fr: 'DA/j', ar: 'د.ج/ي' }[lang]}
                           </span>
                         </p>
@@ -76,7 +76,7 @@ export const StepAssurance: React.FC = () => {
                     <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300"
                       style={{
                         background: isSelected ? C.accent : 'transparent',
-                        border: isSelected ? `2px solid ${C.accent}` : '2px solid rgba(15,23,42,0.15)',
+                        border: isSelected ? `2px solid ${C.accent}` : '2px solid rgba(245,240,225,0.15)',
                       }}>
                       {isSelected && <Check size={13} color="#FFFFFF" strokeWidth={3} />}
                     </div>
@@ -111,7 +111,7 @@ export const StepAssurance: React.FC = () => {
                   {/* Pied : coût total pour la durée */}
                   {days > 0 && (
                     <div className="px-5 py-3 flex items-center justify-between text-xs"
-                      style={{ background: 'rgba(220,38,38,0.04)', borderTop: '1px solid rgba(15,23,42,0.06)' }}>
+                      style={{ background: 'rgba(200, 161, 60,0.04)', borderTop: '1px solid rgba(245,240,225,0.06)' }}>
                       <span className="text-vel-muted">{days} {{ fr: 'jour(s)', ar: 'يوم' }[lang]}</span>
                       <span className="font-black" style={{ color: C.accent }}>
                         {(a.pricePerDay * days).toLocaleString()} {DA}
@@ -131,7 +131,7 @@ export const StepAssurance: React.FC = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           className="rounded-2xl p-6 flex justify-between items-center"
-          style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.16)' }}
+          style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.16)' }}
         >
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-vel-muted">{{ fr: 'Assurance choisie', ar: 'التأمين المختار' }[lang]}</p>

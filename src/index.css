@@ -352,6 +352,20 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--color-vel-border-strong); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-vel-cta); }
 
+/* ── Champs du site public (thème sombre « noir & or ») ── */
+.wiz-field {
+  background: #17150D;
+  border: 1px solid rgba(200, 161, 60, 0.18);
+  color: #F5F0E1;
+  color-scheme: dark;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+.wiz-field::placeholder { color: #9C947E; }
+.wiz-field:hover { border-color: rgba(200, 161, 60, 0.42); }
+.wiz-field:focus-visible,
+.wiz-field:focus { border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(200, 161, 60, 0.18); }
+.wiz-field option { background: #17150D; color: #F5F0E1; }
+
 /* ── RTL Support ── */
 [dir="rtl"] { font-family: 'Noto Sans Arabic', sans-serif; }
 
@@ -627,11 +641,11 @@ body {
 }
 .wizard-calendar .rdp-disabled { opacity: 0.4; }
 .wizard-calendar .rdp-disabled .rdp-day_button { cursor: not-allowed; text-decoration: line-through; }
-/* Jours déjà réservés : rouge, distinct du simple passé */
+/* Jours déjà réservés : grisés & barrés, distincts du simple passé (noir & or) */
 .wizard-calendar .wizard-day-blocked { opacity: 1; }
 .wizard-calendar .wizard-day-blocked .rdp-day_button {
-  background: rgba(220, 38, 38, 0.10);
-  color: rgba(185, 28, 28, 0.75);
+  background: rgba(110, 102, 86, 0.18);
+  color: #9C947E;
   text-decoration: line-through;
   cursor: not-allowed;
 }

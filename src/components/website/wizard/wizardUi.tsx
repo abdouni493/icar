@@ -3,13 +3,13 @@ import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Language } from '../../../types';
 
-// ─── Palette claire "Automotive" (voir design-system/auto_location/MASTER.md) ──
+// ─── Palette sombre « Automotive » — NOIR & OR (volz-inspired) ──
 export const C = {
-  accent:    '#C8A13C',
-  amber:     '#B8912E',
-  bg:        '#F8FAFC',
-  surface:   '#FFFFFF',
-  elevated:  '#FFFFFF',
+  accent:    '#D4AF37',   // or vif
+  amber:     '#C8A13C',   // or chaud
+  bg:        '#0A0A08',   // noir profond (fond de page)
+  surface:   '#121109',   // cartes
+  elevated:  '#17150D',   // cartes / champs surélevés
 };
 
 export const ALGERIAN_WILAYAS = [
@@ -34,16 +34,16 @@ export const fromYmd = (s: string): Date => {
 
 // ─── Styles d'inputs partagés ─────────────────────────────────────────────────
 export const inputStyle: React.CSSProperties = {
-  background: '#FFFFFF',
-  border: '1px solid rgba(15,23,42,0.1)',
-  color: '#14130E',
+  background: '#17150D',
+  border: '1px solid rgba(200, 161, 60, 0.18)',
+  color: '#F5F0E1',
 };
 export const focusInput = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-  (e.target as HTMLElement).style.borderColor = '#C8A13C';
-  (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(220,38,38,0.2)';
+  (e.target as HTMLElement).style.borderColor = '#D4AF37';
+  (e.target as HTMLElement).style.boxShadow = '0 0 0 3px rgba(200, 161, 60, 0.18)';
 };
 export const blurInput = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-  (e.target as HTMLElement).style.borderColor = 'rgba(15,23,42,0.1)';
+  (e.target as HTMLElement).style.borderColor = 'rgba(200, 161, 60, 0.18)';
   (e.target as HTMLElement).style.boxShadow = 'none';
 };
 
@@ -53,7 +53,7 @@ export const inputClass = 'w-full px-4 py-3 rounded-xl outline-none transition-a
 export const SectionCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div
     className={`rounded-2xl p-6 sm:p-8 space-y-6 ${className}`}
-    style={{ background: C.elevated, border: '1px solid rgba(220,38,38,0.08)' }}
+    style={{ background: C.surface, border: '1px solid rgba(200, 161, 60, 0.14)', boxShadow: '0 10px 40px rgba(0,0,0,0.4)' }}
   >
     {children}
   </div>

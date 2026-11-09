@@ -1,21 +1,20 @@
 import React, { useRef, useState } from 'react';
-import { Language, Agency } from '../../types';
+import { Language, Agency, Car, SpecialOffer } from '../../types';
 import { motion, useScroll, useTransform } from 'motion/react';
-import { ChevronDown, Shield, Zap, Star, ArrowRight, Car as CarIcon, MapPin, CalendarDays, Search } from 'lucide-react';
-import { Hero3D } from './Hero3D';
+import { Shield, Zap, Star, ArrowRight, Car as CarIcon, MapPin, CalendarDays, Search } from 'lucide-react';
 import { ShowcaseBand } from './ShowcaseBand';
-import { HERO_SPLINE_SCENE_URL } from '../../constants';
+import { OffersListing } from './OffersListing';
 import { WizardSearchCriteria } from './wizard/WizardContext';
 import { toYmd } from './wizard/wizardUi';
 
 // ─── Colour tokens for this page ───────────────────────────────────────────
 const C = {
-  accent:    '#C8A13C',
-  amber:     '#B8912E',
-  accentDim: 'rgba(220,38,38,0.1)',
-  amberDim:  'rgba(217,119,6,0.1)',
-  bg:        '#F8FAFC',
-  surface:   '#FFFFFF',
+  accent:    '#D4AF37',
+  amber:     '#C8A13C',
+  accentDim: 'rgba(200, 161, 60, 0.14)',
+  amberDim:  'rgba(200, 161, 60, 0.10)',
+  bg:        '#0A0A08',
+  surface:   '#121109',
 };
 
 // ─── Pure CSS + Framer Motion hero visual (anneaux animés uniquement) ────────
@@ -28,7 +27,7 @@ function HeroVisual() {
         animate={{ rotate: 360 }}
         transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
         className="absolute w-[400px] h-[400px] rounded-full"
-        style={{ border: '1px solid rgba(220,38,38,0.09)' }}
+        style={{ border: '1px solid rgba(200, 161, 60,0.09)' }}
       >
         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
           style={{ background: C.accent, boxShadow: `0 0 14px ${C.accent}` }} />
@@ -39,7 +38,7 @@ function HeroVisual() {
         animate={{ rotate: -360 }}
         transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
         className="absolute w-[290px] h-[290px] rounded-full"
-        style={{ border: '1px dashed rgba(217,119,6,0.2)' }}
+        style={{ border: '1px dashed rgba(200, 161, 60,0.2)' }}
       >
         <div className="absolute top-0 right-6 w-2 h-2 rounded-full"
           style={{ background: C.amber, boxShadow: `0 0 10px ${C.amber}` }} />
@@ -50,7 +49,7 @@ function HeroVisual() {
         animate={{ scale: [1, 1.07, 1], opacity: [0.35, 0.65, 0.35] }}
         transition={{ duration: 3, repeat: Infinity }}
         className="absolute w-[180px] h-[180px] rounded-full"
-        style={{ border: '1px solid rgba(220,38,38,0.3)' }}
+        style={{ border: '1px solid rgba(200, 161, 60,0.3)' }}
       />
 
       {/* Corner accent dots */}
@@ -79,8 +78,8 @@ function BookingSearchPanel({ lang, agencies, onSearch, hasBg }: {
 
   const isValid = !!departureAgencyId && !!from && !!to && from <= to && from >= today;
 
-  const selectClass = "w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-900 outline-none hover:border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 cursor-pointer shadow-sm";
-  const inputClass = "w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-900 outline-none hover:border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all duration-200 shadow-sm";
+  const selectClass = "w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-200 cursor-pointer wiz-field";
+  const inputClass = "w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all duration-200 wiz-field";
 
   const fields: { label: string; icon: React.ReactNode; el: React.ReactNode }[] = [
     {
@@ -132,11 +131,11 @@ function BookingSearchPanel({ lang, agencies, onSearch, hasBg }: {
       transition={{ duration: 0.8, delay: 0.75 }}
       className="relative z-20 rounded-3xl p-6 sm:p-8"
       style={{
-        background: 'rgba(255, 255, 255, 0.12)',
-        border: '1px solid rgba(255, 255, 255, 0.35)',
-        backdropFilter: 'blur(20px) saturate(140%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(140%)',
-        boxShadow: '0 20px 60px rgba(15, 23, 42, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
+        background: 'rgba(18, 17, 9, 0.72)',
+        border: '1px solid rgba(200, 161, 60, 0.30)',
+        backdropFilter: 'blur(22px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(22px) saturate(140%)',
+        boxShadow: '0 30px 80px rgba(0,0,0, 0.55), inset 0 1px 0 rgba(200, 161, 60, 0.18)',
       }}
     >
       <p className="text-xs font-bold tracking-[0.2em] uppercase mb-5 flex items-center gap-2"
@@ -165,12 +164,12 @@ function BookingSearchPanel({ lang, agencies, onSearch, hasBg }: {
           disabled={!isValid}
           whileHover={isValid ? { scale: 1.03, y: -1 } : {}}
           whileTap={isValid ? { scale: 0.97 } : {}}
-          className={`px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 whitespace-nowrap transition-all ${!isValid ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg hover:shadow-red-500/20'}`}
+          className={`px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 whitespace-nowrap transition-all ${!isValid ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'}`}
           style={{
             fontFamily: 'var(--font-display)',
-            background: `linear-gradient(135deg, ${C.accent}, #B8912E)`,
-            color: '#FFFFFF',
-            boxShadow: isValid ? '0 6px 20px rgba(220,38,38,0.25)' : 'none',
+            background: `linear-gradient(135deg, #E4C878, #B8912E)`,
+            color: '#14130E',
+            boxShadow: isValid ? '0 6px 24px rgba(200, 161, 60, 0.45)' : 'none',
           }}
         >
           {{ fr: 'Suivant', ar: 'التالي' }[lang]} <ArrowRight size={16} />
@@ -191,6 +190,12 @@ interface WelcomeProps {
   websiteSettings: any;
   /** Agences pour le widget de recherche de disponibilité. */
   agencies: Agency[];
+  /** Toutes les voitures disponibles (affichées directement sous la carte de réservation). */
+  cars: Car[];
+  /** Offres spéciales (badges de remise sur les cartes). */
+  specialOffers: SpecialOffer[];
+  /** Lance le wizard avec une voiture présélectionnée. */
+  onOrderCar: (car: Car) => void;
   /** Ouvre la grille des voitures ("Voir les voitures"). */
   onStartRenting: () => void;
   /** Lance le wizard de réservation ("Réserver"). */
@@ -201,7 +206,7 @@ interface WelcomeProps {
   showcaseImage?: string;
 }
 
-export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencies, onStartRenting, onReserve, onSearch, showcaseImage }) => {
+export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencies, cars, specialOffers, onOrderCar, onStartRenting, onReserve, onSearch, showcaseImage }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
@@ -231,7 +236,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
     <div ref={containerRef} className="relative overflow-hidden" style={{ background: C.bg }}>
 
       {/* ══ HERO SECTION ══ */}
-      <section className="relative min-h-screen flex items-center">
+      <section className="relative flex items-start">
 
         {/* Background image — subtle blur + cinematic dark overlay for readability */}
         {websiteSettings?.landing_background && (
@@ -255,7 +260,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
             }} />
             {/* Left-side text protection gradient */}
             <div className="absolute inset-0" style={{
-              background: 'linear-gradient(90deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.1) 55%, transparent 100%)',
+              background: 'linear-gradient(90deg, rgba(15,23,42,0.5) 0%, rgba(245,240,225,0.1) 55%, transparent 100%)',
             }} />
           </div>
         )}
@@ -290,64 +295,32 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
               <BookingSearchPanel lang={lang} agencies={agencies} onSearch={onSearch} hasBg={hasBg} />
             </div>
 
-            {/* CTA — un seul bouton : voir les voitures disponibles (la réservation
-                démarre après avoir choisi une voiture, plus de réservation directe). */}
+            {/* ── Toutes les voitures disponibles, directement sous la carte ── */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
-              className="mt-10"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="w-full mt-16"
             >
-              <motion.button
-                onClick={onStartRenting}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="btn-vel-cta px-8 py-4 text-sm"
-              >
-                {{ fr: 'Voir les voitures disponibles', ar: 'عرض السيارات المتاحة' }[lang]}
-                <ArrowRight size={17} />
-              </motion.button>
-            </motion.div>
-
-            {/* Visuel 3D (Spline) avec repli sur le visuel CSS statique */}
-            <motion.div
-              initial={{ scale: 0.85 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 1.1, delay: 0.25, ease: 'easeOut' }}
-              style={{ opacity: heroOpacity, y: heroY }}
-              className="relative w-full max-w-3xl"
-            >
-              {/* Glow halo */}
-              <div className="absolute inset-0 pointer-events-none rounded-full" style={{
-                background: `radial-gradient(ellipse at center, ${C.accentDim}, transparent 68%)`,
-              }} />
-              <Hero3D
-                sceneUrl={HERO_SPLINE_SCENE_URL}
-                fallback={<HeroVisual />}
+              <OffersListing
+                lang={lang}
+                cars={cars}
+                specialOffers={specialOffers}
+                onOrder={onOrderCar}
+                embedded
+                heading={{ fr: 'Disponibles maintenant', ar: 'متاحة الآن' }}
+                subheading={{ fr: 'Choisissez votre voiture', ar: 'اختر سيارتك' }}
               />
             </motion.div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{ color: C.accent }}
-        >
-          <span className="text-xs tracking-widest uppercase opacity-60" style={{ fontFamily: 'var(--font-display)' }}>
-            {{ fr: 'Défiler', ar: 'مرر' }[lang]}
-          </span>
-          <ChevronDown size={18} />
-        </motion.div>
       </section>
 
       {/* ══ FEATURES SECTION ══ */}
       <section className="relative py-24 px-4 sm:px-6 lg:px-8" style={{
-        background: '#FFFFFF',
-        borderTop: '1px solid rgba(15,23,42,0.06)',
-        borderBottom: '1px solid rgba(15,23,42,0.06)',
+        background: 'linear-gradient(180deg, #0A0A08 0%, #12110B 50%, #0A0A08 100%)',
+        borderTop: '1px solid rgba(200,161,60,0.12)',
+        borderBottom: '1px solid rgba(200,161,60,0.12)',
       }}>
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -377,8 +350,8 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
                 whileHover={{ y: -6 }}
                 className="rounded-2xl p-8 space-y-4 transition-all duration-300 cursor-default"
                 style={{
-                  background: 'rgba(220,38,38,0.04)',
-                  border: '1px solid rgba(220,38,38,0.09)',
+                  background: 'rgba(200, 161, 60,0.04)',
+                  border: '1px solid rgba(200, 161, 60,0.09)',
                   backdropFilter: 'blur(12px)',
                 }}
                 onMouseEnter={e => {
@@ -386,7 +359,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
                   (e.currentTarget as HTMLElement).style.boxShadow = `0 0 30px ${C.accent}12`;
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(220,38,38,0.09)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.09)';
                   (e.currentTarget as HTMLElement).style.boxShadow = 'none';
                 }}
               >
@@ -441,7 +414,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
               fontFamily: 'var(--font-display)',
               background: `linear-gradient(135deg, ${C.accent}, #B8912E)`,
               color: '#FFFFFF',
-              boxShadow: `0 6px 18px rgba(220,38,38,0.28)`,
+              boxShadow: `0 6px 18px rgba(200, 161, 60,0.28)`,
             }}
           >
             <CarIcon size={20} /> {{ fr: 'Voir tous les véhicules', ar: 'عرض جميع السيارات' }[lang]}

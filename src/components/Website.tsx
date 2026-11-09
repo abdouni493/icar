@@ -9,7 +9,6 @@ import { ContactsWebsite } from './website/ContactsWebsite';
 import { ReservationWizard } from './website/wizard/ReservationWizard';
 import { WizardSearchCriteria } from './website/wizard/WizardContext';
 import { WebsiteCurrencyProvider, CurrencySwitcher } from './website/CurrencyContext';
-import { ThemeToggle } from './ThemeToggle';
 import { SITE_NAME } from '../constants';
 
 interface WebsiteProps {
@@ -63,7 +62,8 @@ export const Website: React.FC<WebsiteProps> = ({
 
   return (
     <WebsiteCurrencyProvider cars={cars}>
-    <div className="min-h-screen bg-vel-void" style={{ fontFamily: 'var(--font-sans)' }}>
+    {/* Le site public est rendu en thème sombre « noir & or » (cinématique). */}
+    <div className="dark min-h-screen bg-vel-void" style={{ fontFamily: 'var(--font-sans)' }}>
       {/* ── NAVBAR ── */}
       <nav className="sticky top-0 z-50 border-b border-vel-border bg-vel-void/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,7 +77,7 @@ export const Website: React.FC<WebsiteProps> = ({
               onClick={() => setCurrentPage('home')}
             >
               <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 transition-all duration-300"
-                style={{ borderColor: 'rgba(220,38,38,0.25)', boxShadow: '0 0 16px rgba(220,38,38,0.2)' }}>
+                style={{ borderColor: 'rgba(200, 161, 60,0.25)', boxShadow: '0 0 16px rgba(200, 161, 60,0.2)' }}>
                 {websiteSettings?.logo ? (
                   <img
                     src={websiteSettings.logo}
@@ -128,7 +128,7 @@ export const Website: React.FC<WebsiteProps> = ({
                     <motion.div
                       layoutId="nav-underline"
                       className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full"
-                      style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(220,38,38,0.3)' }}
+                      style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(200, 161, 60,0.3)' }}
                     />
                   )}
                 </motion.button>
@@ -144,9 +144,6 @@ export const Website: React.FC<WebsiteProps> = ({
                 labelAll={{ fr: 'Toutes devises', ar: 'كل العملات' }[lang]}
               />
 
-              {/* Bascule clair / sombre (partagée avec l'application) */}
-              <ThemeToggle lang={lang} variant="site" />
-
               {onLangChange && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -156,8 +153,8 @@ export const Website: React.FC<WebsiteProps> = ({
                   style={{
                     fontFamily: 'var(--font-display)',
                     color: '#C8A13C',
-                    border: '1px solid rgba(220,38,38,0.25)',
-                    background: 'rgba(220,38,38,0.06)',
+                    border: '1px solid rgba(200, 161, 60,0.25)',
+                    background: 'rgba(200, 161, 60,0.06)',
                   }}
                 >
                   {lang === 'fr' ? 'عربي' : 'FR'}
@@ -169,7 +166,7 @@ export const Website: React.FC<WebsiteProps> = ({
                 className="md:hidden p-2 rounded-lg text-vel-slate transition-all"
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C8A13C'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; }}
-                style={{ background: isMobileMenuOpen ? 'rgba(15,23,42,0.04)' : 'transparent' }}
+                style={{ background: isMobileMenuOpen ? 'rgba(245,240,225,0.04)' : 'transparent' }}
               >
                 {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
               </motion.button>
@@ -224,6 +221,9 @@ export const Website: React.FC<WebsiteProps> = ({
             lang={lang}
             websiteSettings={websiteSettings}
             agencies={agencies}
+            cars={cars}
+            specialOffers={specialOffers}
+            onOrderCar={handleReserveClick}
             onStartRenting={() => setCurrentPage('offers')}
             onReserve={() => { setSelectedCar(null); setCurrentPage('orders'); }}
             onSearch={handleAvailabilitySearch}
@@ -250,6 +250,7 @@ export const Website: React.FC<WebsiteProps> = ({
             selectedCar={selectedCar}
             initialSearch={searchCriteria}
             websiteSettings={websiteSettings}
+            contactInfo={contactInfo}
             onBackHome={() => { setSelectedCar(null); setSearchCriteria(null); setCurrentPage('home'); }}
           />
         )}
@@ -259,7 +260,7 @@ export const Website: React.FC<WebsiteProps> = ({
       </motion.div>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: '#FFFFFF', borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+      <footer style={{ background: 'linear-gradient(180deg, #0A0A08, #050504)', borderTop: '1px solid rgba(200,161,60,0.18)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             {/* Brand */}
@@ -268,7 +269,7 @@ export const Website: React.FC<WebsiteProps> = ({
                 style={{ fontFamily: 'var(--font-display)' }}>
                 {SITE_NAME}
               </h3>
-              <div className="w-12 h-0.5 mb-4" style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(220,38,38,0.35)' }} />
+              <div className="w-12 h-0.5 mb-4" style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(200, 161, 60,0.35)' }} />
               <p className="text-vel-muted text-sm leading-relaxed">{websiteSettings?.description}</p>
             </div>
 
@@ -354,7 +355,7 @@ export const Website: React.FC<WebsiteProps> = ({
           </div>
 
           <div className="mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
-            style={{ borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+            style={{ borderTop: '1px solid rgba(245,240,225,0.08)' }}>
             <p className="text-vel-dim text-sm">
               © {new Date().getFullYear()} {SITE_NAME}.{' '}
               <span className="text-vel-muted">{{ fr: 'Tous droits réservés.', ar: 'جميع الحقوق محفوظة.' }[lang]}</span>

@@ -53,7 +53,7 @@ export const StepAgencies: React.FC = () => {
           <span
             className="relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors duration-300"
             style={{
-              background: differentReturnAgency ? C.accent : 'rgba(15,23,42,0.12)',
+              background: differentReturnAgency ? C.accent : 'rgba(245,240,225,0.12)',
             }}
           >
             <motion.span
@@ -96,7 +96,7 @@ export const StepAgencies: React.FC = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-sm text-vel-muted px-4 py-3 rounded-xl"
-                style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.06)' }}
+                style={{ background: 'rgba(245,240,225,0.03)', border: '1px solid rgba(245,240,225,0.06)' }}
               >
                 {lang === 'fr'
                   ? <>Le véhicule sera rendu au lieu de départ : <span className="font-bold text-vel-slate">{departureAgencyName}</span></>

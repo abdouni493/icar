@@ -55,7 +55,7 @@ export const StepCarDates: React.FC = () => {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-2xl mx-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-5 py-3.5 rounded-2xl text-sm"
-            style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.16)' }}
+            style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.16)' }}
           >
             <span className="flex items-center gap-2 font-bold" style={{ color: C.accent }}>
               <CalendarCheck size={15} />
@@ -86,7 +86,7 @@ export const StepCarDates: React.FC = () => {
             onChange={e => setSearchQuery(e.target.value)}
             placeholder={lang === 'fr' ? 'Rechercher par marque, modèle, immatriculation…' : 'ابحث بالماركة أو الموديل…'}
             className="w-full pl-12 pr-4 py-3.5 text-base rounded-2xl outline-none transition-all text-vel-ink placeholder:text-vel-dim font-medium"
-            style={{ background: C.elevated, border: '1px solid rgba(220,38,38,0.16)' }}
+            style={{ background: C.elevated, border: '1px solid rgba(200, 161, 60,0.16)' }}
             onFocus={focusInput} onBlur={blurInput}
           />
         </div>
@@ -116,13 +116,13 @@ export const StepCarDates: React.FC = () => {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => selectCar(c)}
                 className="text-left rounded-2xl overflow-hidden transition-all duration-400 group cursor-pointer"
-                style={{ background: C.elevated, border: '1px solid rgba(15,23,42,0.06)' }}
+                style={{ background: C.elevated, border: '1px solid rgba(245,240,225,0.06)' }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(220,38,38,0.28)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 0 30px rgba(220,38,38,0.08)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.28)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 0 30px rgba(200, 161, 60,0.08)';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(15,23,42,0.06)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,240,225,0.06)';
                   (e.currentTarget as HTMLElement).style.boxShadow = 'none';
                 }}
               >
@@ -135,7 +135,7 @@ export const StepCarDates: React.FC = () => {
                     <div className="w-full h-full flex items-center justify-center text-5xl">🚗</div>
                   )}
                   <div className="absolute top-3 left-3 px-2 py-0.5 rounded-lg text-xs font-bold"
-                    style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)', color: C.accent, fontFamily: 'var(--font-display)' }}>
+                    style={{ background: 'rgba(200, 161, 60,0.1)', border: '1px solid rgba(200, 161, 60,0.25)', color: C.accent, fontFamily: 'var(--font-display)' }}>
                     {c.year}
                   </div>
                 </div>
@@ -147,12 +147,12 @@ export const StepCarDates: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <p className="font-black text-lg" style={{ color: C.accent, fontFamily: 'var(--font-display)' }}>
                       {c.priceDay.toLocaleString()}
-                      <span className="text-xs ml-1" style={{ color: 'rgba(220,38,38,0.75)' }}>
+                      <span className="text-xs ml-1" style={{ color: 'rgba(200, 161, 60,0.75)' }}>
                         {{ fr: 'DA/j', ar: 'د.ج/ي' }[lang]}
                       </span>
                     </p>
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                      style={{ background: 'rgba(220,38,38,0.09)', border: '1px solid rgba(220,38,38,0.25)' }}>
+                      style={{ background: 'rgba(200, 161, 60,0.09)', border: '1px solid rgba(200, 161, 60,0.25)' }}>
                       <ChevronRight size={15} style={{ color: C.accent }} />
                     </div>
                   </div>
@@ -170,7 +170,7 @@ export const StepCarDates: React.FC = () => {
     <div className="space-y-6">
       {/* Bandeau voiture sélectionnée */}
       <div className="rounded-2xl flex gap-4 p-5 items-center"
-        style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.16)' }}>
+        style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.16)' }}>
         <div className="w-20 h-16 rounded-xl overflow-hidden flex-shrink-0" style={{ background: C.surface }}>
           {car.images?.[0]
             ? <img src={car.images[0]} alt={car.model} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -193,9 +193,9 @@ export const StepCarDates: React.FC = () => {
         <button
           onClick={() => selectCar(null)}
           className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-vel-slate transition-colors"
-          style={{ border: '1px solid rgba(15,23,42,0.12)' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = C.accent; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(220,38,38,0.25)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(15,23,42,0.12)'; }}
+          style={{ border: '1px solid rgba(245,240,225,0.12)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = C.accent; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.25)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,240,225,0.12)'; }}
         >
           <ChevronLeft size={14} />
           {{ fr: 'Choisir une autre voiture', ar: 'اختيار سيارة أخرى' }[lang]}
@@ -240,7 +240,7 @@ export const StepCarDates: React.FC = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 px-4 py-3 rounded-xl"
-            style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.1)' }}
+            style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.1)' }}
           >
             <span className="text-xl">📅</span>
             <span className="text-vel-slate font-bold text-sm">
