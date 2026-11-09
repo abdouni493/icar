@@ -330,44 +330,6 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
               <BookingSearchPanel lang={lang} agencies={agencies} onSearch={onSearch} hasBg={hasBg} />
             </div>
 
-            {/* ── Trio de cartes « atouts » façon VÖLZ ── */}
-            <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-              {[
-                {
-                  title: { fr: 'Toute la flotte, une recherche', ar: 'كل الأسطول، بحث واحد' },
-                  desc:  { fr: 'Citadines, SUV & premium, au même endroit.', ar: 'سيارات صغيرة، دفع رباعي وفاخرة، في مكان واحد.' },
-                  icon: CarIcon,
-                },
-                {
-                  title: { fr: 'Réservation en minutes', ar: 'حجز في دقائق' },
-                  desc:  { fr: 'Trois étapes simples, clés en main le jour même.', ar: 'ثلاث خطوات بسيطة، ومفاتيحك في نفس اليوم.' },
-                  icon: Zap,
-                },
-                {
-                  title: { fr: 'Payez à votre façon', ar: 'ادفع بطريقتك' },
-                  desc:  { fr: 'Espèces, CIB, BaridiMob, Visa & Mastercard.', ar: 'نقداً، CIB، بريدي موب، Visa و Mastercard.' },
-                  icon: Shield,
-                },
-              ].map((f, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 28 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9 + i * 0.12, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="volz-feature p-5 text-left"
-                >
-                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: `${C.accent}16`, border: `1px solid ${C.accent}3a` }}>
-                    <f.icon size={20} style={{ color: C.accent }} />
-                  </div>
-                  <h3 className="font-bold text-base text-vel-ink mb-1.5" style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.3px' }}>
-                    {f.title[lang]}
-                  </h3>
-                  <p className="text-vel-muted text-sm leading-relaxed">{f.desc[lang]}</p>
-                </motion.div>
-              ))}
-            </div>
-
             {/* ── Toutes les voitures disponibles, directement sous la carte ── */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
