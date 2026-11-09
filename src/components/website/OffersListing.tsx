@@ -7,6 +7,7 @@ import { getCurrentSpecialOfferForCar } from '../../utils/specialOffers';
 import { useWebsiteCurrency, CurrencySwitcher } from './CurrencyContext';
 import { CURRENCIES, ALL_CURRENCIES, isCurrencyEnabled, convertFromDzd, formatCurrency, getCarRate, CurrencyCode } from '../../utils/currency';
 import { CarPriceBoard } from './CarPriceBoard';
+import { trackMetaPixel } from '../../utils/metaPixel';
 
 interface OffersListingProps {
   lang: Language;
@@ -14,6 +15,11 @@ interface OffersListingProps {
   cars: Car[];
   specialOffers: SpecialOffer[];
   onOrder: (car: Car) => void;
+  /** Intégré dans une autre page (ex. landing) : supprime le fond/plein écran. */
+  embedded?: boolean;
+  /** Titres personnalisés (mode intégré). */
+  heading?: { fr: string; ar: string };
+  subheading?: { fr: string; ar: string };
 }
 
 /**
@@ -21,7 +27,7 @@ interface OffersListingProps {
  * Toute la carte est cliquable (→ détails) ; le bouton Réserver lance le wizard
  * avec la voiture présélectionnée (stopPropagation pour ne pas ouvrir les détails).
  */
-export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specialOffers, onOrder }) => {
+export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specialOffers, onOrder, embedded = false, heading, subheading }) => {
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -37,10 +43,18 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
   const openDetails = (car: Car) => {
     setSelectedCar(car);
     setShowDetails(true);
+    // Suivi Meta Ads : consultation d'une fiche véhicule.
+    trackMetaPixel('ViewContent', {
+      content_type: 'vehicle',
+      content_ids: [car.id],
+      content_name: `${car.brand} ${car.model}`,
+      value: car.priceDay,
+      currency: 'DZD',
+    });
   };
 
   return (
-    <div className="min-h-screen bg-vel-void py-20 px-3 sm:px-6 lg:px-8">
+    <div className={embedded ? '' : 'min-h-screen bg-vel-void py-20 px-3 sm:px-6 lg:px-8'}>
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
@@ -49,14 +63,14 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="text-center mb-14"
+          className={embedded ? 'text-center mb-10' : 'text-center mb-14'}
         >
-          <p className="font-bold text-xs tracking-[0.25em] uppercase mb-4"
-            style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
-            {{ fr: 'Nos Véhicules', ar: 'سياراتنا' }[lang]}
+          <p className="font-bold text-xs tracking-[0.25em] uppercase mb-4 gold-text gold-text-anim"
+            style={{ fontFamily: 'var(--font-display)' }}>
+            {heading ? heading[lang] : { fr: 'Nos Véhicules', ar: 'سياراتنا' }[lang]}
           </p>
-          <h1 className="font-black text-5xl sm:text-6xl text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
-            {{ fr: 'La Flotte', ar: 'الأسطول' }[lang]}
+          <h1 className={`font-black text-vel-ink ${embedded ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'}`} style={{ fontFamily: 'var(--font-display)', letterSpacing: '-1px' }}>
+            {subheading ? subheading[lang] : { fr: 'La Flotte', ar: 'الأسطول' }[lang]}
           </h1>
           <p className="text-vel-muted text-lg mt-4 max-w-2xl mx-auto">
             {{ fr: 'Découvrez notre sélection de véhicules premium avec les meilleures offres', ar: 'اكتشف تشكيلتنا من السيارات الفاخرة مع أفضل العروض' }[lang]}
@@ -105,13 +119,13 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: reduceMotion ? 0 : Math.min(index % 8, 6) * 0.05, duration: 0.45 }}
                 whileHover={reduceMotion ? {} : { y: -4 }}
-                className="vel-glass rounded-xl overflow-hidden group cursor-pointer transition-shadow duration-300 flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                className="vel-glass rounded-2xl overflow-hidden group cursor-pointer transition-shadow duration-300 flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(220,38,38,0.25)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 30px rgba(220,38,38,0.09)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.25)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 30px rgba(200, 161, 60,0.09)';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(15,23,42,0.08)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,240,225,0.08)';
                   (e.currentTarget as HTMLElement).style.boxShadow = 'none';
                 }}
               >
@@ -126,7 +140,7 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
                   />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(8,12,20,0.7), transparent 55%)' }} />
                   <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-bold backdrop-blur-sm"
-                    style={{ color: '#C8A13C', background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.25)', fontFamily: 'var(--font-display)' }}>
+                    style={{ color: '#C8A13C', background: 'rgba(200, 161, 60,0.1)', border: '1px solid rgba(200, 161, 60,0.25)', fontFamily: 'var(--font-display)' }}>
                     {car.year}
                   </div>
                   {promo && (
@@ -152,8 +166,8 @@ export const OffersListing: React.FC<OffersListingProps> = ({ lang, cars, specia
                     {specs.map((s, i) => (
                       <span key={i}
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium text-vel-slate"
-                        style={{ background: '#EEF2F7', border: '1px solid rgba(15,23,42,0.07)' }}>
-                        <s.icon size={9} style={{ color: 'rgba(220,38,38,0.55)' }} />
+                        style={{ background: '#1F1C14', border: '1px solid rgba(245,240,225,0.07)' }}>
+                        <s.icon size={9} style={{ color: 'rgba(200, 161, 60,0.55)' }} />
                         {s.value}
                       </span>
                     ))}

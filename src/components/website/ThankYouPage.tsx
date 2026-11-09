@@ -22,7 +22,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4 z-50 overflow-hidden"
-      style={{ background: '#F8FAFC' }}>
+      style={{ background: '#0A0A08' }}>
 
       {/* Halos d'arrière-plan */}
       <div className="absolute inset-0 pointer-events-none">
@@ -30,10 +30,10 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
           animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.09), transparent 60%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(200, 161, 60,0.09), transparent 60%)' }}
         />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.08), transparent 60%)' }} />
+          style={{ background: 'radial-gradient(circle, rgba(200, 161, 60,0.08), transparent 60%)' }} />
       </div>
 
       {/* Carte de contenu */}
@@ -44,14 +44,14 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
         className="relative z-10 text-center max-w-lg w-full rounded-3xl p-10 space-y-6"
         style={{
           background: 'rgba(255,255,255,0.97)',
-          border: '1px solid rgba(220,38,38,0.2)',
-          boxShadow: '0 20px 60px rgba(15,23,42,0.1)',
+          border: '1px solid rgba(200, 161, 60,0.2)',
+          boxShadow: '0 20px 60px rgba(245,240,225,0.1)',
         }}
       >
         {/* Logo + nom de l'agence */}
         <div className="flex flex-col items-center gap-3">
           <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center"
-            style={{ background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.25)' }}>
+            style={{ background: 'rgba(200, 161, 60,0.06)', border: '1px solid rgba(200, 161, 60,0.25)' }}>
             {websiteSettings?.logo ? (
               <img src={websiteSettings.logo} alt={agencyName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             ) : (
@@ -71,7 +71,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lang, onBackHome, we
           transition={{ delay: 0.3, type: 'spring', stiffness: 260, damping: 18 }}
           className="flex justify-center"
         >
-          <CheckCircle size={56} style={{ color: '#C8A13C', filter: 'drop-shadow(0 0 16px rgba(220,38,38,0.35))' }} />
+          <CheckCircle size={56} style={{ color: '#C8A13C', filter: 'drop-shadow(0 0 16px rgba(200, 161, 60,0.35))' }} />
         </motion.div>
 
         {/* Message */}

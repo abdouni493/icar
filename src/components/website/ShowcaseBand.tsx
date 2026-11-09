@@ -35,7 +35,7 @@ export const ShowcaseBand: React.FC<ShowcaseBandProps> = ({ lang, onReserve, ima
     <section
       ref={sectionRef}
       className="relative overflow-hidden py-28 px-4 sm:px-6 lg:px-8"
-      style={{ background: '#F8FAFC' }}
+      style={{ background: '#0A0A08' }}
     >
       {/* ── Couche visuelle d'arrière-plan (décorative, non interactive) ── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -54,15 +54,18 @@ export const ShowcaseBand: React.FC<ShowcaseBandProps> = ({ lang, onReserve, ima
         ) : (
           // Pas d'image disponible : simple fond dégradé discret
           <div className="w-full h-full" style={{
-            background: 'radial-gradient(ellipse 70% 80% at 85% 50%, rgba(220,38,38,0.08), transparent 70%)',
+            background: 'radial-gradient(ellipse 70% 80% at 85% 50%, rgba(200, 161, 60,0.08), transparent 70%)',
           }} />
         )}
-        {/* Dégradé clair pour la lisibilité du texte au-dessus (la voiture reste visible à droite) */}
+        {/* Dégradé cinématographique sombre pour la lisibilité (la voiture reste visible à droite) */}
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(90deg, rgba(248,250,252,0.97) 0%, rgba(248,250,252,0.82) 40%, rgba(248,250,252,0.12) 75%, rgba(248,250,252,0) 100%)',
+          background: 'linear-gradient(90deg, rgba(10,10,8,0.97) 0%, rgba(10,10,8,0.82) 42%, rgba(10,10,8,0.18) 75%, rgba(10,10,8,0) 100%)',
         }} />
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(to bottom, rgba(248,250,252,0.85), transparent 22%, transparent 78%, rgba(248,250,252,0.85))',
+          background: 'linear-gradient(to bottom, rgba(10,10,8,0.9), transparent 22%, transparent 74%, rgba(10,10,8,0.95))',
+        }} />
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse 60% 50% at 20% 50%, rgba(200,161,60,0.10), transparent 70%)',
         }} />
       </div>
 
@@ -75,12 +78,10 @@ export const ShowcaseBand: React.FC<ShowcaseBandProps> = ({ lang, onReserve, ima
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className="max-w-xl space-y-6"
         >
-          <p className="font-bold text-xs tracking-[0.25em] uppercase"
-            style={{ color: '#C8A13C', fontFamily: 'var(--font-display)' }}>
+          <p className="volz-eyebrow">
             {{ fr: 'Prêt quand vous l\'êtes', ar: 'جاهزون عندما تكون جاهزًا' }[lang]}
           </p>
-          <h2 className="font-black text-4xl sm:text-5xl text-vel-ink leading-tight"
-            style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="volz-h2" style={{ fontSize: 'clamp(2.1rem, 1.3rem + 3vw, 3.2rem)' }}>
             {{ fr: 'Une flotte entretenue, des clés en main le jour même', ar: 'أسطول مُعتنى به، ومفاتيح بين يديك في نفس اليوم' }[lang]}
           </h2>
           <p className="text-vel-slate text-lg leading-relaxed">

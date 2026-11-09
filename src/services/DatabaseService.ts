@@ -1840,6 +1840,7 @@ export class DatabaseService {
             activite: data[0].activite,
             capital: data[0].capital,
             bank_name: data[0].bank_name,
+            meta_pixel_id: data[0].meta_pixel_id,
           };
         }
       } catch (e: any) {
@@ -1867,6 +1868,7 @@ export class DatabaseService {
         activite: '',
         capital: '',
         bank_name: '',
+        meta_pixel_id: '',
       };
     });
   }
@@ -1895,6 +1897,7 @@ export class DatabaseService {
       activite: settings.activite ?? current.activite,
       capital: settings.capital ?? current.capital,
       bank_name: settings.bank_name ?? current.bank_name,
+      meta_pixel_id: settings.meta_pixel_id ?? current.meta_pixel_id,
     };
 
     // First, delete all existing records to ensure only one record exists
@@ -1948,6 +1951,7 @@ export class DatabaseService {
       activite: data.activite,
       capital: data.capital,
       bank_name: data.bank_name,
+      meta_pixel_id: data.meta_pixel_id,
     };
   }
 

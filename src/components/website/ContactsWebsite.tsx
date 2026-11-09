@@ -59,7 +59,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
       label: 'TikTok',
       shortLabel: 'tt',
       href: contactInfo?.tiktok ? `https://tiktok.com/@${contactInfo.tiktok}` : undefined,
-      hoverColor: '#F8FAFC',
+      hoverColor: '#0A0A08',
     },
     {
       show: !!contactInfo?.whatsapp,
@@ -110,7 +110,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                 {SITE_NAME}
               </h2>
               <div className="w-10 h-0.5 mb-4"
-                style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(220,38,38,0.35)' }} />
+                style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(200, 161, 60,0.35)' }} />
               {websiteSettings?.description && (
                 <p className="text-vel-muted leading-relaxed">{websiteSettings.description}</p>
               )}
@@ -121,8 +121,8 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                 const content = (
                   <div className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group/item cursor-pointer"
                     style={{
-                      background: 'rgba(220,38,38,0.04)',
-                      border: '1px solid rgba(15,23,42,0.08)',
+                      background: 'rgba(200, 161, 60,0.04)',
+                      border: '1px solid rgba(245,240,225,0.08)',
                       borderLeftWidth: '2px',
                       borderLeftColor: '#C8A13C',
                     }}
@@ -162,7 +162,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                   className="flex items-center gap-4 p-4 rounded-xl block transition-all duration-300"
                   style={{
                     background: 'rgba(37,211,102,0.05)',
-                    border: '1px solid rgba(15,23,42,0.08)',
+                    border: '1px solid rgba(245,240,225,0.08)',
                     borderLeftWidth: '2px',
                     borderLeftColor: '#C8A13C',
                   }}
@@ -212,7 +212,7 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                   }}
                   onMouseLeave={e => {
                     (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(15,23,42,0.08)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,240,225,0.08)';
                   }}
                 >
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black"
@@ -266,14 +266,14 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
                 <input
                   type={field.type}
                   className="w-full rounded-xl px-4 py-3 outline-none transition-all text-vel-ink placeholder:text-vel-dim font-medium"
-                  style={{ background: '#EEF2F7', border: '1px solid rgba(15,23,42,0.08)' }}
+                  style={{ background: '#1F1C14', border: '1px solid rgba(245,240,225,0.08)' }}
                   placeholder={field.placeholder[lang]}
                   onFocus={e => {
                     (e.target as HTMLElement).style.borderColor = '#C8A13C';
-                    (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(220,38,38,0.25)';
+                    (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(200, 161, 60,0.25)';
                   }}
                   onBlur={e => {
-                    (e.target as HTMLElement).style.borderColor = 'rgba(15,23,42,0.08)';
+                    (e.target as HTMLElement).style.borderColor = 'rgba(245,240,225,0.08)';
                     (e.target as HTMLElement).style.boxShadow = 'none';
                   }}
                 />
@@ -288,14 +288,14 @@ export const ContactsWebsite: React.FC<ContactsWebsiteProps> = ({
               <textarea
                 rows={4}
                 className="w-full rounded-xl px-4 py-3 outline-none transition-all text-vel-ink placeholder:text-vel-dim font-medium resize-none"
-                style={{ background: '#EEF2F7', border: '1px solid rgba(15,23,42,0.08)' }}
+                style={{ background: '#1F1C14', border: '1px solid rgba(245,240,225,0.08)' }}
                 placeholder={{ fr: 'Votre message...', ar: 'رسالتك...' }[lang]}
                 onFocus={e => {
                   (e.target as HTMLElement).style.borderColor = '#C8A13C';
-                  (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(220,38,38,0.25)';
+                  (e.target as HTMLElement).style.boxShadow = '0 0 0 1px rgba(200, 161, 60,0.25)';
                 }}
                 onBlur={e => {
-                  (e.target as HTMLElement).style.borderColor = 'rgba(15,23,42,0.08)';
+                  (e.target as HTMLElement).style.borderColor = 'rgba(245,240,225,0.08)';
                   (e.target as HTMLElement).style.boxShadow = 'none';
                 }}
               />

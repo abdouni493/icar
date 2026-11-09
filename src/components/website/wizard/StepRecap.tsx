@@ -31,9 +31,9 @@ export const StepRecap: React.FC = () => {
     <button
       onClick={() => goToStep(step)}
       className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg transition-colors text-vel-muted"
-      style={{ border: '1px solid rgba(15,23,42,0.1)' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = C.accent; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(220,38,38,0.25)'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(15,23,42,0.1)'; }}
+      style={{ border: '1px solid rgba(245,240,225,0.1)' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = C.accent; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.25)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,240,225,0.1)'; }}
     >
       <Pencil size={11} />
       {{ fr: 'Modifier', ar: 'تعديل' }[lang]}
@@ -41,7 +41,7 @@ export const StepRecap: React.FC = () => {
   );
 
   const summaryBlock = (title: string, editStep: number, rows: { label: string; value: string }[]) => (
-    <div className="rounded-xl p-4 space-y-2" style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.06)' }}>
+    <div className="rounded-xl p-4 space-y-2" style={{ background: 'rgba(245,240,225,0.03)', border: '1px solid rgba(245,240,225,0.06)' }}>
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold text-vel-muted uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>{title}</p>
         <EditButton step={editStep} />
@@ -71,7 +71,7 @@ export const StepRecap: React.FC = () => {
       )}
       {!currencySupported && (
         <div className="rounded-2xl px-5 py-3.5 text-sm font-semibold"
-          style={{ background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)', color: '#B8912E' }}>
+          style={{ background: 'rgba(200, 161, 60,0.06)', border: '1px solid rgba(200, 161, 60,0.2)', color: '#B8912E' }}>
           {{ fr: 'Cette voiture n’est pas proposée dans la devise choisie — les montants sont affichés en dinars.',
              ar: 'هذه السيارة غير متاحة بالعملة المختارة — تُعرض المبالغ بالدينار.' }[lang]}
         </div>
@@ -130,7 +130,7 @@ export const StepRecap: React.FC = () => {
         <SectionTitle>💰 {{ fr: 'Tarification', ar: 'التسعير' }[lang]}</SectionTitle>
         <div className="space-y-3">
           <div className="flex justify-between items-center px-4 py-3 rounded-xl text-sm"
-            style={{ background: 'rgba(15,23,42,0.03)' }}>
+            style={{ background: 'rgba(245,240,225,0.03)' }}>
             <span className="text-vel-slate">
               {days} {{ fr: 'j ×', ar: 'يوم ×' }[lang]} {car.priceDay.toLocaleString()} {{ fr: 'DA', ar: 'د.ج' }[lang]}
             </span>
@@ -154,7 +154,7 @@ export const StepRecap: React.FC = () => {
           {/* Assurance de protection (prix/jour × durée) */}
           {selectedAssurance && assuranceTotal > 0 && (
             <div className="flex justify-between items-center px-4 py-3 rounded-xl text-sm"
-              style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.14)' }}>
+              style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.14)' }}>
               <span className="text-vel-slate">
                 🛡️ {selectedAssurance.name} ({days} {{ fr: 'j ×', ar: 'يوم ×' }[lang]} {selectedAssurance.pricePerDay.toLocaleString()})
               </span>
@@ -164,7 +164,7 @@ export const StepRecap: React.FC = () => {
 
           {selectedServices.map(s => (
             <div key={s.id} className="flex justify-between items-center px-4 py-3 rounded-xl text-sm"
-              style={{ background: 'rgba(217,119,6,0.05)', border: '1px solid rgba(217,119,6,0.1)' }}>
+              style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.1)' }}>
               <span className="text-vel-slate">{s.name}</span>
               <span className="font-bold" style={{ color: C.amber }}>{fx(s.price)}</span>
             </div>
@@ -172,7 +172,7 @@ export const StepRecap: React.FC = () => {
 
           {/* ── Code promo : saisie + vérification serveur + remise appliquée ── */}
           <div className="px-4 py-4 rounded-xl space-y-3"
-            style={{ background: 'rgba(15,23,42,0.03)', border: '1px dashed rgba(220,38,38,0.25)' }}>
+            style={{ background: 'rgba(245,240,225,0.03)', border: '1px dashed rgba(200, 161, 60,0.25)' }}>
             <p className="flex items-center gap-2 text-xs font-bold text-vel-muted uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-display)' }}>
               <Ticket size={14} style={{ color: C.accent }} />
@@ -215,8 +215,8 @@ export const StepRecap: React.FC = () => {
                     disabled={!promoInput.trim() || promoStatus === 'checking'}
                     className="px-5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                     style={{
-                      background: 'rgba(220,38,38,0.08)',
-                      border: '1px solid rgba(220,38,38,0.3)',
+                      background: 'rgba(200, 161, 60,0.08)',
+                      border: '1px solid rgba(200, 161, 60,0.3)',
                       color: C.accent,
                       fontFamily: 'var(--font-display)',
                     }}
@@ -255,7 +255,7 @@ export const StepRecap: React.FC = () => {
           )}
 
           <div className="flex justify-between items-center px-4 py-4 rounded-2xl"
-            style={{ background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)' }}>
+            style={{ background: 'rgba(200, 161, 60,0.06)', border: '1px solid rgba(200, 161, 60,0.2)' }}>
             <span className="font-black text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
               {{ fr: 'TOTAL', ar: 'المجموع' }[lang]}
             </span>
@@ -300,7 +300,7 @@ export const StepRecap: React.FC = () => {
       )}
 
       {/* Bandeau confirmation */}
-      <div className="rounded-2xl p-6" style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.16)' }}>
+      <div className="rounded-2xl p-6" style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.16)' }}>
         <h3 className="font-black text-vel-ink text-lg mb-2" style={{ fontFamily: 'var(--font-display)' }}>
           ✅ {{ fr: 'Prêt à confirmer ?', ar: 'جاهز للتأكيد؟' }[lang]}
         </h3>

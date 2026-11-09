@@ -1389,6 +1389,25 @@ export const WebsiteManagementPage: React.FC<WebsiteManagementPageProps> = ({ la
                   />
                 </div>
 
+                {/* Meta (Facebook) Pixel */}
+                <div className="space-y-2">
+                  <label className="label-saas">📊 {{fr: 'Meta Pixel ID (Facebook / Instagram Ads)', ar: 'معرّف Meta Pixel (إعلانات فيسبوك/إنستغرام)'}[lang]}</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={settings.meta_pixel_id || ''}
+                    onChange={e => setSettings({ ...settings, meta_pixel_id: e.target.value.replace(/[^0-9]/g, '') })}
+                    placeholder={{fr: 'ex. 1234567890123456', ar: 'مثال: 1234567890123456'}[lang]}
+                    className="input-saas"
+                  />
+                  <p className="text-xs text-saas-text-muted">
+                    {{
+                      fr: "Collez l'identifiant de votre Pixel depuis Meta Events Manager → Sources de données. Le suivi (PageView, réservations, demandes WhatsApp) s'active automatiquement sur le site public.",
+                      ar: 'الصق معرّف البكسل من Meta Events Manager ← مصادر البيانات. يتم تفعيل التتبّع (المشاهدات، الحجوزات، طلبات واتساب) تلقائيًا على الموقع العام.'
+                    }[lang]}
+                  </p>
+                </div>
+
                 {/* Logo */}
                 <div className="space-y-4">
                   <label className="label-saas">🖼️ {{fr: 'Logo du site', ar: 'شعار الموقع'}[lang]}</label>

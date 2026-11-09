@@ -438,6 +438,8 @@ export interface WebsiteSettings {
   capital?: string;
   /** Nom de la banque (RIB). */
   bank_name?: string;
+  /** Identifiant du Meta (Facebook) Pixel pour le suivi Ads Manager. */
+  meta_pixel_id?: string;
 }
 
 // Code promo utilisable sur la réservation du site public

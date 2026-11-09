@@ -93,7 +93,7 @@ export const StepPersonalInfo: React.FC = () => {
         <SectionTitle>📸 {{ fr: 'Photo (optionnelle)', ar: 'صورة (اختياري)' }[lang]}</SectionTitle>
         <div className="flex items-center gap-5">
           <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center"
-            style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.16)' }}>
+            style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.16)' }}>
             {personal.photo
               ? <img src={personal.photo} alt="Photo" className="w-full h-full object-cover" />
               : <span className="text-3xl">📷</span>
@@ -102,7 +102,7 @@ export const StepPersonalInfo: React.FC = () => {
           <label>
             <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploadingProfile} />
             <span className={`cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${uploadingProfile ? 'opacity-50' : ''}`}
-              style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', color: C.accent, fontFamily: 'var(--font-display)' }}>
+              style={{ background: 'rgba(200, 161, 60,0.08)', border: '1px solid rgba(200, 161, 60,0.25)', color: C.accent, fontFamily: 'var(--font-display)' }}>
               {uploadingProfile ? <><Loader2 size={16} className="animate-spin" /> {lang === 'fr' ? 'Envoi…' : 'جاري…'}</> : <><Upload size={16} /> {lang === 'fr' ? 'Charger' : 'تحميل'}</>}
             </span>
           </label>
@@ -193,7 +193,7 @@ export const StepPersonalInfo: React.FC = () => {
         <label>
           <input type="file" multiple accept="image/*,.pdf" onChange={handleDocumentUpload} className="hidden" disabled={uploadingDocument} />
           <span className={`cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${uploadingDocument ? 'opacity-50' : ''}`}
-            style={{ background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.28)', color: C.amber, fontFamily: 'var(--font-display)' }}>
+            style={{ background: 'rgba(200, 161, 60,0.1)', border: '1px solid rgba(200, 161, 60,0.28)', color: C.amber, fontFamily: 'var(--font-display)' }}>
             {uploadingDocument ? <><Loader2 size={16} className="animate-spin" /> {lang === 'fr' ? 'Envoi…' : 'جاري…'}</> : <><Upload size={16} /> {{ fr: 'Télécharger', ar: 'تحميل' }[lang]}</>}
           </span>
         </label>
@@ -203,9 +203,9 @@ export const StepPersonalInfo: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {personal.scannedDocuments.map((docUrl, index) => (
               <div key={index} className="relative group aspect-square rounded-xl overflow-hidden"
-                style={{ border: '1px solid rgba(217,119,6,0.28)' }}>
+                style={{ border: '1px solid rgba(200, 161, 60,0.28)' }}>
                 {docUrl.includes('data:application/pdf') ? (
-                  <div className="w-full h-full flex flex-col items-center justify-center gap-2" style={{ background: 'rgba(217,119,6,0.08)' }}>
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-2" style={{ background: 'rgba(200, 161, 60,0.08)' }}>
                     <FileText size={28} style={{ color: C.amber }} />
                     <p className="text-xs font-bold" style={{ color: C.amber }}>PDF</p>
                   </div>
@@ -296,7 +296,7 @@ export const StepPersonalInfo: React.FC = () => {
 
           {personal.flightTicketImage ? (
             <div className="relative inline-block rounded-2xl overflow-hidden"
-              style={{ border: '1px solid rgba(15,23,42,0.12)' }}>
+              style={{ border: '1px solid rgba(245,240,225,0.12)' }}>
               <img
                 src={personal.flightTicketImage}
                 alt={lang === 'fr' ? 'Billet' : 'التذكرة'}
@@ -314,7 +314,7 @@ export const StepPersonalInfo: React.FC = () => {
           ) : (
             <label
               className="flex flex-col items-center justify-center gap-2 py-8 px-4 rounded-2xl cursor-pointer transition-colors"
-              style={{ border: '2px dashed rgba(15,23,42,0.16)', background: 'rgba(15,23,42,0.02)' }}
+              style={{ border: '2px dashed rgba(245,240,225,0.16)', background: 'rgba(245,240,225,0.02)' }}
             >
               {uploadingTicket
                 ? <Loader2 size={26} className="animate-spin" style={{ color: C.accent }} />

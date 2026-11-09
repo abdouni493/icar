@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Language, Car, Agency } from '../types';
 import { motion } from 'motion/react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, HelpCircle } from 'lucide-react';
+import { initMetaPixel, trackMetaPixel, trackMetaPageView } from '../utils/metaPixel';
 import { Welcome } from './website/Welcome';
 import { OffersListing } from './website/OffersListing';
 import { SpecialOffersListing } from './website/SpecialOffersListing';
@@ -9,7 +10,6 @@ import { ContactsWebsite } from './website/ContactsWebsite';
 import { ReservationWizard } from './website/wizard/ReservationWizard';
 import { WizardSearchCriteria } from './website/wizard/WizardContext';
 import { WebsiteCurrencyProvider, CurrencySwitcher } from './website/CurrencyContext';
-import { ThemeToggle } from './ThemeToggle';
 import { SITE_NAME } from '../constants';
 
 interface WebsiteProps {
@@ -40,6 +40,25 @@ export const Website: React.FC<WebsiteProps> = ({
   // Recherche de disponibilité lancée depuis le landing (agences + période)
   const [searchCriteria, setSearchCriteria] = useState<WizardSearchCriteria | null>(null);
 
+  // ── Meta (Facebook) Pixel ──────────────────────────────────────────────
+  // Le pixel du site est initialisé dès que l'ID est disponible (réglages du
+  // site ou variable d'env). Un PageView est émis à chaque changement de page ;
+  // l'ouverture du tunnel de réservation déclenche « InitiateCheckout ».
+  useEffect(() => {
+    initMetaPixel(websiteSettings?.meta_pixel_id);
+  }, [websiteSettings?.meta_pixel_id]);
+
+  const firstPixelView = useRef(true);
+  useEffect(() => {
+    // Le premier PageView est déjà émis par initMetaPixel → on ne le double pas.
+    if (firstPixelView.current) { firstPixelView.current = false; }
+    else { trackMetaPageView(); }
+    if (currentPage === 'orders') {
+      trackMetaPixel('InitiateCheckout');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
   const handleReserveClick = (car: Car) => {
     setSelectedCar(car);
     setSearchCriteria(null);
@@ -63,7 +82,8 @@ export const Website: React.FC<WebsiteProps> = ({
 
   return (
     <WebsiteCurrencyProvider cars={cars}>
-    <div className="min-h-screen bg-vel-void" style={{ fontFamily: 'var(--font-sans)' }}>
+    {/* Le site public est rendu en thème sombre « noir & or » (cinématique). */}
+    <div className="dark min-h-screen bg-vel-void" style={{ fontFamily: 'var(--font-sans)' }}>
       {/* ── NAVBAR ── */}
       <nav className="sticky top-0 z-50 border-b border-vel-border bg-vel-void/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,7 +97,7 @@ export const Website: React.FC<WebsiteProps> = ({
               onClick={() => setCurrentPage('home')}
             >
               <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 transition-all duration-300"
-                style={{ borderColor: 'rgba(220,38,38,0.25)', boxShadow: '0 0 16px rgba(220,38,38,0.2)' }}>
+                style={{ borderColor: 'rgba(200, 161, 60,0.25)', boxShadow: '0 0 16px rgba(200, 161, 60,0.2)' }}>
                 {websiteSettings?.logo ? (
                   <img
                     src={websiteSettings.logo}
@@ -104,8 +124,8 @@ export const Website: React.FC<WebsiteProps> = ({
               </div>
             </motion.div>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
+            {/* Desktop Nav — pilule flottante façon VÖLZ */}
+            <div className="hidden md:flex items-center gap-1 volz-pill px-2 py-1.5">
               {navItems.map((item, i) => (
                 <motion.button
                   key={item.id}
@@ -113,24 +133,25 @@ export const Website: React.FC<WebsiteProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.07 }}
                   onClick={() => setCurrentPage(item.id as any)}
-                  className={`relative px-5 py-2 font-bold text-xs tracking-[0.15em] uppercase rounded-lg transition-all duration-300 ${
+                  className={`relative px-5 py-2 font-bold text-xs tracking-[0.15em] uppercase rounded-full transition-all duration-300 ${
                     currentPage === item.id
                       ? ''
                       : 'text-vel-muted hover:text-vel-slate'
                   }`}
                   style={{
-                    ...(currentPage === item.id ? { color: '#C8A13C' } : {}),
+                    ...(currentPage === item.id ? { color: '#14130E' } : {}),
                     fontFamily: 'var(--font-display)'
                   }}
                 >
-                  {item.label[lang]}
                   {currentPage === item.id && (
                     <motion.div
-                      layoutId="nav-underline"
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full"
-                      style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(220,38,38,0.3)' }}
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full -z-0"
+                      style={{ background: 'linear-gradient(135deg, #E4C878, #B8912E)', boxShadow: '0 4px 14px rgba(200, 161, 60,0.35)' }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
                   )}
+                  <span className="relative z-10">{item.label[lang]}</span>
                 </motion.button>
               ))}
             </div>
@@ -144,9 +165,6 @@ export const Website: React.FC<WebsiteProps> = ({
                 labelAll={{ fr: 'Toutes devises', ar: 'كل العملات' }[lang]}
               />
 
-              {/* Bascule clair / sombre (partagée avec l'application) */}
-              <ThemeToggle lang={lang} variant="site" />
-
               {onLangChange && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -156,8 +174,8 @@ export const Website: React.FC<WebsiteProps> = ({
                   style={{
                     fontFamily: 'var(--font-display)',
                     color: '#C8A13C',
-                    border: '1px solid rgba(220,38,38,0.25)',
-                    background: 'rgba(220,38,38,0.06)',
+                    border: '1px solid rgba(200, 161, 60,0.25)',
+                    background: 'rgba(200, 161, 60,0.06)',
                   }}
                 >
                   {lang === 'fr' ? 'عربي' : 'FR'}
@@ -169,7 +187,7 @@ export const Website: React.FC<WebsiteProps> = ({
                 className="md:hidden p-2 rounded-lg text-vel-slate transition-all"
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C8A13C'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; }}
-                style={{ background: isMobileMenuOpen ? 'rgba(15,23,42,0.04)' : 'transparent' }}
+                style={{ background: isMobileMenuOpen ? 'rgba(245,240,225,0.04)' : 'transparent' }}
               >
                 {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
               </motion.button>
@@ -224,6 +242,9 @@ export const Website: React.FC<WebsiteProps> = ({
             lang={lang}
             websiteSettings={websiteSettings}
             agencies={agencies}
+            cars={cars}
+            specialOffers={specialOffers}
+            onOrderCar={handleReserveClick}
             onStartRenting={() => setCurrentPage('offers')}
             onReserve={() => { setSelectedCar(null); setCurrentPage('orders'); }}
             onSearch={handleAvailabilitySearch}
@@ -250,6 +271,7 @@ export const Website: React.FC<WebsiteProps> = ({
             selectedCar={selectedCar}
             initialSearch={searchCriteria}
             websiteSettings={websiteSettings}
+            contactInfo={contactInfo}
             onBackHome={() => { setSelectedCar(null); setSearchCriteria(null); setCurrentPage('home'); }}
           />
         )}
@@ -258,8 +280,8 @@ export const Website: React.FC<WebsiteProps> = ({
         )}
       </motion.div>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: '#FFFFFF', borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+      {/* ── FOOTER — panneau arrondi façon VÖLZ ── */}
+      <footer className="volz-footer-panel relative mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             {/* Brand */}
@@ -268,7 +290,7 @@ export const Website: React.FC<WebsiteProps> = ({
                 style={{ fontFamily: 'var(--font-display)' }}>
                 {SITE_NAME}
               </h3>
-              <div className="w-12 h-0.5 mb-4" style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(220,38,38,0.35)' }} />
+              <div className="w-12 h-0.5 mb-4" style={{ background: '#C8A13C', boxShadow: '0 0 8px rgba(200, 161, 60,0.35)' }} />
               <p className="text-vel-muted text-sm leading-relaxed">{websiteSettings?.description}</p>
             </div>
 
@@ -354,7 +376,7 @@ export const Website: React.FC<WebsiteProps> = ({
           </div>
 
           <div className="mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
-            style={{ borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+            style={{ borderTop: '1px solid rgba(245,240,225,0.08)' }}>
             <p className="text-vel-dim text-sm">
               © {new Date().getFullYear()} {SITE_NAME}.{' '}
               <span className="text-vel-muted">{{ fr: 'Tous droits réservés.', ar: 'جميع الحقوق محفوظة.' }[lang]}</span>
@@ -368,6 +390,28 @@ export const Website: React.FC<WebsiteProps> = ({
           </div>
         </div>
       </footer>
+
+      {/* ── Bouton d'aide flottant « Besoin d'aide ? » façon VÖLZ ── */}
+      <motion.a
+        href={contactInfo?.whatsapp
+          ? `https://wa.me/${String(contactInfo.whatsapp).replace(/\D/g, '')}`
+          : contactInfo?.phone
+            ? `tel:${String(contactInfo.phone).replace(/\s/g, '')}`
+            : undefined}
+        target={contactInfo?.whatsapp ? '_blank' : undefined}
+        rel={contactInfo?.whatsapp ? 'noopener noreferrer' : undefined}
+        onClick={!contactInfo?.whatsapp && !contactInfo?.phone ? () => setCurrentPage('contacts') : undefined}
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ delay: 1, type: 'spring', stiffness: 300, damping: 20 }}
+        whileHover={{ y: -3 }}
+        whileTap={{ scale: 0.95 }}
+        className="volz-help-fab"
+      >
+        <span className="volz-help-dot" />
+        <HelpCircle size={17} style={{ color: '#E4C878' }} />
+        {{ fr: "Besoin d'aide ?", ar: 'تحتاج مساعدة؟' }[lang]}
+      </motion.a>
     </div>
     </WebsiteCurrencyProvider>
   );
