@@ -58,6 +58,10 @@ interface WizardContextValue {
   cars: Car[];
   agencies: Agency[];
   isLoadingAgencies: boolean;
+  /** Coordonnées publiques (numéro WhatsApp de l'agence, etc.). */
+  contactInfo: any;
+  /** Réglages du site (nom, logo…) pour composer les messages. */
+  websiteSettings: any;
 
   // Navigation
   step: number;                 // 1..6
@@ -165,11 +169,13 @@ interface ProviderProps {
   initialCar?: Car | null;
   /** Recherche lancée depuis le landing : pré-remplit dates + agences et filtre les voitures disponibles. */
   initialSearch?: WizardSearchCriteria | null;
+  contactInfo?: any;
+  websiteSettings?: any;
   children: React.ReactNode;
 }
 
 export const ReservationWizardProvider: React.FC<ProviderProps> = ({
-  lang, cars, agencies, isLoadingAgencies, specialOffers, initialCar, initialSearch, children,
+  lang, cars, agencies, isLoadingAgencies, specialOffers, initialCar, initialSearch, contactInfo, websiteSettings, children,
 }) => {
   const search = initialSearch || null;
 
@@ -535,6 +541,7 @@ export const ReservationWizardProvider: React.FC<ProviderProps> = ({
 
   const value: WizardContextValue = {
     lang, cars, agencies, isLoadingAgencies,
+    contactInfo: contactInfo || null, websiteSettings: websiteSettings || null,
     step, goToStep, next, prev, isStepValid,
     car, selectCar, range, setRange,
     departureTime, setDepartureTime, returnTime, setReturnTime,

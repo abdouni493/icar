@@ -50,7 +50,7 @@ export const CarPriceBoard: React.FC<{
     return (
       <div
         className={`rounded-lg ${compact ? 'px-2.5 py-2 space-y-1' : 'px-4 py-3.5 space-y-2'}`}
-        style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.12)' }}
+        style={{ background: 'rgba(200, 161, 60,0.05)', border: '1px solid rgba(200, 161, 60,0.12)' }}
       >
         {display !== 'ALL' && code !== 'DZD' && (
           <p className={`${textSize} font-black uppercase tracking-widest text-vel-muted flex items-center gap-1`}>
@@ -61,7 +61,7 @@ export const CarPriceBoard: React.FC<{
           <div
             key={r.key}
             className={`flex justify-between items-baseline ${textSize} ${r.isDeposit ? 'pt-1' : ''}`}
-            style={r.isDeposit ? { borderTop: '1px solid rgba(15,23,42,0.06)' } : undefined}
+            style={r.isDeposit ? { borderTop: '1px solid rgba(245,240,225,0.06)' } : undefined}
           >
             <span className="text-vel-muted">{r.label}</span>
             <span className={`font-black ${valueSize}`} style={{ color: r.isDeposit ? 'rgba(228,200,120,0.95)' : '#C8A13C' }}>
@@ -82,7 +82,7 @@ export const CarPriceBoard: React.FC<{
   return (
     <div
       className={`rounded-lg overflow-hidden ${compact ? '' : ''}`}
-      style={{ background: 'rgba(220,38,38,0.04)', border: '1px solid rgba(220,38,38,0.12)' }}
+      style={{ background: 'rgba(200, 161, 60,0.04)', border: '1px solid rgba(200, 161, 60,0.12)' }}
     >
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
@@ -106,7 +106,7 @@ export const CarPriceBoard: React.FC<{
             {rows.map(r => (
               <tr
                 key={r.key}
-                style={r.isDeposit ? { borderTop: '1px solid rgba(15,23,42,0.08)' } : undefined}
+                style={r.isDeposit ? { borderTop: '1px solid rgba(245,240,225,0.08)' } : undefined}
               >
                 <td className={`${compact ? 'px-2.5 py-1 text-[10px]' : 'px-4 py-2 text-sm'} text-vel-muted whitespace-nowrap`}>
                   {r.label}

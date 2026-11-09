@@ -36,9 +36,9 @@ export const CarDetailsModal: React.FC<CarDetailsModalProps> = ({ lang, car, onC
         onClick={e => e.stopPropagation()}
         className="relative rounded-3xl max-w-3xl w-full max-h-[calc(100vh-4rem)] overflow-y-auto"
         style={{
-          background: '#FFFFFF',
-          border: '1px solid rgba(220,38,38,0.2)',
-          boxShadow: '0 0 60px rgba(220,38,38,0.06), 0 25px 50px rgba(15,23,42,0.15)',
+          background: '#121109',
+          border: '1px solid rgba(200, 161, 60, 0.25)',
+          boxShadow: '0 0 80px rgba(200, 161, 60, 0.10), 0 25px 60px rgba(0,0,0,0.6)',
         }}
       >
         {/* Close Button */}
@@ -48,8 +48,8 @@ export const CarDetailsModal: React.FC<CarDetailsModalProps> = ({ lang, car, onC
           whileTap={{ scale: 0.9 }}
           className="absolute top-4 right-4 z-20 rounded-xl p-2 transition-all duration-200 text-vel-muted"
           style={{
-            background: 'rgba(15,23,42,0.06)',
-            border: '1px solid rgba(15,23,42,0.1)',
+            background: 'rgba(245,240,225,0.06)',
+            border: '1px solid rgba(245,240,225,0.1)',
           }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C8A13C'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = ''; }}
@@ -161,7 +161,7 @@ export const CarDetailsModal: React.FC<CarDetailsModalProps> = ({ lang, car, onC
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 pt-2" style={{ borderTop: '1px solid rgba(15,23,42,0.08)' }}>
+          <div className="flex gap-4 pt-2" style={{ borderTop: '1px solid rgba(245,240,225,0.08)' }}>
             <motion.button
               onClick={onClose}
               whileHover={{ scale: 1.02 }}

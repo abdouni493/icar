@@ -29,7 +29,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
 
       {/* Faint cyan radial glow background */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none" style={{
-        background: 'radial-gradient(circle, rgba(220,38,38,0.04), transparent 70%)',
+        background: 'radial-gradient(circle, rgba(200, 161, 60,0.04), transparent 70%)',
       }} />
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -68,11 +68,11 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                 whileHover={{ y: -8 }}
                 className="vel-glass rounded-2xl overflow-hidden group transition-all duration-500"
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(220,38,38,0.25)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(220,38,38,0.06)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(200, 161, 60,0.25)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(200, 161, 60,0.06)';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(15,23,42,0.08)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,240,225,0.08)';
                   (e.currentTarget as HTMLElement).style.boxShadow = 'none';
                 }}
               >
@@ -134,7 +134,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                       `${offer.car.doors} ${lang === 'fr' ? 'portes' : 'أبواب'}`,
                     ].map((spec, i) => (
                       <span key={i} className="px-3 py-1 rounded-full text-xs font-medium text-vel-slate"
-                        style={{ background: '#EEF2F7', border: '1px solid rgba(15,23,42,0.08)' }}>
+                        style={{ background: '#1F1C14', border: '1px solid rgba(245,240,225,0.08)' }}>
                         {spec}
                       </span>
                     ))}
@@ -157,9 +157,9 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                     {/* New price */}
                     <div className="flex items-center justify-between pt-2"
                       style={{ borderTop: '1px solid rgba(239,68,68,0.2)' }}>
-                      <p className="font-black text-4xl" style={{ color: '#C8A13C', fontFamily: 'var(--font-display)', textShadow: '0 0 20px rgba(220,38,38,0.2)' }}>
+                      <p className="font-black text-4xl" style={{ color: '#C8A13C', fontFamily: 'var(--font-display)', textShadow: '0 0 20px rgba(200, 161, 60,0.2)' }}>
                         {offer.newPrice.toLocaleString()}
-                        <span className="text-base ml-1" style={{ color: 'rgba(220,38,38,0.75)' }}>
+                        <span className="text-base ml-1" style={{ color: 'rgba(200, 161, 60,0.75)' }}>
                           {{ fr: 'DA/j', ar: 'د.ج/ي' }[lang]}
                         </span>
                       </p>
@@ -191,7 +191,7 @@ export const SpecialOffersListing: React.FC<SpecialOffersListingProps> = ({
                   {/* Note */}
                   {offer.note && (
                     <p className="text-xs text-vel-muted italic px-3 py-2 rounded-lg"
-                      style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.06)' }}>
+                      style={{ background: 'rgba(245,240,225,0.03)', border: '1px solid rgba(245,240,225,0.06)' }}>
                       {offer.note}
                     </p>
                   )}
