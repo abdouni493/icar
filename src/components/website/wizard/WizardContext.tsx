@@ -5,6 +5,7 @@ import { getCurrentSpecialOfferForCar } from '../../../utils/specialOffers';
 import { fromYmd } from './wizardUi';
 import { useWebsiteCurrency } from '../CurrencyContext';
 import { CurrencyCode, convertFromDzd, formatCurrency, isCurrencyEnabled, getCarRate } from '../../../utils/currency';
+import { trackMetaPixel } from '../../../utils/metaPixel';
 
 // ═══ Modèle d'état du wizard de réservation (source unique de vérité) ═══
 // Tout l'état vit ici : naviguer entre les étapes ne perd jamais les saisies.
@@ -524,6 +525,16 @@ export const ReservationWizardProvider: React.FC<ProviderProps> = ({
         reservation: reservationPayload,
         services: servicesPayload,
         promoCode: promoStatus === 'valid' ? promoInput.trim() : null,
+      });
+
+      // Suivi Meta Ads : réservation en ligne confirmée = conversion (Purchase).
+      trackMetaPixel('Purchase', {
+        content_type: 'vehicle',
+        content_ids: [car.id],
+        content_name: `${car.brand} ${car.model}`,
+        value: fxValue(total),
+        currency,
+        num_items: 1,
       });
 
       setSubmitted(true);

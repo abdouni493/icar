@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Check, Loader2, MessageCircle, ArrowRight } from 'lucide-react';
 import { useWizard } from './WizardContext';
 import { SectionCard, SectionTitle, C, fromYmd } from './wizardUi';
+import { trackMetaPixel } from '../../../utils/metaPixel';
 
 /**
  * Étape 4 — Services (optionnel).
@@ -20,7 +21,7 @@ export const StepServices: React.FC = () => {
     lang, availableServices, loadingServices, selectedServices, toggleService,
     contactInfo, websiteSettings, car, range, departureTime, returnTime,
     agencies, departureAgency, differentReturnAgency, returnAgency,
-    selectedAssurance, days, total, fx, next, isStepValid,
+    selectedAssurance, days, total, fx, fxValue, currency, next, isStepValid,
   } = useWizard();
 
   const L = lang === 'fr';
@@ -79,6 +80,14 @@ export const StepServices: React.FC = () => {
   // Ouvre WhatsApp avec le message pré-rempli. Ne crée AUCUNE réservation.
   const handleWhatsApp = () => {
     if (!waNumber) return;
+    // Suivi Meta Ads : demande de réservation via WhatsApp = prospect (Lead).
+    trackMetaPixel('Lead', {
+      content_type: 'vehicle',
+      content_ids: car ? [car.id] : [],
+      content_name: car ? `${car.brand} ${car.model}` : undefined,
+      value: fxValue(total),
+      currency,
+    });
     const text = encodeURIComponent(buildWhatsAppMessage());
     window.open(`https://wa.me/${waNumber}?text=${text}`, '_blank', 'noopener,noreferrer');
   };
