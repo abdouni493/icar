@@ -13,6 +13,55 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- ──────────────────────────────────────────────────────────────────
+         Filet de sécurité « anti-page-blanche ».
+         Ce script inline s'exécute AVANT et INDÉPENDAMMENT du bundle de
+         l'application. Si le bundle ne se charge pas / ne s'exécute pas
+         (erreur de parsing, asset 404, navigateur incompatible…), l'écran
+         resterait vide : React (et donc l'ErrorBoundary) n'a jamais démarré.
+         Ici, on capture les erreurs globales et, si #root est toujours vide
+         après quelques secondes, on affiche un message lisible + le détail.
+         ────────────────────────────────────────────────────────────────── -->
+    <script>
+      (function () {
+        var firstError = null;
+        function capture(msg) { if (!firstError && msg) firstError = String(msg); }
+        function esc(s) {
+          return String(s).replace(/[&<>]/g, function (c) {
+            return c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;';
+          });
+        }
+        window.addEventListener('error', function (e) {
+          capture((e && e.message) || (e && e.target && e.target.src ? 'Échec de chargement: ' + e.target.src : ''));
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) {
+          capture(e && e.reason && (e.reason.message || e.reason));
+        });
+        function mounted() {
+          var r = document.getElementById('root');
+          return r && r.childElementCount > 0;
+        }
+        function showFallback() {
+          if (mounted()) return;
+          var pre = firstError
+            ? '<pre style="text-align:left;white-space:pre-wrap;word-break:break-word;font-size:12px;color:#C6BDA6;background:#121109;border:1px solid rgba(200,161,60,.2);border-radius:12px;padding:12px 14px;margin:0 0 18px;max-height:180px;overflow:auto;">' + esc(firstError) + '</pre>'
+            : '';
+          document.getElementById('root').innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#0A0A08;color:#F5F0E1;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">'
+            + '<div style="max-width:520px;width:100%;text-align:center;">'
+            + '<div style="width:64px;height:64px;margin:0 auto 20px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:rgba(200,161,60,.12);border:1px solid rgba(200,161,60,.4);font-size:30px;">&#9888;&#65039;</div>'
+            + '<h1 style="font-size:22px;font-weight:800;margin:0 0 10px;color:#D4AF37;">Chargement impossible</h1>'
+            + '<p style="font-size:14px;line-height:1.6;color:#9C947E;margin:0 0 18px;">L\'application n\'a pas pu démarrer. Videz le cache puis rechargez (Ctrl/Cmd + Shift + R). Le détail ci-dessous aide au diagnostic.</p>'
+            + pre
+            + '<button onclick="window.location.reload()" style="cursor:pointer;font-weight:700;font-size:14px;padding:12px 28px;border-radius:12px;color:#14130E;border:none;background:linear-gradient(135deg,#E4C878,#B8912E);">Recharger la page</button>'
+            + '</div></div>';
+        }
+        // Laisse au bundle le temps de monter l'app avant d'afficher le repli.
+        window.setTimeout(showFallback, 8000);
+      })();
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
