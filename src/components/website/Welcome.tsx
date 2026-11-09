@@ -289,7 +289,41 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
         }} />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="flex flex-col items-center pt-28 pb-24">
+          <div className="flex flex-col items-center pt-24 pb-24">
+
+            {/* ── Titre héro façon VÖLZ : grand, serré, accroche dorée ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center max-w-4xl mb-10"
+            >
+              <motion.span
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.6 }}
+                className="inline-flex items-center gap-2 volz-pill px-4 py-1.5 mb-6"
+              >
+                <span className="w-2 h-2 rounded-full" style={{ background: C.accent, boxShadow: `0 0 10px ${C.accent}` }} />
+                <span className="volz-eyebrow" style={{ letterSpacing: '0.18em', color: '#F5EBCD' }}>
+                  {{ fr: 'Location de voitures · Algérie', ar: 'تأجير السيارات · الجزائر' }[lang]}
+                </span>
+              </motion.span>
+
+              <h1 className="volz-h1 text-vel-ink">
+                {{ fr: 'Cherchez mieux.', ar: 'ابحث بذكاء.' }[lang]}{' '}
+                <span className="gold-text gold-text-anim">
+                  {{ fr: 'Roulez en minutes.', ar: 'انطلق في دقائق.' }[lang]}
+                </span>
+              </h1>
+
+              <p className="text-vel-slate text-base sm:text-lg mt-6 max-w-2xl mx-auto leading-relaxed">
+                {{
+                  fr: "Comparez toute notre flotte, réservez votre véhicule et payez à votre façon — en quelques minutes.",
+                  ar: 'قارن بين كل سياراتنا، احجز سيارتك وادفع بالطريقة التي تناسبك — في دقائق معدودة.',
+                }[lang]}
+              </p>
+            </motion.div>
 
             {/* ── Carte de réservation : centrée en haut de la page ── */}
             <div className="w-full max-w-5xl">
@@ -333,11 +367,10 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
             transition={{ duration: 0.7 }}
             className="text-center mb-16"
           >
-            <p className="font-bold text-xs tracking-[0.25em] uppercase mb-4"
-              style={{ color: C.accent, fontFamily: 'var(--font-display)' }}>
+            <p className="volz-eyebrow mb-4">
               {{ fr: 'Pourquoi nous choisir', ar: 'لماذا تختارنا' }[lang]}
             </p>
-            <h2 className="font-black text-4xl text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2 className="volz-h2">
               {{ fr: "L'expérience automobile premium", ar: 'تجربة السيارات الفاخرة' }[lang]}
             </h2>
           </motion.div>
@@ -380,6 +413,68 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
         </div>
       </section>
 
+      {/* ══ TÉMOIGNAGES (façon VÖLZ « What our travelers say ») ══ */}
+      <section className="relative py-24 px-4 sm:px-6 lg:px-8 volz-aura" style={{ background: C.bg }}>
+        <div className="max-w-7xl mx-auto relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-14"
+          >
+            <p className="volz-eyebrow mb-4">
+              {{ fr: 'Ils nous font confiance', ar: 'يثقون بنا' }[lang]}
+            </p>
+            <h2 className="volz-h2">
+              {{ fr: 'Ce que disent nos clients', ar: 'ماذا يقول عملاؤنا' }[lang]}
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { name: 'Sirine B.', handle: '@sirine.b', initials: 'SB',
+                quote: { fr: "Réservation en 3 minutes, voiture impeccable et livrée à l'heure. Je recommande les yeux fermés.",
+                         ar: 'الحجز في 3 دقائق، سيارة ممتازة وتم تسليمها في الوقت المحدد. أنصح بها بثقة.' } },
+              { name: 'Yacine M.', handle: '@yacine.m', initials: 'YM',
+                quote: { fr: "J'ai pu payer en espèces à l'agence, tout était clair : kilométrage, assurance, caution. Zéro surprise.",
+                         ar: 'دفعت نقداً في الوكالة، كل شيء كان واضحاً: العداد، التأمين، الضمان. بدون أي مفاجأة.' } },
+              { name: 'Lina K.', handle: '@lina.k', initials: 'LK',
+                quote: { fr: "La flotte est récente et bien entretenue. Le SUV que j'ai pris était comme neuf.",
+                         ar: 'الأسطول حديث ومُعتنى به جيداً. سيارة الدفع الرباعي التي أخذتها كانت كالجديدة.' } },
+            ].map((t, i) => (
+              <motion.figure
+                key={i}
+                initial={{ opacity: 0, y: 34 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                className="volz-feature p-6 flex flex-col"
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <Star key={s} size={15} style={{ color: C.accent, fill: C.accent }} />
+                  ))}
+                </div>
+                <blockquote className="text-vel-slate text-[15px] leading-relaxed flex-1">
+                  “{t.quote[lang]}”
+                </blockquote>
+                <figcaption className="flex items-center gap-3 mt-5 pt-5" style={{ borderTop: '1px solid rgba(200,161,60,0.14)' }}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
+                    style={{ fontFamily: 'var(--font-display)', color: '#14130E', background: `linear-gradient(135deg, #E4C878, #B8912E)` }}>
+                    {t.initials}
+                  </div>
+                  <div className="leading-tight">
+                    <p className="font-bold text-sm text-vel-ink" style={{ fontFamily: 'var(--font-display)' }}>{t.name}</p>
+                    <p className="text-vel-dim text-xs">{t.handle}</p>
+                  </div>
+                </figcaption>
+              </motion.figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══ SHOWCASE BAND (voiture en arrière-plan + titre) ══ */}
       <ShowcaseBand lang={lang} onReserve={onStartRenting} imageUrl={showcaseImage} />
 
@@ -402,7 +497,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ lang, websiteSettings, agencie
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center relative z-10"
         >
-          <h2 className="font-black text-5xl text-vel-ink mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="volz-h2 mb-6" style={{ fontSize: 'clamp(2.4rem, 1.4rem + 3.4vw, 3.6rem)' }}>
             {{ fr: 'Prêt à prendre la route ?', ar: 'مستعد للانطلاق؟' }[lang]}
           </h2>
           <p className="text-vel-slate text-lg mb-10">
