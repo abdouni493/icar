@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, RotateCcw, Trash2, Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 import { DatabaseService } from '../services/DatabaseService';
 import { ReservationsService } from '../services/ReservationsService';
+import { WhatsAppService } from '../services/whatsappService';
 import { supabase } from '../supabase';
 
 interface ConfigPageProps {
@@ -12,7 +13,7 @@ interface ConfigPageProps {
 }
 
 export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
-  const [activeTab, setActiveTab] = useState<'general' | 'profile' | 'database'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'profile' | 'whatsapp' | 'database'>('general');
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -52,6 +53,20 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
     newPassword: '',
     confirmPassword: '',
   });
+
+  // WhatsApp Cloud API settings
+  const [whatsappData, setWhatsappData] = useState({
+    enabled: false,
+    phone_number_id: '',
+    access_token: '',
+    business_number: '',
+    default_country_code: '213',
+    template_name: '',
+    template_lang: 'fr',
+    graph_version: 'v21.0',
+  });
+  const [savingWa, setSavingWa] = useState(false);
+  const [testingWa, setTestingWa] = useState(false);
 
   // Database
   const [lastBackup] = useState('Aujourd\'hui à 10:45');
@@ -150,6 +165,23 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
           capital: websiteSettings.capital || '',
         });
 
+        // Load WhatsApp Cloud API settings
+        try {
+          const wa = await DatabaseService.getWhatsAppSettings();
+          setWhatsappData({
+            enabled: !!wa.enabled,
+            phone_number_id: wa.phone_number_id || '',
+            access_token: wa.access_token || '',
+            business_number: wa.business_number || '',
+            default_country_code: wa.default_country_code || '213',
+            template_name: wa.template_name || '',
+            template_lang: wa.template_lang || 'fr',
+            graph_version: wa.graph_version || 'v21.0',
+          });
+        } catch (waErr) {
+          console.warn('Could not load WhatsApp settings:', waErr);
+        }
+
         // Load worker data for profile and security
         if (user.email) {
           try {
@@ -199,6 +231,73 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
   const handleSecurityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSecurityData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target as HTMLInputElement;
+    if (type === 'checkbox') {
+      setWhatsappData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
+    } else {
+      setWhatsappData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSaveWhatsApp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setSavingWa(true);
+      await DatabaseService.updateWhatsAppSettings({
+        enabled: whatsappData.enabled,
+        phone_number_id: whatsappData.phone_number_id.trim(),
+        access_token: whatsappData.access_token.trim(),
+        business_number: whatsappData.business_number.trim(),
+        default_country_code: (whatsappData.default_country_code || '213').replace(/\D/g, ''),
+        template_name: whatsappData.template_name.trim(),
+        template_lang: whatsappData.template_lang,
+        graph_version: whatsappData.graph_version.trim() || 'v21.0',
+      });
+      setNotification({
+        type: 'success',
+        message: lang === 'fr' ? 'Paramètres WhatsApp enregistrés ✅' : 'تم حفظ إعدادات واتساب ✅',
+      });
+    } catch (err: any) {
+      console.error('Error saving WhatsApp settings:', err);
+      setNotification({
+        type: 'error',
+        message: err.message || (lang === 'fr' ? 'Erreur lors de l\'enregistrement' : 'خطأ في الحفظ'),
+      });
+    } finally {
+      setSavingWa(false);
+    }
+  };
+
+  const handleTestWhatsApp = async () => {
+    if (!whatsappData.phone_number_id || !whatsappData.access_token) {
+      setNotification({
+        type: 'error',
+        message: lang === 'fr'
+          ? 'Renseignez le Phone Number ID et l\'Access Token d\'abord.'
+          : 'أدخل Phone Number ID و Access Token أولاً.',
+      });
+      return;
+    }
+    try {
+      setTestingWa(true);
+      const result = await WhatsAppService.testConnection({
+        enabled: true,
+        phone_number_id: whatsappData.phone_number_id.trim(),
+        access_token: whatsappData.access_token.trim(),
+        graph_version: whatsappData.graph_version.trim() || 'v21.0',
+      });
+      setNotification({
+        type: result.success ? 'success' : 'error',
+        message: result.message,
+      });
+    } catch (err: any) {
+      setNotification({ type: 'error', message: err.message || 'Erreur' });
+    } finally {
+      setTestingWa(false);
+    }
   };
 
   const handleSaveAgencyInfo = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -554,6 +653,16 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
             }`}
           >
             👤 {{fr: 'Profil & Sécurité', ar: 'الملف والأمان'}[lang]}
+          </button>
+          <button
+            onClick={() => setActiveTab('whatsapp')}
+            className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'whatsapp'
+                ? 'bg-linear-to-r from-saas-primary-start via-saas-primary-via to-saas-primary-end text-white shadow-lg'
+                : 'bg-white border-2 border-saas-border text-saas-text-main hover:border-saas-primary-via'
+            }`}
+          >
+            💬 WhatsApp
           </button>
           <button
             onClick={() => setActiveTab('database')}
@@ -926,6 +1035,196 @@ export const ConfigPage: React.FC<ConfigPageProps> = ({ lang, user }) => {
                   </div>
                 </form>
               </div>
+            </motion.div>
+          )}
+
+          {/* WHATSAPP TAB */}
+          {activeTab === 'whatsapp' && (
+            <motion.div
+              key="whatsapp"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-white rounded-[2rem] shadow-lg border border-saas-border overflow-hidden"
+            >
+              <div className="p-6 border-b border-saas-border bg-linear-to-r from-green-500 to-green-600 text-white">
+                <h2 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
+                  💬 {{fr: 'Connexion WhatsApp', ar: 'ربط واتساب'}[lang]}
+                </h2>
+                <p className="text-white/80 text-xs font-bold mt-1">
+                  {{fr: 'Envoi automatique des documents via WhatsApp Cloud API (Meta)', ar: 'إرسال تلقائي للمستندات عبر WhatsApp Cloud API'}[lang]}
+                </p>
+              </div>
+
+              <form className="p-8 space-y-6" onSubmit={handleSaveWhatsApp}>
+                {/* Enable toggle */}
+                <label className="flex items-center justify-between gap-3 p-4 bg-green-50 rounded-xl border-2 border-green-200 cursor-pointer">
+                  <div>
+                    <span className="font-bold text-saas-text-main">
+                      {{fr: 'Activer l\'envoi automatique', ar: 'تفعيل الإرسال التلقائي'}[lang]}
+                    </span>
+                    <p className="text-xs text-saas-text-muted">
+                      {{fr: 'Quand désactivé : envoi manuel gratuit (click-to-chat).', ar: 'عند الإيقاف: إرسال يدوي مجاني.'}[lang]}
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    name="enabled"
+                    checked={whatsappData.enabled}
+                    onChange={handleWhatsAppChange}
+                    className="w-6 h-6 text-green-600 rounded focus:ring-green-500"
+                  />
+                </label>
+
+                {/* Business number (display) */}
+                <div className="space-y-2">
+                  <label className="block font-bold text-saas-text-main">
+                    {{fr: 'Numéro WhatsApp Business', ar: 'رقم واتساب للأعمال'}[lang]}
+                  </label>
+                  <input
+                    type="text"
+                    name="business_number"
+                    value={whatsappData.business_number}
+                    onChange={handleWhatsAppChange}
+                    placeholder="+213 ..."
+                    dir="ltr"
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Phone Number ID */}
+                <div className="space-y-2">
+                  <label className="block font-bold text-saas-text-main">
+                    Phone Number ID *
+                  </label>
+                  <input
+                    type="text"
+                    name="phone_number_id"
+                    value={whatsappData.phone_number_id}
+                    onChange={handleWhatsAppChange}
+                    placeholder="123456789012345"
+                    dir="ltr"
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none font-mono text-sm"
+                  />
+                </div>
+
+                {/* Access Token */}
+                <div className="space-y-2">
+                  <label className="block font-bold text-saas-text-main">
+                    Access Token *
+                  </label>
+                  <input
+                    type="password"
+                    name="access_token"
+                    value={whatsappData.access_token}
+                    onChange={handleWhatsAppChange}
+                    placeholder="EAAG..."
+                    dir="ltr"
+                    autoComplete="new-password"
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none font-mono text-sm"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Default country code */}
+                  <div className="space-y-2">
+                    <label className="block font-bold text-saas-text-main">
+                      {{fr: 'Indicatif pays', ar: 'رمز الدولة'}[lang]}
+                    </label>
+                    <input
+                      type="text"
+                      name="default_country_code"
+                      value={whatsappData.default_country_code}
+                      onChange={handleWhatsAppChange}
+                      placeholder="213"
+                      dir="ltr"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none font-mono"
+                    />
+                  </div>
+                  {/* Graph version */}
+                  <div className="space-y-2">
+                    <label className="block font-bold text-saas-text-main">
+                      {{fr: 'Version API', ar: 'إصدار API'}[lang]}
+                    </label>
+                    <input
+                      type="text"
+                      name="graph_version"
+                      value={whatsappData.graph_version}
+                      onChange={handleWhatsAppChange}
+                      placeholder="v21.0"
+                      dir="ltr"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Template name */}
+                  <div className="space-y-2">
+                    <label className="block font-bold text-saas-text-main">
+                      {{fr: 'Nom du modèle (template)', ar: 'اسم القالب'}[lang]}
+                    </label>
+                    <input
+                      type="text"
+                      name="template_name"
+                      value={whatsappData.template_name}
+                      onChange={handleWhatsAppChange}
+                      placeholder="document_delivery"
+                      dir="ltr"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none font-mono text-sm"
+                    />
+                  </div>
+                  {/* Template language */}
+                  <div className="space-y-2">
+                    <label className="block font-bold text-saas-text-main">
+                      {{fr: 'Langue du modèle', ar: 'لغة القالب'}[lang]}
+                    </label>
+                    <select
+                      name="template_lang"
+                      value={whatsappData.template_lang}
+                      onChange={handleWhatsAppChange}
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none"
+                    >
+                      <option value="fr">Français (fr)</option>
+                      <option value="ar">العربية (ar)</option>
+                      <option value="en">English (en)</option>
+                      <option value="ar_DZ">ar_DZ</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Help box */}
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 text-xs text-blue-900 space-y-1">
+                  <p className="font-bold">
+                    {{fr: 'Où trouver ces valeurs ?', ar: 'أين تجد هذه القيم؟'}[lang]}
+                  </p>
+                  <p>1. developers.facebook.com → {{fr: 'créez une app', ar: 'أنشئ تطبيقًا'}[lang]} → WhatsApp.</p>
+                  <p>2. {{fr: 'Ajoutez votre numéro WhatsApp Business (dédié, pas sur l\'app WhatsApp normale).', ar: 'أضف رقم واتساب للأعمال (مخصص).'}[lang]}</p>
+                  <p>3. {{fr: 'Copiez le', ar: 'انسخ'}[lang]} <b>Phone Number ID</b> + {{fr: 'générez un', ar: 'وأنشئ'}[lang]} <b>Access Token</b> {{fr: 'permanent', ar: 'دائمًا'}[lang]}.</p>
+                  <p>4. {{fr: 'Pour envoyer aux clients hors fenêtre 24 h, créez un modèle approuvé avec en-tête DOCUMENT et indiquez son nom ci-dessus.', ar: 'لإرسال المستندات خارج 24 ساعة، أنشئ قالبًا معتمدًا بترويسة DOCUMENT.'}[lang]}</p>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleTestWhatsApp}
+                    disabled={testingWa || savingWa}
+                    className="flex-1 py-3 px-6 rounded-xl font-bold bg-white border-2 border-green-500 text-green-600 hover:bg-green-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {testingWa && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {{fr: 'Tester la connexion', ar: 'اختبار الاتصال'}[lang]}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={savingWa || testingWa}
+                    className="flex-1 py-3 px-6 rounded-xl font-bold bg-linear-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {savingWa && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {{fr: 'Enregistrer', ar: 'حفظ'}[lang]}
+                  </button>
+                </div>
+              </form>
             </motion.div>
           )}
 

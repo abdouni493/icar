@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Send, Mail, Loader } from 'lucide-react';
-import { Language, ReservationDetails } from '../types';
+import { X, Mail, Loader, MessageCircle } from 'lucide-react';
+import { Language, ReservationDetails, WhatsAppSettings } from '../types';
 import { EmailService } from '../services/emailService';
+import { WhatsAppService } from '../services/whatsappService';
 import { DatabaseService } from '../services/DatabaseService';
 
 interface SendContractModalProps {
@@ -17,6 +18,10 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
   onClose,
 }) => {
   const [clientEmail, setClientEmail] = useState(reservation.client.email || '');
+  const [clientPhone, setClientPhone] = useState(reservation.client.phone || '');
+  const [countryCode, setCountryCode] = useState(WhatsAppService.DEFAULT_COUNTRY_CODE);
+  const [whatsappLoading, setWhatsappLoading] = useState(false);
+  const [waSettings, setWaSettings] = useState<WhatsAppSettings | null>(null);
   const [senderEmail, setSenderEmail] = useState('');
   const [templateLang, setTemplateLang] = useState<'fr' | 'ar'>('ar');
   const [documentType, setDocumentType] = useState<'contract' | 'devis' | 'recu' | 'engagement' | 'facture' | 'inspection' | 'reservation'>('contract');
@@ -59,6 +64,16 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
 
     loadSenderEmail();
   }, [lang]);
+
+  // Charge la configuration WhatsApp (envoi automatique via Cloud API).
+  useEffect(() => {
+    DatabaseService.getWhatsAppSettings()
+      .then((s) => {
+        setWaSettings(s);
+        if (s?.default_country_code) setCountryCode(s.default_country_code);
+      })
+      .catch((e) => console.warn('getWhatsAppSettings failed', e));
+  }, []);
 
   // Clear notification after 4 seconds
   useEffect(() => {
@@ -165,7 +180,131 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
     }
   };
 
-  const bgNotificationColor = 
+  const handleSendWhatsApp = async () => {
+    const normalized = WhatsAppService.normalizePhone(clientPhone, countryCode);
+    if (!WhatsAppService.isValidPhone(normalized)) {
+      setNotification({
+        type: 'error',
+        message: lang === 'fr'
+          ? 'Veuillez entrer un numéro WhatsApp valide'
+          : 'يرجى إدخال رقم واتساب صحيح',
+      });
+      return;
+    }
+
+    const autoMode = !!(waSettings?.enabled && waSettings?.phone_number_id && waSettings?.access_token);
+
+    // Mode manuel (click-to-chat) : ouvre une fenêtre dans le geste utilisateur
+    // pour éviter le blocage des popups. En mode automatique, rien ne s'ouvre.
+    const waWindow = autoMode ? null : window.open('', '_blank');
+
+    try {
+      setWhatsappLoading(true);
+      const documentNames = {
+        contract: lang === 'fr' ? 'Contrat' : 'العقد',
+        devis: lang === 'fr' ? 'Devis' : 'عرض أسعار',
+        recu: lang === 'fr' ? 'Reçu' : 'إيصال',
+        engagement: lang === 'fr' ? 'Engagement' : 'التزام',
+        facture: lang === 'fr' ? 'Facture' : 'الفاتورة',
+        inspection: lang === 'fr' ? 'Inspection' : 'فحص المركبة',
+        reservation: lang === 'fr' ? 'Réservation' : 'الحجز'
+      };
+
+      setNotification({
+        type: 'info',
+        message: lang === 'fr'
+          ? `${autoMode ? 'Envoi' : 'Préparation'} du ${documentNames[documentType]} WhatsApp...`
+          : `جاري ${autoMode ? 'إرسال' : 'تحضير'} ${documentNames[documentType]} واتساب...`,
+      });
+
+      const htmlContent = await EmailService.generateDocumentHTML(reservation, templateLang, documentType);
+
+      // Enregistre le numéro sur la fiche client si modifié.
+      const persistPhone = async () => {
+        if (clientPhone && clientPhone !== reservation.client.phone) {
+          try {
+            await DatabaseService.updateClient(reservation.client.id, { phone: clientPhone });
+          } catch (updateError) {
+            console.error('Error updating client phone:', updateError);
+          }
+        }
+      };
+
+      if (autoMode) {
+        // ===== ENVOI AUTOMATIQUE via WhatsApp Cloud API =====
+        const result = await WhatsAppService.sendViaCloudAPI({
+          settings: waSettings!,
+          reservation,
+          htmlContent,
+          clientPhone,
+          templateLang,
+          documentType,
+        });
+
+        if (result.success) {
+          await persistPhone();
+          setNotification({
+            type: 'success',
+            message: lang === 'fr'
+              ? `${documentNames[documentType]} envoyé sur WhatsApp ✅`
+              : `تم إرسال ${documentNames[documentType]} على واتساب ✅`,
+          });
+          setTimeout(() => onClose(), 1800);
+        } else {
+          setNotification({
+            type: 'error',
+            message: result.message || (lang === 'fr' ? 'Erreur WhatsApp' : 'خطأ واتساب'),
+          });
+        }
+        return;
+      }
+
+      // ===== MODE MANUEL (gratuit, click-to-chat) =====
+      const result = await WhatsAppService.sendDocument({
+        reservation,
+        htmlContent,
+        clientPhone,
+        countryCode,
+        templateLang,
+        documentType,
+      });
+
+      if (result.success && result.waLink) {
+        await persistPhone();
+        if (waWindow && !waWindow.closed) {
+          waWindow.location.href = result.waLink;
+        } else {
+          window.open(result.waLink, '_blank');
+        }
+        setNotification({
+          type: 'success',
+          message: lang === 'fr'
+            ? `WhatsApp ouvert — appuyez sur Envoyer ✅`
+            : `تم فتح واتساب — اضغط على إرسال ✅`,
+        });
+        setTimeout(() => onClose(), 1800);
+      } else {
+        if (waWindow && !waWindow.closed) waWindow.close();
+        setNotification({
+          type: 'error',
+          message: result.message || (lang === 'fr' ? 'Erreur WhatsApp' : 'خطأ واتساب'),
+        });
+      }
+    } catch (error: any) {
+      if (waWindow && !waWindow.closed) waWindow.close();
+      console.error('Error sending via WhatsApp:', error);
+      setNotification({
+        type: 'error',
+        message: error.message || (lang === 'fr'
+          ? 'Erreur lors de l\'envoi WhatsApp'
+          : 'خطأ في إرسال واتساب'),
+      });
+    } finally {
+      setWhatsappLoading(false);
+    }
+  };
+
+  const bgNotificationColor =
     notification?.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
     notification?.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
     'bg-blue-50 border-blue-200 text-blue-800';
@@ -195,7 +334,7 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
                 📧 {lang === 'fr' ? 'Envoyer un Document' : 'إرسال مستند'}
               </h2>
               <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1">
-                {lang === 'fr' ? 'Envoi par email au client' : 'إرسال بريد إلكتروني للعميل'}
+                {lang === 'fr' ? 'Envoi par email ou WhatsApp au client' : 'إرسال بالبريد أو واتساب للعميل'}
               </p>
             </div>
             <button
@@ -237,6 +376,45 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
                 disabled={loading}
                 className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors disabled:bg-slate-100"
               />
+            </div>
+
+            {/* WhatsApp Number Input */}
+            <div className="space-y-2">
+              <label className="block font-bold text-saas-text-main">
+                💬 {lang === 'fr' ? 'Numéro WhatsApp du Client' : 'رقم واتساب العميل'}
+              </label>
+              <div className="flex gap-2">
+                <div className="flex items-center gap-1 px-3 py-3 border-2 border-slate-200 rounded-lg bg-slate-50">
+                  <span className="text-saas-text-muted font-bold">+</span>
+                  <input
+                    type="text"
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value.replace(/\D/g, ''))}
+                    disabled={loading || whatsappLoading}
+                    className="w-14 bg-transparent focus:outline-none font-mono text-sm disabled:opacity-50"
+                    placeholder="213"
+                    dir="ltr"
+                  />
+                </div>
+                <input
+                  type="tel"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  placeholder="0661 23 45 67"
+                  disabled={loading || whatsappLoading}
+                  dir="ltr"
+                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors disabled:bg-slate-100"
+                />
+              </div>
+              <p className="text-[11px] text-saas-text-muted">
+                {waSettings?.enabled && waSettings?.phone_number_id && waSettings?.access_token
+                  ? (lang === 'fr'
+                      ? '⚡ Envoi automatique activé : le PDF part directement sur WhatsApp.'
+                      : '⚡ الإرسال التلقائي مفعّل: يُرسل ملف PDF مباشرة على واتساب.')
+                  : (lang === 'fr'
+                      ? 'Le PDF sera hébergé et son lien pré-rempli dans WhatsApp (envoi manuel).'
+                      : 'سيتم استضافة ملف PDF وإدراج رابطه في واتساب (إرسال يدوي).')}
+              </p>
             </div>
 
             {/* Template Language Selection */}
@@ -355,30 +533,49 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
           </div>
 
           {/* Footer Buttons */}
-          <div className="bg-saas-bg p-8 border-t border-saas-border flex gap-3">
+          <div className="bg-saas-bg p-8 border-t border-saas-border flex flex-col gap-3">
+            <div className="flex gap-3">
+              <button
+                onClick={handleSendEmail}
+                disabled={loading || whatsappLoading || !clientEmail || !senderEmail}
+                className="flex-1 py-3 px-4 rounded-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    {lang === 'fr' ? 'Envoi...' : 'جاري الإرسال...'}
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4" />
+                    {lang === 'fr' ? 'Email' : 'بريد'}
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleSendWhatsApp}
+                disabled={loading || whatsappLoading || !clientPhone}
+                className="flex-1 py-3 px-4 rounded-lg font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {whatsappLoading ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    {lang === 'fr' ? 'Préparation...' : 'جاري التحضير...'}
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="w-4 h-4" />
+                    {lang === 'fr' ? 'WhatsApp' : 'واتساب'}
+                  </>
+                )}
+              </button>
+            </div>
             <button
               onClick={onClose}
-              disabled={loading}
-              className="flex-1 py-3 px-4 rounded-lg font-bold bg-saas-bg hover:bg-saas-secondary-start/10 text-saas-text-muted border border-saas-border hover:border-saas-secondary-start/20 transition-all disabled:opacity-50"
+              disabled={loading || whatsappLoading}
+              className="w-full py-3 px-4 rounded-lg font-bold bg-saas-bg hover:bg-saas-secondary-start/10 text-saas-text-muted border border-saas-border hover:border-saas-secondary-start/20 transition-all disabled:opacity-50"
             >
               {lang === 'fr' ? 'Annuler' : 'إلغاء'}
-            </button>
-            <button
-              onClick={handleSendEmail}
-              disabled={loading || !clientEmail || !senderEmail}
-              className="flex-1 py-3 px-4 rounded-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader className="w-4 h-4 animate-spin" />
-                  {lang === 'fr' ? 'Envoi...' : 'جاري الإرسال...'}
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  {lang === 'fr' ? 'Envoyer' : 'إرسال'}
-                </>
-              )}
             </button>
           </div>
         </div>
