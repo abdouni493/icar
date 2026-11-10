@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Mail, Loader, MessageCircle } from 'lucide-react';
-import { Language, ReservationDetails } from '../types';
+import { Language, ReservationDetails, WhatsAppSettings } from '../types';
 import { EmailService } from '../services/emailService';
 import { WhatsAppService } from '../services/whatsappService';
 import { DatabaseService } from '../services/DatabaseService';
@@ -21,6 +21,7 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
   const [clientPhone, setClientPhone] = useState(reservation.client.phone || '');
   const [countryCode, setCountryCode] = useState(WhatsAppService.DEFAULT_COUNTRY_CODE);
   const [whatsappLoading, setWhatsappLoading] = useState(false);
+  const [waSettings, setWaSettings] = useState<WhatsAppSettings | null>(null);
   const [senderEmail, setSenderEmail] = useState('');
   const [templateLang, setTemplateLang] = useState<'fr' | 'ar'>('ar');
   const [documentType, setDocumentType] = useState<'contract' | 'devis' | 'recu' | 'engagement' | 'facture' | 'inspection' | 'reservation'>('contract');
@@ -63,6 +64,16 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
 
     loadSenderEmail();
   }, [lang]);
+
+  // Charge la configuration WhatsApp (envoi automatique via Cloud API).
+  useEffect(() => {
+    DatabaseService.getWhatsAppSettings()
+      .then((s) => {
+        setWaSettings(s);
+        if (s?.default_country_code) setCountryCode(s.default_country_code);
+      })
+      .catch((e) => console.warn('getWhatsAppSettings failed', e));
+  }, []);
 
   // Clear notification after 4 seconds
   useEffect(() => {
@@ -181,9 +192,11 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
       return;
     }
 
-    // Ouvre une fenêtre immédiatement (dans le geste utilisateur) pour éviter le
-    // blocage des popups ; on y injecte le lien WhatsApp une fois le PDF prêt.
-    const waWindow = window.open('', '_blank');
+    const autoMode = !!(waSettings?.enabled && waSettings?.phone_number_id && waSettings?.access_token);
+
+    // Mode manuel (click-to-chat) : ouvre une fenêtre dans le geste utilisateur
+    // pour éviter le blocage des popups. En mode automatique, rien ne s'ouvre.
+    const waWindow = autoMode ? null : window.open('', '_blank');
 
     try {
       setWhatsappLoading(true);
@@ -200,12 +213,53 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
       setNotification({
         type: 'info',
         message: lang === 'fr'
-          ? `Préparation du ${documentNames[documentType]} pour WhatsApp...`
-          : `جاري تحضير ${documentNames[documentType]} لواتساب...`,
+          ? `${autoMode ? 'Envoi' : 'Préparation'} du ${documentNames[documentType]} WhatsApp...`
+          : `جاري ${autoMode ? 'إرسال' : 'تحضير'} ${documentNames[documentType]} واتساب...`,
       });
 
       const htmlContent = await EmailService.generateDocumentHTML(reservation, templateLang, documentType);
 
+      // Enregistre le numéro sur la fiche client si modifié.
+      const persistPhone = async () => {
+        if (clientPhone && clientPhone !== reservation.client.phone) {
+          try {
+            await DatabaseService.updateClient(reservation.client.id, { phone: clientPhone });
+          } catch (updateError) {
+            console.error('Error updating client phone:', updateError);
+          }
+        }
+      };
+
+      if (autoMode) {
+        // ===== ENVOI AUTOMATIQUE via WhatsApp Cloud API =====
+        const result = await WhatsAppService.sendViaCloudAPI({
+          settings: waSettings!,
+          reservation,
+          htmlContent,
+          clientPhone,
+          templateLang,
+          documentType,
+        });
+
+        if (result.success) {
+          await persistPhone();
+          setNotification({
+            type: 'success',
+            message: lang === 'fr'
+              ? `${documentNames[documentType]} envoyé sur WhatsApp ✅`
+              : `تم إرسال ${documentNames[documentType]} على واتساب ✅`,
+          });
+          setTimeout(() => onClose(), 1800);
+        } else {
+          setNotification({
+            type: 'error',
+            message: result.message || (lang === 'fr' ? 'Erreur WhatsApp' : 'خطأ واتساب'),
+          });
+        }
+        return;
+      }
+
+      // ===== MODE MANUEL (gratuit, click-to-chat) =====
       const result = await WhatsAppService.sendDocument({
         reservation,
         htmlContent,
@@ -216,31 +270,19 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
       });
 
       if (result.success && result.waLink) {
-        if (saveEmailToClient === false && clientPhone && clientPhone !== reservation.client.phone) {
-          try {
-            await DatabaseService.updateClient(reservation.client.id, { phone: clientPhone });
-          } catch (updateError) {
-            console.error('Error updating client phone:', updateError);
-          }
-        }
-
-        // Redirige la fenêtre pré-ouverte vers WhatsApp.
+        await persistPhone();
         if (waWindow && !waWindow.closed) {
           waWindow.location.href = result.waLink;
         } else {
           window.open(result.waLink, '_blank');
         }
-
         setNotification({
           type: 'success',
           message: lang === 'fr'
             ? `WhatsApp ouvert — appuyez sur Envoyer ✅`
             : `تم فتح واتساب — اضغط على إرسال ✅`,
         });
-
-        setTimeout(() => {
-          onClose();
-        }, 1800);
+        setTimeout(() => onClose(), 1800);
       } else {
         if (waWindow && !waWindow.closed) waWindow.close();
         setNotification({
@@ -365,9 +407,13 @@ export const SendContractModal: React.FC<SendContractModalProps> = ({
                 />
               </div>
               <p className="text-[11px] text-saas-text-muted">
-                {lang === 'fr'
-                  ? 'Le document PDF sera hébergé et son lien pré-rempli dans WhatsApp.'
-                  : 'سيتم استضافة ملف PDF وإدراج رابطه مسبقًا في واتساب.'}
+                {waSettings?.enabled && waSettings?.phone_number_id && waSettings?.access_token
+                  ? (lang === 'fr'
+                      ? '⚡ Envoi automatique activé : le PDF part directement sur WhatsApp.'
+                      : '⚡ الإرسال التلقائي مفعّل: يُرسل ملف PDF مباشرة على واتساب.')
+                  : (lang === 'fr'
+                      ? 'Le PDF sera hébergé et son lien pré-rempli dans WhatsApp (envoi manuel).'
+                      : 'سيتم استضافة ملف PDF وإدراج رابطه في واتساب (إرسال يدوي).')}
               </p>
             </div>
 

@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import { Car, Client, Agency, Worker, WorkerAdvance, WorkerAbsence, WorkerPayment, WorkerRole, WorkerPermissions, Entreprise, RentalSettings, StoreExpense, VehicleExpense, MaintenanceAlert, WebsiteOrder, ReservationDetails, SpecialOffer, ContactInfo, WebsiteSettings, PromoCode } from '../types';
+import { Car, Client, Agency, Worker, WorkerAdvance, WorkerAbsence, WorkerPayment, WorkerRole, WorkerPermissions, Entreprise, RentalSettings, StoreExpense, VehicleExpense, MaintenanceAlert, WebsiteOrder, ReservationDetails, SpecialOffer, ContactInfo, WebsiteSettings, WhatsAppSettings, PromoCode } from '../types';
 import { parseCarCurrencies } from '../utils/currency';
 import { cachedFetch, invalidate as cacheInvalidate } from './dataCache';
 
@@ -12,6 +12,7 @@ const CK = {
   offers: 'special_offers',
   contacts: 'website_contacts',
   settings: 'website_settings',
+  whatsapp: 'whatsapp_settings',
 } as const;
 
 // Generic database service functions
@@ -1956,6 +1957,85 @@ export class DatabaseService {
       bank_name: data.bank_name,
       meta_pixel_id: data.meta_pixel_id,
       tiktok_pixel_id: data.tiktok_pixel_id,
+    };
+  }
+
+  // WhatsApp Cloud API Settings (une seule ligne)
+  static async getWhatsAppSettings(): Promise<WhatsAppSettings> {
+    return cachedFetch(CK.whatsapp, async () => {
+      try {
+        const { data, error } = await supabase
+          .from('whatsapp_settings')
+          .select('*')
+          .order('updated_at', { ascending: false })
+          .limit(1);
+        if (error) throw error;
+        if (data && data.length > 0) {
+          return {
+            enabled: !!data[0].enabled,
+            phone_number_id: data[0].phone_number_id || '',
+            access_token: data[0].access_token || '',
+            business_number: data[0].business_number || '',
+            default_country_code: data[0].default_country_code || '213',
+            template_name: data[0].template_name || '',
+            template_lang: data[0].template_lang || 'fr',
+            graph_version: data[0].graph_version || 'v21.0',
+          };
+        }
+      } catch (e: any) {
+        console.warn('getWhatsAppSettings failed, returning defaults', e.message || e);
+      }
+      return { enabled: false, default_country_code: '213', template_lang: 'fr', graph_version: 'v21.0' };
+    });
+  }
+
+  static async updateWhatsAppSettings(settings: WhatsAppSettings): Promise<WhatsAppSettings> {
+    const current = await this.getWhatsAppSettings();
+    const merged: Record<string, any> = {
+      enabled: settings.enabled ?? current.enabled ?? false,
+      phone_number_id: settings.phone_number_id ?? current.phone_number_id ?? '',
+      access_token: settings.access_token ?? current.access_token ?? '',
+      business_number: settings.business_number ?? current.business_number ?? '',
+      default_country_code: settings.default_country_code ?? current.default_country_code ?? '213',
+      template_name: settings.template_name ?? current.template_name ?? '',
+      template_lang: settings.template_lang ?? current.template_lang ?? 'fr',
+      graph_version: settings.graph_version ?? current.graph_version ?? 'v21.0',
+    };
+
+    await supabase
+      .from('whatsapp_settings')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+
+    const payload: Record<string, any> = { ...merged, updated_at: new Date().toISOString() };
+    let data: any = null;
+    let error: any = null;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      ({ data, error } = await supabase
+        .from('whatsapp_settings')
+        .insert([payload])
+        .select()
+        .single());
+      if (!error) break;
+      const m = (error.message || '').match(/'([a-z_]+)' column/i);
+      if (m && m[1] && m[1] in payload) {
+        delete payload[m[1]];
+        continue;
+      }
+      break;
+    }
+    if (error) throw error;
+    cacheInvalidate(CK.whatsapp);
+
+    return {
+      enabled: !!data.enabled,
+      phone_number_id: data.phone_number_id || '',
+      access_token: data.access_token || '',
+      business_number: data.business_number || '',
+      default_country_code: data.default_country_code || '213',
+      template_name: data.template_name || '',
+      template_lang: data.template_lang || 'fr',
+      graph_version: data.graph_version || 'v21.0',
     };
   }
 
