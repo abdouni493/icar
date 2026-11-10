@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import { ReservationDetails } from '../types';
+import { ReservationDetails, WhatsAppSettings } from '../types';
 import { EmailService } from './emailService';
 
 /**
@@ -68,6 +68,140 @@ export class WhatsAppService {
   /** Vérifie qu'un numéro normalisé est plausible (8 à 15 chiffres). */
   static isValidPhone(normalized: string): boolean {
     return /^\d{8,15}$/.test(normalized);
+  }
+
+  /** URL de la fonction serverless d'envoi automatique (dev vs Vercel). */
+  static apiEndpoint(): string {
+    const isDev =
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return isDev
+      ? 'http://localhost:3002/api/send-whatsapp'
+      : `${window.location.origin}/api/send-whatsapp`;
+  }
+
+  /** Teste la connexion à l'API WhatsApp Cloud (sans envoyer de message). */
+  static async testConnection(settings: WhatsAppSettings): Promise<{ success: boolean; message: string }> {
+    try {
+      const resp = await fetch(WhatsAppService.apiEndpoint(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          test: true,
+          phoneNumberId: settings.phone_number_id,
+          accessToken: settings.access_token,
+          graphVersion: settings.graph_version || 'v21.0',
+        }),
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || data?.success === false) {
+        return { success: false, message: data?.error || 'Échec de la connexion WhatsApp' };
+      }
+      const name = data?.info?.verifiedName || data?.info?.displayPhoneNumber || '';
+      return {
+        success: true,
+        message: name ? `Connecté : ${name}` : 'Connexion WhatsApp valide',
+      };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Échec de la connexion WhatsApp' };
+    }
+  }
+
+  /**
+   * Envoi AUTOMATIQUE via l'API WhatsApp Cloud (Meta), par le biais de la
+   * fonction serverless Vercel /api/send-whatsapp. Aucune action manuelle :
+   * le message part tout seul depuis le numéro WhatsApp Business configuré.
+   */
+  static async sendViaCloudAPI(params: {
+    settings: WhatsAppSettings;
+    reservation: ReservationDetails;
+    htmlContent: string;
+    clientPhone: string;
+    templateLang: 'fr' | 'ar';
+    documentType: string;
+  }): Promise<{ success: boolean; message: string; pdfUrl?: string }> {
+    try {
+      const { settings } = params;
+      if (!settings.enabled || !settings.phone_number_id || !settings.access_token) {
+        throw new Error(
+          params.templateLang === 'fr'
+            ? 'WhatsApp automatique non configuré. Configurez-le dans Paramètres → WhatsApp.'
+            : 'واتساب التلقائي غير مُهيأ. قم بإعداده في الإعدادات → واتساب.',
+        );
+      }
+
+      const phone = WhatsAppService.normalizePhone(
+        params.clientPhone,
+        settings.default_country_code || WhatsAppService.DEFAULT_COUNTRY_CODE,
+      );
+      if (!WhatsAppService.isValidPhone(phone)) {
+        throw new Error(
+          params.templateLang === 'fr' ? 'Numéro WhatsApp invalide.' : 'رقم واتساب غير صالح.',
+        );
+      }
+
+      // 1) PDF + hébergement public.
+      const pdfBlob = await EmailService.htmlToPdf(
+        params.htmlContent,
+        `${params.documentType || 'document'}-${params.reservation.id}`,
+      );
+      const pdfUrl = await WhatsAppService.uploadPdf(
+        pdfBlob,
+        params.documentType,
+        params.reservation.id,
+      );
+
+      const clientName = `${params.reservation.client.firstName} ${params.reservation.client.lastName}`.trim();
+      const docLabel = WhatsAppService.documentLabel(params.documentType, params.templateLang);
+
+      // 2) Envoi via la fonction serverless -> API WhatsApp Cloud.
+      const resp = await fetch(WhatsAppService.apiEndpoint(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phoneNumberId: settings.phone_number_id,
+          accessToken: settings.access_token,
+          graphVersion: settings.graph_version || 'v21.0',
+          to: phone,
+          pdfUrl,
+          fileName: `${params.documentType || 'document'}_${params.reservation.id}.pdf`,
+          caption:
+            params.templateLang === 'fr'
+              ? `${docLabel} — AUTO LOCATION`
+              : `${docLabel} — أوتو لوكيشن`,
+          // Template (envoi hors fenêtre 24 h) si configuré.
+          templateName: settings.template_name || undefined,
+          templateLang: settings.template_lang || params.templateLang,
+          templateBodyParam: settings.template_name ? clientName : undefined,
+        }),
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || data?.success === false) {
+        throw new Error(data?.error || `Erreur WhatsApp (${resp.status})`);
+      }
+
+      // 3) Journalisation best-effort.
+      try {
+        await supabase.from('whatsapp_sent_log').insert({
+          reservation_id: params.reservation.id,
+          client_name: clientName,
+          phone,
+          document_type: params.documentType,
+          language: params.templateLang,
+          pdf_url: pdfUrl,
+        });
+      } catch (logErr) {
+        console.warn('whatsapp_sent_log insert failed (ignored):', logErr);
+      }
+
+      return {
+        success: true,
+        message: params.templateLang === 'fr' ? 'WhatsApp envoyé automatiquement' : 'تم إرسال واتساب تلقائيًا',
+        pdfUrl,
+      };
+    } catch (error: any) {
+      console.error('sendViaCloudAPI error:', error);
+      return { success: false, message: error.message || 'Échec de l\'envoi WhatsApp automatique' };
+    }
   }
 
   /**

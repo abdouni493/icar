@@ -66,3 +66,29 @@ CREATE POLICY "whatsapp_sent_log_all" ON public.whatsapp_sent_log
 
 CREATE INDEX IF NOT EXISTS whatsapp_sent_log_reservation_idx
   ON public.whatsapp_sent_log (reservation_id);
+
+-- ----------------------------------------------------------------------------
+-- 3) Paramètres de connexion WhatsApp Cloud API (Meta) — une seule ligne.
+--    Permet l'ENVOI AUTOMATIQUE des documents depuis le numéro WhatsApp
+--    Business de l'agence, configuré dans Paramètres → WhatsApp.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.whatsapp_settings (
+  id                   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  enabled              boolean NOT NULL DEFAULT false,
+  phone_number_id      text,
+  access_token         text,
+  business_number      text,
+  default_country_code text DEFAULT '213',
+  template_name        text,
+  template_lang        text DEFAULT 'fr',
+  graph_version        text DEFAULT 'v21.0',
+  updated_at           timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.whatsapp_settings ENABLE ROW LEVEL SECURITY;
+
+-- Accès réservé aux utilisateurs connectés (le jeton d'accès est sensible).
+DROP POLICY IF EXISTS "whatsapp_settings_auth_all" ON public.whatsapp_settings;
+CREATE POLICY "whatsapp_settings_auth_all" ON public.whatsapp_settings
+  FOR ALL TO authenticated
+  USING (true) WITH CHECK (true);

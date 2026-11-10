@@ -444,6 +444,30 @@ export interface WebsiteSettings {
   tiktok_pixel_id?: string;
 }
 
+/**
+ * Paramètres de l'intégration WhatsApp Cloud API (Meta) permettant l'envoi
+ * AUTOMATIQUE des documents au numéro WhatsApp du client. Stocké dans la table
+ * `whatsapp_settings` (une seule ligne).
+ */
+export interface WhatsAppSettings {
+  /** Active l'envoi automatique via l'API WhatsApp Cloud. */
+  enabled: boolean;
+  /** Identifiant du numéro WhatsApp Business (Phone Number ID, Meta). */
+  phone_number_id?: string;
+  /** Jeton d'accès permanent (Permanent Access Token, Meta). */
+  access_token?: string;
+  /** Numéro affiché du compte WhatsApp Business (indicatif pour l'utilisateur). */
+  business_number?: string;
+  /** Indicatif pays par défaut appliqué aux numéros locaux (ex : 213). */
+  default_country_code?: string;
+  /** Nom du modèle (template) Meta approuvé avec en-tête DOCUMENT (optionnel). */
+  template_name?: string;
+  /** Langue du template (code Meta, ex : fr, ar, en). */
+  template_lang?: string;
+  /** Version de l'API Graph (ex : v21.0). */
+  graph_version?: string;
+}
+
 // Code promo utilisable sur la réservation du site public
 export interface PromoCode {
   id: string;
