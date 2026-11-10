@@ -24,7 +24,7 @@ export interface WizardSearchCriteria {
   returnAgencyId?: string;    // absent = même agence qu'au départ
 }
 
-export const WIZARD_STEP_COUNT = 6;
+export const WIZARD_STEP_COUNT = 4;
 
 const emptyPersonal: ReservationStep2 = {
   photo: '',
@@ -351,18 +351,7 @@ export const ReservationWizardProvider: React.FC<ProviderProps> = ({
       case 3:
         return true; // l'assurance de protection est optionnelle
       case 4:
-        return true; // les services sont optionnels
-      case 5:
-        // Informations personnelles + informations de vol (numéro, date/heure,
-        // justificatif du billet) désormais obligatoires.
-        return !!(
-          personal.firstName && personal.lastName && personal.phone && personal.email
-          && personal.licenseNumber && personal.wilaya
-          && personal.flightNumber && personal.flightDate && personal.flightTime
-          && personal.flightTicketImage
-        );
-      case 6:
-        return true;
+        return true; // informations client facultatives + envoi WhatsApp
       default:
         return false;
     }

@@ -1,24 +1,20 @@
 import React from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { Check, Car as CarIcon, MapPin, User, ConciergeBell, ClipboardCheck, Shield } from 'lucide-react';
+import { Check, Car as CarIcon, MapPin, User, Shield } from 'lucide-react';
 import { Language, Car, Agency, SpecialOffer, WebsiteSettings } from '../../../types';
 import { ReservationWizardProvider, useWizard, WIZARD_STEP_COUNT, WizardSearchCriteria } from './WizardContext';
 import { StepCarDates } from './StepCarDates';
 import { StepAgencies } from './StepAgencies';
 import { StepAssurance } from './StepAssurance';
-import { StepPersonalInfo } from './StepPersonalInfo';
-import { StepServices } from './StepServices';
-import { StepRecap } from './StepRecap';
+import { StepInfoWhatsApp } from './StepInfoWhatsApp';
 import { NavButtons, C } from './wizardUi';
 import { ThankYouPage } from '../ThankYouPage';
 
 const STEP_META = [
-  { icon: CarIcon,        label: { fr: 'Voiture & Dates', ar: 'السيارة والتواريخ' } },
-  { icon: MapPin,         label: { fr: 'Agences', ar: 'الوكالات' } },
-  { icon: Shield,         label: { fr: 'Assurance', ar: 'التأمين' } },
-  { icon: ConciergeBell,  label: { fr: 'Services', ar: 'الخدمات' } },
-  { icon: User,           label: { fr: 'Informations', ar: 'المعلومات' } },
-  { icon: ClipboardCheck, label: { fr: 'Récapitulatif', ar: 'الملخص' } },
+  { icon: CarIcon, label: { fr: 'Voiture & Dates', ar: 'السيارة والتواريخ' } },
+  { icon: MapPin,  label: { fr: 'Agences', ar: 'الوكالات' } },
+  { icon: Shield,  label: { fr: 'Assurance', ar: 'التأمين' } },
+  { icon: User,    label: { fr: 'Informations', ar: 'المعلومات' } },
 ];
 
 interface ReservationWizardProps {
@@ -36,7 +32,7 @@ interface ReservationWizardProps {
   onBackHome: () => void;
 }
 
-/** Assistant de réservation public en 5 étapes guidées. */
+/** Assistant de réservation public en 4 étapes guidées. */
 export const ReservationWizard: React.FC<ReservationWizardProps> = ({
   lang, cars, agencies, isLoadingAgencies = false, specialOffers, selectedCar, initialSearch, websiteSettings, contactInfo, onBackHome,
 }) => (
@@ -149,9 +145,7 @@ const WizardShell: React.FC<{ websiteSettings?: WebsiteSettings | null; onBackHo
             {step === 1 && <StepCarDates />}
             {step === 2 && <StepAgencies />}
             {step === 3 && <StepAssurance />}
-            {step === 4 && <StepServices />}
-            {step === 5 && <StepPersonalInfo />}
-            {step === 6 && <StepRecap />}
+            {step === 4 && <StepInfoWhatsApp />}
           </motion.div>
         </AnimatePresence>
 
