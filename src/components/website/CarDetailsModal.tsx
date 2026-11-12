@@ -1,4 +1,5 @@
 import React from 'react';
+import { getWeekRate, getMonthRate } from '../../utils/pricing';
 import { Language, Car } from '../../types';
 import { motion } from 'motion/react';
 import { X, Fuel, Settings, Users, DoorOpen, Palette } from 'lucide-react';
@@ -120,23 +121,23 @@ export const CarDetailsModal: React.FC<CarDetailsModalProps> = ({ lang, car, onC
                   {car.priceDay.toLocaleString()}
                 </p>
                 <p className="text-vel-muted text-xs mt-1">
-                  {{ fr: 'DA / jour', ar: 'د.ج / يوم' }[lang]}
+                  {{ fr: 'DA / jour · 1–6 j', ar: 'د.ج / يوم · 1–6 أيام' }[lang]}
                 </p>
               </div>
               <div className="vel-glass rounded-xl p-4 text-center">
                 <p className="font-black text-2xl text-vel-slate" style={{ fontFamily: 'var(--font-display)' }}>
-                  {car.priceWeek.toLocaleString()}
+                  {getWeekRate(car).toLocaleString()}
                 </p>
                 <p className="text-vel-muted text-xs mt-1">
-                  {{ fr: 'DA / semaine', ar: 'د.ج / أسبوع' }[lang]}
+                  {{ fr: 'DA / jour · 7 j et +', ar: 'د.ج / يوم · 7 أيام فأكثر' }[lang]}
                 </p>
               </div>
               <div className="vel-glass rounded-xl p-4 text-center">
                 <p className="font-black text-2xl text-vel-slate" style={{ fontFamily: 'var(--font-display)' }}>
-                  {car.priceMonth.toLocaleString()}
+                  {getMonthRate(car).toLocaleString()}
                 </p>
                 <p className="text-vel-muted text-xs mt-1">
-                  {{ fr: 'DA / mois', ar: 'د.ج / شهر' }[lang]}
+                  {{ fr: 'DA / jour · 30 j et +', ar: 'د.ج / يوم · 30 يوماً فأكثر' }[lang]}
                 </p>
               </div>
             </div>

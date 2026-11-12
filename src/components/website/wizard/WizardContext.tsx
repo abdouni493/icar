@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getDailyRate, getWeekRate, getMonthRate } from '../../../utils/pricing';
 import { Language, Car, Agency, SpecialOffer, ReservationStep2, AdditionalService, ProtectionAssurance } from '../../../types';
 import { DatabaseService } from '../../../services/DatabaseService';
 import { getCurrentSpecialOfferForCar } from '../../../utils/specialOffers';
@@ -379,8 +380,11 @@ export const ReservationWizardProvider: React.FC<ProviderProps> = ({
   }, [range.from, range.to]);
 
   const promo = car ? getCurrentSpecialOfferForCar(car.id, specialOffers) : undefined;
-  const basePrice = car ? car.priceDay * days : 0;
-  const discount = promo && car ? Math.max(0, (car.priceDay - promo.newPrice) * days) : 0;
+  // Prix / jour selon la durée : < 7 j → normal, ≥ 7 j → semaine, ≥ 30 j → mois.
+  // Une offre spéciale (prix/jour promo) s'applique si elle est plus avantageuse.
+  const tierRate = car ? getDailyRate(car, days) : 0;
+  const basePrice = Math.round(tierRate * days);
+  const discount = promo && car ? Math.max(0, Math.round((tierRate - promo.newPrice) * days)) : 0;
   const servicesTotal = selectedServices.reduce((sum, s) => sum + s.price, 0);
   const assuranceTotal = selectedAssurance ? selectedAssurance.pricePerDay * days : 0;
   const subtotal = Math.max(0, basePrice - discount + servicesTotal + assuranceTotal);
@@ -474,9 +478,10 @@ export const ReservationWizardProvider: React.FC<ProviderProps> = ({
         return_date: range.to!,
         return_time: returnTime,
         return_agency_id: differentReturnAgency ? returnAgency : departureAgency,
-        price_per_day: car.priceDay,
-        price_week: car.priceWeek ?? '',
-        price_month: car.priceMonth ?? '',
+        // Prix / jour réellement appliqué pour cette durée
+        price_per_day: tierRate,
+        price_week: getWeekRate(car) || '',
+        price_month: getMonthRate(car) || '',
         total_days: days,
         total_price: total,
         deposit: car.deposit,

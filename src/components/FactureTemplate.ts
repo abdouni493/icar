@@ -1,3 +1,4 @@
+import { getDailyRate } from '../utils/pricing';
 import { ReservationDetails } from '../types';
 import { goldPrintOverrideCSS } from './printTheme';
 
@@ -248,7 +249,11 @@ export const buildFactureHTML = (
   const dueDateValue = (dueDate && dueDate.trim()) || departDate;
   const dueDateLabel = formatDateFR(dueDateValue) || '—';
   const days = reservation?.totalDays || 0;
-  const pricePerDay = (reservation?.car as any)?.priceDay || (reservation?.car as any)?.price_per_day || 0;
+  const carForRate = reservation?.car as any;
+  const pricePerDay = getDailyRate(
+    carForRate ? { priceDay: carForRate.priceDay ?? carForRate.price_per_day, priceWeek: carForRate.priceWeek, priceMonth: carForRate.priceMonth } : null,
+    Number(reservation?.totalDays) || 0,
+  );
 
   const a: any = agency || {};
   const today = new Date().toLocaleDateString('fr-FR');

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getDailyRate } from '../utils/pricing';
 import { Language, ReservationDetails } from '../types';
 import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Save, MapPin, CreditCard, Car as CarIcon, Camera, User, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -176,7 +177,7 @@ export const EditReservationForm: React.FC<EditReservationFormProps> = ({ lang, 
   // Detect if price was manually edited by comparing stored price with calculated price
   useEffect(() => {
     const calculateExpectedPrice = () => {
-      const pricePerDay = reservation.car?.priceDay || 0;
+      const pricePerDay = getDailyRate(reservation.car, reservation.totalDays || 0);
       const servicesTotal = (reservation.additionalServices || []).reduce((sum, s) => sum + (s.price || 0), 0);
       const additionalFees = reservation.additionalFees || 0;
       const tvaAmount = reservation.tvaApplied ? (reservation.totalPrice ? Math.ceil(reservation.totalPrice * 0.19) : 0) : 0;
@@ -268,8 +269,11 @@ export const EditReservationForm: React.FC<EditReservationFormProps> = ({ lang, 
       console.log('📊 Total Days - Original:', reservation.totalDays, '→ New:', newTotalDays);
 
       // === PRICING CALCULATION ===
-      const pricePerDay = reservation.pricePerDay || reservation.car?.priceDay || 0;
-      const basePrice = pricePerDay * newTotalDays;
+      // Palier recalculé selon la nouvelle durée (normal / 7+ j / 30+ j)
+      const pricePerDay = reservation.car
+        ? getDailyRate(reservation.car, newTotalDays)
+        : (reservation.pricePerDay || 0);
+      const basePrice = Math.round(pricePerDay * newTotalDays);
       
       console.log('💰 Price/Day:', pricePerDay, 'DA');
       console.log('💰 Base Price (old):', (pricePerDay * (reservation.totalDays || 0)).toLocaleString(), 'DA');

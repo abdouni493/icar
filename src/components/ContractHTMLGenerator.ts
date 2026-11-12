@@ -1,3 +1,4 @@
+import { getDailyRate } from '../utils/pricing';
 import { ReservationDetails } from '../types';
 
 /**
@@ -492,7 +493,7 @@ export const generateContractHTML = (
             <div class="pricing">
               <div class="pricing-row">
                 <div class="pricing-label">${labels.pricePerDay}:</div>
-                <div class="pricing-value">${reservation?.car?.pricePerDay || 0} DA</div>
+                <div class="pricing-value">${getDailyRate(reservation?.car as any, Number(reservation?.totalDays) || 0)} DA</div>
               </div>
               <div class="pricing-row">
                 <div class="pricing-label">${labels.numberOfDays}:</div>

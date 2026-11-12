@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { normalizePerDayRate, calculateRentalBase, getDailyRate } from '../utils/pricing';
 import { useLocation } from 'react-router-dom';
 import { Language, ReservationDetails, Client, Car, Entreprise } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -161,8 +162,8 @@ export const PlannerPage: React.FC<PlannerPageProps> = ({ lang, isAuthLoading = 
             seats: dbCar.seats || 5,
             doors: dbCar.doors || 4,
             priceDay: Math.round(Number(dbCar.price_per_day)),
-            priceWeek: Math.round(Number(dbCar.price_week || dbCar.price_per_day * 2)),
-            priceMonth: Math.round(Number(dbCar.price_month || dbCar.price_per_day * 4)),
+            priceWeek: normalizePerDayRate(dbCar.price_week, dbCar.price_per_day, 7),
+            priceMonth: normalizePerDayRate(dbCar.price_month, dbCar.price_per_day, 30),
             deposit: Math.round(Number(dbCar.deposit || dbCar.price_per_day * 2)),
             images: dbCar.image_url ? [dbCar.image_url] : ['https://picsum.photos/seed/car/400/300'],
             mileage: dbCar.mileage || 0,
@@ -998,13 +999,7 @@ export const PlannerPage: React.FC<PlannerPageProps> = ({ lang, isAuthLoading = 
           // Financial calculations: compute base vehicle price from rates and days
           const servicesTotal = (reservation.additionalServices || []).reduce((sum, s) => sum + (s.price || 0), 0);
           const days = Number(reservation.totalDays) || 0;
-          const weeks = Math.floor(days / 7);
-          const remainingDays = days % 7;
-          const priceDay = reservation.car?.priceDay || reservation.car?.priceDay || 0;
-          const priceWeek = reservation.car?.priceWeek || (priceDay * 7);
-          const weeklyPrice = priceWeek * weeks;
-          const remainingPrice = priceDay * remainingDays;
-          const basePrice = weeklyPrice + remainingPrice;
+          const basePrice = calculateRentalBase(reservation.car, days);
           const subtotal = basePrice + servicesTotal;
           const totalCost = subtotal + (Number(reservation.additionalFees) || 0) + (Number((reservation as any).tvaAmount) || 0);
           
@@ -1824,7 +1819,7 @@ const getInitialElements = (type: string, reservation: ReservationDetails, lang:
       rentalConditionsTitle: { x: 50, y: 465, text: lang === 'fr' ? '📋 CONDITIONS DE LOCATION & TARIFICATION' : '📋 شروط التأجير والتسعير', fontSize: 13, fontFamily: 'Arial', color: '#FFFFFF', fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', textAlign: 'left', backgroundColor: '#2d7a4d' },
       
       dailyPriceLabel: { x: 50, y: 495, text: lang === 'fr' ? 'Prix Journalier:' : 'السعر اليومي:', fontSize: 12, fontFamily: 'Arial', color: '#1a3a52', fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', textAlign: 'left', backgroundColor: 'transparent' },
-      dailyPrice: { x: 280, y: 495, text: `${reservation.car.priceDay?.toLocaleString() || '7000,00'} DA`, fontSize: 12, fontFamily: 'Arial', color: '#2d7a4d', fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', textAlign: 'right', backgroundColor: 'transparent' },
+      dailyPrice: { x: 280, y: 495, text: `${getDailyRate(reservation.car, Number(reservation.totalDays) || 0).toLocaleString()} DA`, fontSize: 12, fontFamily: 'Arial', color: '#2d7a4d', fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', textAlign: 'right', backgroundColor: 'transparent' },
       
       numberOfDaysLabel: { x: 50, y: 518, text: lang === 'fr' ? 'Nombre de Jours:' : 'عدد الأيام:', fontSize: 12, fontFamily: 'Arial', color: '#1a3a52', fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', textAlign: 'left', backgroundColor: 'transparent' },
       numberOfDays: { x: 280, y: 518, text: `${reservation.totalDays} ${lang === 'fr' ? 'jour(s)' : 'يوم'}`, fontSize: 12, fontFamily: 'Arial', color: '#2d7a4d', fontWeight: 'bold', fontStyle: 'normal', textDecoration: 'none', textAlign: 'right', backgroundColor: 'transparent' },
@@ -3405,7 +3400,7 @@ export const PersonalizationModal: React.FC<{
             <div class="pricing-table">
               <div class="pricing-row">
                 <span>${labels.pricePerDay}:</span>
-                <span>${reservation?.car?.priceDay || 0} DA</span>
+                <span>${getDailyRate(reservation?.car, Number(reservation?.totalDays) || 0)} DA</span>
               </div>
               <div class="pricing-row">
                 <span>${labels.numberOfDays}:</span>
@@ -3917,7 +3912,7 @@ export const PersonalizationModal: React.FC<{
             </div>
             <div class="info-field">
               <div class="info-field-label">${isFrench ? 'Prix Jour' : 'السعر اليومي'}</div>
-              <div class="info-field-value">${reservation?.car?.priceDay?.toLocaleString() || '0'} DA</div>
+              <div class="info-field-value">${getDailyRate(reservation?.car, Number(reservation?.totalDays) || 0).toLocaleString()} DA</div>
             </div>
           </div>
         </div>

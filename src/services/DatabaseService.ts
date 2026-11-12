@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { normalizePerDayRate } from '../utils/pricing';
 import { Car, Client, Agency, Worker, WorkerAdvance, WorkerAbsence, WorkerPayment, WorkerRole, WorkerPermissions, Entreprise, RentalSettings, StoreExpense, VehicleExpense, MaintenanceAlert, WebsiteOrder, ReservationDetails, SpecialOffer, ContactInfo, WebsiteSettings, WhatsAppSettings, PromoCode } from '../types';
 import { parseCarCurrencies } from '../utils/currency';
 import { cachedFetch, invalidate as cacheInvalidate } from './dataCache';
@@ -34,8 +35,8 @@ export class DatabaseService {
       seats: dbCar.seats || 5,
       doors: dbCar.doors || 4,
       priceDay: Math.round(Number(dbCar.price_per_day)),
-      priceWeek: Math.round(Number(dbCar.price_week || dbCar.price_per_day * 2)),
-      priceMonth: Math.round(Number(dbCar.price_month || dbCar.price_per_day * 4)),
+      priceWeek: normalizePerDayRate(dbCar.price_week, dbCar.price_per_day, 7),
+      priceMonth: normalizePerDayRate(dbCar.price_month, dbCar.price_per_day, 30),
       deposit: Math.round(Number(dbCar.deposit || dbCar.price_per_day * 2)),
       images: dbCar.image_url ? [dbCar.image_url] : ['https://picsum.photos/seed/car/400/300'],
       mileage: dbCar.mileage || 0,

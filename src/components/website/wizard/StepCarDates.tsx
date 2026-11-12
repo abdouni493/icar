@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getWeekRate, getMonthRate } from '../../../utils/pricing';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Search, CalendarCheck, Loader2 } from 'lucide-react';
 import { Car } from '../../../types';
@@ -188,6 +189,11 @@ export const StepCarDates: React.FC = () => {
                   <span className="font-bold" style={{ color: C.accent }}>{promo.newPrice.toLocaleString()} DA/j</span>
                 </>
               : <>{car.priceDay.toLocaleString()} DA/j</>}
+          </p>
+          <p className="text-vel-muted text-xs mt-0.5">
+            {lang === 'fr' ? '7 j et +' : '7 أيام فأكثر'} : <span className="font-bold" style={{ color: C.accent }}>{getWeekRate(car).toLocaleString()} DA/j</span>
+            {' · '}
+            {lang === 'fr' ? '30 j et +' : '30 يوماً فأكثر'} : <span className="font-bold" style={{ color: C.accent }}>{getMonthRate(car).toLocaleString()} DA/j</span>
           </p>
         </div>
         <button

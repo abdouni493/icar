@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { normalizePerDayRate } from '../utils/pricing';
 import { useNavigate } from 'react-router-dom';
 import { DashboardStats, MaintenanceAlert, Language, Car, ReservationDetails, VehicleExpense, User } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -350,8 +351,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ lang, isAuthLoadin
             seats: dbCar.seats || 5,
             doors: dbCar.doors || 4,
             priceDay: Math.round(Number(dbCar.price_per_day)),
-            priceWeek: Math.round(Number(dbCar.price_week || dbCar.price_per_day * 2)),
-            priceMonth: Math.round(Number(dbCar.price_month || dbCar.price_per_day * 4)),
+            priceWeek: normalizePerDayRate(dbCar.price_week, dbCar.price_per_day, 7),
+            priceMonth: normalizePerDayRate(dbCar.price_month, dbCar.price_per_day, 30),
             deposit: Math.round(Number(dbCar.deposit || dbCar.price_per_day * 2)),
             images: dbCar.image_url ? [dbCar.image_url] : [],
             mileage: dbCar.mileage || 0,

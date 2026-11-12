@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { normalizePerDayRate } from '../utils/pricing';
 import { useLocation } from 'react-router-dom';
 import { Car, Language, MaintenanceType, VehicleExpense } from '../types';
 import { MaintenanceCard } from './MaintenanceCard';
@@ -123,8 +124,8 @@ export const MaintenancePage: React.FC<MaintenancePageProps> = ({
           seats: dbCar.seats || 5,
           doors: dbCar.doors || 4,
           priceDay: Math.round(Number(dbCar.price_per_day)),
-          priceWeek: Math.round(Number(dbCar.price_week || dbCar.price_per_day * 2)),
-          priceMonth: Math.round(Number(dbCar.price_month || dbCar.price_per_day * 4)),
+          priceWeek: normalizePerDayRate(dbCar.price_week, dbCar.price_per_day, 7),
+          priceMonth: normalizePerDayRate(dbCar.price_month, dbCar.price_per_day, 30),
           deposit: Math.round(Number(dbCar.deposit || dbCar.price_per_day * 2)),
           images: dbCar.image_url ? [dbCar.image_url] : ['https://picsum.photos/seed/car/400/300'],
           mileage: dbCar.mileage || 0,
@@ -197,8 +198,8 @@ export const MaintenancePage: React.FC<MaintenancePageProps> = ({
           transmission: carData.transmission || selectedCar.transmission,
           seats: carData.seats || selectedCar.seats,
           doors: carData.doors || selectedCar.doors,
-          price_week: carData.priceWeek || selectedCar.priceWeek,
-          price_month: carData.priceMonth || selectedCar.priceMonth,
+          price_week: carData.priceWeek ?? selectedCar.priceWeek,
+          price_month: carData.priceMonth ?? selectedCar.priceMonth,
           deposit: carData.deposit || selectedCar.deposit,
           mileage: carData.mileage || selectedCar.mileage,
         };

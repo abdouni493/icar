@@ -1,4 +1,5 @@
 import React from 'react';
+import { getWeekRate, getMonthRate } from '../../utils/pricing';
 import { Car, Language, SpecialOffer } from '../../types';
 import { useWebsiteCurrency } from './CurrencyContext';
 import {
@@ -23,10 +24,15 @@ export const CarPriceBoard: React.FC<{
 }> = ({ lang, car, promo, variant = 'card' }) => {
   const { display, active } = useWebsiteCurrency();
 
-  const rows = [
-    { key: 'day', label: { fr: 'Jour', ar: 'يوم' }[lang], dzd: promo ? promo.newPrice : car.priceDay, old: promo ? car.priceDay : undefined },
-    { key: 'week', label: { fr: 'Semaine', ar: 'أسبوع' }[lang], dzd: car.priceWeek },
-    { key: 'month', label: { fr: 'Mois', ar: 'شهر' }[lang], dzd: car.priceMonth },
+  // Chaque palier est un PRIX PAR JOUR (appliqué selon la durée de location).
+  // L'offre spéciale s'applique à un palier lorsqu'elle est plus avantageuse.
+  const tier = (rate: number) =>
+    promo && promo.newPrice < rate ? { dzd: promo.newPrice, old: rate } : { dzd: rate, old: undefined };
+  const perDay = { fr: ' /j', ar: ' /ي' }[lang];
+  const rows: { key: string; label: string; dzd: number; old?: number; isDeposit?: boolean; suffix?: string }[] = [
+    { key: 'day', label: { fr: 'Prix/jour · 1–6 j', ar: 'السعر/يوم · 1–6 أيام' }[lang], ...tier(car.priceDay), suffix: perDay },
+    { key: 'week', label: { fr: 'Prix/jour · 7 j et +', ar: 'السعر/يوم · 7 أيام فأكثر' }[lang], ...tier(getWeekRate(car)), suffix: perDay },
+    { key: 'month', label: { fr: 'Prix/jour · 30 j et +', ar: 'السعر/يوم · 30 يوماً فأكثر' }[lang], ...tier(getMonthRate(car)), suffix: perDay },
     { key: 'deposit', label: { fr: 'Caution', ar: 'الكفالة' }[lang], dzd: car.deposit, isDeposit: true },
   ];
 
@@ -71,6 +77,9 @@ export const CarPriceBoard: React.FC<{
                 </span>
               )}
               {fmt(r.dzd, code)}
+              {r.suffix && fmt(r.dzd, code) !== '—' && (
+                <span className="font-medium text-vel-muted">{r.suffix}</span>
+              )}
             </span>
           </div>
         ))}
@@ -127,6 +136,9 @@ export const CarPriceBoard: React.FC<{
                       </span>
                     )}
                     {fmt(r.dzd, code)}
+                    {r.suffix && fmt(r.dzd, code) !== '—' && (
+                      <span className="font-medium text-vel-muted">{r.suffix}</span>
+                    )}
                   </td>
                 ))}
               </tr>

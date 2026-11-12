@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { normalizePerDayRate } from '../utils/pricing';
 import { ReservationDetails, VehicleInspection, Payment, ProtectionAssurance, Entreprise } from '../types';
 import { parseCarCurrencies } from '../utils/currency';
 
@@ -420,8 +421,8 @@ export class ReservationsService {
         seats: res.car.seats,
         doors: res.car.doors,
         priceDay: res.car.price_per_day,
-        priceWeek: res.car.price_week,
-        priceMonth: res.car.price_month,
+        priceWeek: normalizePerDayRate(res.car.price_week, res.car.price_per_day, 7),
+        priceMonth: normalizePerDayRate(res.car.price_month, res.car.price_per_day, 30),
         deposit: res.car.deposit,
         images: res.car.image_url ? [res.car.image_url] : [],
         mileage: res.car.mileage,
@@ -641,8 +642,8 @@ export class ReservationsService {
         seats: data.car.seats,
         doors: data.car.doors,
         priceDay: data.car.price_per_day,
-        priceWeek: data.car.price_week,
-        priceMonth: data.car.price_month,
+        priceWeek: normalizePerDayRate(data.car.price_week, data.car.price_per_day, 7),
+        priceMonth: normalizePerDayRate(data.car.price_month, data.car.price_per_day, 30),
         deposit: data.car.deposit,
         images: data.car.image_url ? [data.car.image_url] : [],
         mileage: data.car.mileage,

@@ -124,11 +124,33 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
     });
   };
 
-  const priceRows: { key: 'priceDay' | 'priceWeek' | 'priceMonth' | 'deposit'; label: string }[] = [
-    { key: 'priceDay', label: lang === 'fr' ? 'Jour' : 'يوم' },
-    { key: 'priceWeek', label: lang === 'fr' ? 'Semaine' : 'أسبوع' },
-    { key: 'priceMonth', label: lang === 'fr' ? 'Mois' : 'شهر' },
-    { key: 'deposit', label: lang === 'fr' ? 'Caution' : 'الضمان' },
+  // Tous les prix sont des prix PAR JOUR : le palier appliqué dépend de la
+  // durée de la réservation (1–6 j → jour, 7+ j → semaine, 30+ j → mois).
+  const priceRows: { key: 'priceDay' | 'priceWeek' | 'priceMonth' | 'deposit'; label: string; hint: string; unit: string }[] = [
+    {
+      key: 'priceDay',
+      label: lang === 'fr' ? 'Prix / jour (normal)' : 'السعر / يوم (عادي)',
+      hint: lang === 'fr' ? 'Location de 1 à 6 jours' : 'كراء من 1 إلى 6 أيام',
+      unit: lang === 'fr' ? 'DA/j' : 'دج/ي',
+    },
+    {
+      key: 'priceWeek',
+      label: lang === 'fr' ? 'Prix / jour (semaine)' : 'السعر / يوم (أسبوعي)',
+      hint: lang === 'fr' ? 'Appliqué dès 7 jours' : 'يُطبق ابتداءً من 7 أيام',
+      unit: lang === 'fr' ? 'DA/j' : 'دج/ي',
+    },
+    {
+      key: 'priceMonth',
+      label: lang === 'fr' ? 'Prix / jour (mois)' : 'السعر / يوم (شهري)',
+      hint: lang === 'fr' ? 'Appliqué dès 30 jours' : 'يُطبق ابتداءً من 30 يوماً',
+      unit: lang === 'fr' ? 'DA/j' : 'دج/ي',
+    },
+    {
+      key: 'deposit',
+      label: lang === 'fr' ? 'Caution' : 'الضمان',
+      hint: lang === 'fr' ? 'Montant fixe' : 'مبلغ ثابت',
+      unit: 'DA',
+    },
   ];
 
   const isThirdParty = formData.ownerType === 'third_party';
@@ -386,12 +408,21 @@ export const CarModal: React.FC<CarModalProps> = ({ isOpen, onClose, onSave, onD
                       min={0}
                       value={formData[row.key] ?? 0}
                       onChange={handleChange}
-                      className="input-saas pr-12"
+                      className="input-saas pr-14"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-saas-text-muted pointer-events-none">DA</span>
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-saas-text-muted pointer-events-none">{row.unit}</span>
                   </div>
+                  <p className="text-[10px] font-bold text-saas-text-muted">{row.hint}</p>
                 </div>
               ))}
+            </div>
+            <div className="flex items-start gap-2.5 rounded-xl bg-saas-primary-via/5 border border-saas-primary-via/20 px-4 py-3">
+              <Info size={15} className="text-saas-primary-via shrink-0 mt-0.5" />
+              <p className="text-xs text-saas-text-main leading-relaxed">
+                {lang === 'fr'
+                  ? "Saisissez toujours un prix PAR JOUR. Total = prix/jour du palier × nombre de jours : moins de 7 jours → prix normal, 7 jours ou plus → prix semaine, 30 jours ou plus → prix mois. Un palier laissé à 0 reprend le palier inférieur."
+                  : 'أدخل دائماً سعراً لليوم الواحد. المجموع = سعر اليوم حسب المدة × عدد الأيام: أقل من 7 أيام ← السعر العادي، 7 أيام أو أكثر ← السعر الأسبوعي، 30 يوماً أو أكثر ← السعر الشهري. الشريحة المتروكة 0 تأخذ سعر الشريحة الأدنى.'}
+              </p>
             </div>
           </section>
 
